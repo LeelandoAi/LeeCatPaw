@@ -1,7 +1,10 @@
+// Filter choices preserved from SP360, Xunlei8, Dm84, and DyGang Java spiders.
+globalThis.leeLegacyFilters = {"sp360":{"1":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"喜剧","v":"喜剧"},{"n":"爱情","v":"爱情"},{"n":"动作","v":"动作"},{"n":"恐怖","v":"恐怖"},{"n":"科幻","v":"科幻"},{"n":"剧情","v":"剧情"},{"n":"犯罪","v":"犯罪"},{"n":"奇幻","v":"奇幻"},{"n":"战争","v":"战争"},{"n":"悬疑","v":"悬疑"},{"n":"动画","v":"动画"},{"n":"文艺","v":"文艺"},{"n":"记录","v":"记录"},{"n":"传记","v":"传记"},{"n":"歌舞","v":"歌舞"},{"n":"古装","v":"古装"},{"n":"历史","v":"历史"},{"n":"惊悚","v":"惊悚"},{"n":"伦理","v":"伦理"},{"n":"其他","v":"其他"}]},{"key":"year","name":"年代","value":[{"n":"全部年代","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"2007","v":"2007"},{"n":"更早","v":"更早"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"内地","v":"大陆"},{"n":"中国香港","v":"香港"},{"n":"中国台湾","v":"台湾"},{"n":"泰国","v":"泰国"},{"n":"美国","v":"美国"},{"n":"韩国","v":"韩国"},{"n":"日本","v":"日本"},{"n":"法国","v":"法国"},{"n":"英国","v":"英国"},{"n":"德国","v":"德国"},{"n":"印度","v":"印度"},{"n":"其他","v":"其他"}]},{"key":"actor","name":"明星","value":[{"n":"全部明星","v":""},{"n":"成龙","v":"成龙"},{"n":"周星驰","v":"周星驰"},{"n":"李连杰","v":"李连杰"},{"n":"林正英","v":"林正英"},{"n":"吴京","v":"吴京"},{"n":"徐峥","v":"徐峥"},{"n":"黄渤","v":"黄渤"},{"n":"王宝强","v":"王宝强"},{"n":"李小龙","v":"李小龙"},{"n":"张国荣","v":"张国荣"},{"n":"洪金宝","v":"洪金宝"},{"n":"姜文","v":"姜文"},{"n":"沈腾","v":"沈腾"},{"n":"邓超","v":"邓超"},{"n":"巩俐","v":"巩俐"},{"n":"马丽","v":"马丽"},{"n":"闫妮","v":"闫妮"},{"n":"周冬雨","v":"周冬雨"},{"n":"刘昊然","v":"刘昊然"},{"n":"汤唯","v":"汤唯"},{"n":"舒淇","v":"舒淇"},{"n":"白百何","v":"白百何"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"},{"n":"最受好评","v":"rankpoint"}]}],"2":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"言情","v":"言情"},{"n":"剧情","v":"剧情"},{"n":"伦理","v":"伦理"},{"n":"喜剧","v":"喜剧"},{"n":"悬疑","v":"悬疑"},{"n":"都市","v":"都市"},{"n":"偶像","v":"偶像"},{"n":"古装","v":"古装"},{"n":"军事","v":"军事"},{"n":"警匪","v":"警匪"},{"n":"历史","v":"历史"},{"n":"励志","v":"励志"},{"n":"神话","v":"神话"},{"n":"谍战","v":"谍战"},{"n":"青春","v":"青春"},{"n":"家庭","v":"家庭"},{"n":"动作","v":"动作"},{"n":"情景","v":"情景"},{"n":"武侠","v":"武侠"},{"n":"科幻","v":"科幻"},{"n":"其他","v":"其他"}]},{"key":"year","name":"年代","value":[{"n":"全部年代","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"2007","v":"2007"},{"n":"更早","v":"更早"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"内地","v":"内地"},{"n":"中国香港","v":"香港"},{"n":"中国台湾","v":"台湾"},{"n":"泰国","v":"泰国"},{"n":"日本","v":"日本"},{"n":"韩国","v":"韩国"},{"n":"美国","v":"美国"},{"n":"英国","v":"英国"},{"n":"新加坡","v":"新加坡"}]},{"key":"actor","name":"明星","value":[{"n":"全部明星","v":""},{"n":"杨幂","v":"杨幂"},{"n":"热巴","v":"迪丽热巴"},{"n":"张嘉译","v":"张嘉译"},{"n":"赵丽颖","v":"赵丽颖"},{"n":"赵又廷","v":"赵又廷"},{"n":"胡歌","v":"胡歌"},{"n":"孙俪","v":"孙俪"},{"n":"韩东君","v":"韩东君"},{"n":"周迅","v":"周迅"},{"n":"张一山","v":"张一山"},{"n":"李小璐","v":"李小璐"},{"n":"李沁","v":"李沁"},{"n":"陈坤","v":"陈坤"},{"n":"刘亦菲","v":"刘亦菲"},{"n":"唐嫣","v":"唐嫣"},{"n":"李小冉","v":"李小冉"},{"n":"周冬雨","v":"周冬雨"},{"n":"于和伟","v":"于和伟"},{"n":"李易峰","v":"李易峰"},{"n":"雷佳音","v":"雷佳音"},{"n":"何冰","v":"何冰"},{"n":"阮经天","v":"阮经天"},{"n":"梅婷","v":"梅婷"},{"n":"徐峥","v":"徐峥"},{"n":"祖峰","v":"祖峰"},{"n":"秦海璐","v":"秦海璐"},{"n":"杨紫","v":"杨紫"},{"n":"任嘉伦","v":"任嘉伦"},{"n":"贾乃亮","v":"贾乃亮"},{"n":"罗晋","v":"罗晋"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"},{"n":"最受好评","v":"rankpoint"}]}],"3":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"脱口秀","v":"脱口秀"},{"n":"真人秀","v":"真人秀"},{"n":"搞笑","v":"搞笑"},{"n":"选秀","v":"选秀"},{"n":"八卦","v":"八卦"},{"n":"访谈","v":"访谈"},{"n":"情感","v":"情感"},{"n":"生活","v":"生活"},{"n":"晚会","v":"晚会"},{"n":"音乐","v":"音乐"},{"n":"职场","v":"职场"},{"n":"美食","v":"美食"},{"n":"时尚","v":"时尚"},{"n":"游戏","v":"游戏"},{"n":"少儿","v":"少儿"},{"n":"体育","v":"体育"},{"n":"纪实","v":"纪实"},{"n":"科教","v":"科教"},{"n":"曲艺","v":"曲艺"},{"n":"歌舞","v":"歌舞"},{"n":"财经","v":"财经"},{"n":"汽车","v":"汽车"},{"n":"播报","v":"播报"},{"n":"其他","v":"其他"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"中国大陆","v":"中国大陆"},{"n":"美国","v":"美国"},{"n":"日本","v":"日本"},{"n":"中国香港","v":"中国香港"},{"n":"中国台湾","v":"中国台湾"},{"n":"韩国","v":"韩国"},{"n":"欧洲","v":"欧洲"},{"n":"其他","v":"泰国"}]},{"key":"actor","name":"明星","value":[{"n":"全部明星","v":""},{"n":"邓超","v":"邓超"},{"n":"陈赫","v":"陈赫"},{"n":"何炅","v":"何炅"},{"n":"汪涵","v":"汪涵"},{"n":"王俊凯","v":"王俊凯"},{"n":"黄磊","v":"黄磊"},{"n":"谢娜","v":"谢娜"},{"n":"黄渤","v":"黄渤"},{"n":"周杰伦","v":"周杰伦"},{"n":"薛之谦","v":"薛之谦"},{"n":"Angelababy","v":"Angelababy"},{"n":"易烊千玺","v":"易烊千玺"},{"n":"岳云鹏","v":"岳云鹏"},{"n":"王嘉尔","v":"王嘉尔"},{"n":"鹿晗","v":"鹿晗"},{"n":"杨幂","v":"杨幂"},{"n":"沈腾","v":"沈腾"},{"n":"张艺兴","v":"张艺兴"},{"n":"潘玮柏","v":"潘玮柏"},{"n":"华晨宇","v":"华晨宇"},{"n":"李维嘉","v":"李维嘉"},{"n":"宋小宝","v":"宋小宝"},{"n":"贾玲","v":"贾玲"},{"n":"沙溢","v":"沙溢"},{"n":"撒贝宁","v":"撒贝宁"},{"n":"涂磊","v":"涂磊"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"}]}],"4":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"热血","v":"热血"},{"n":"科幻","v":"科幻"},{"n":"美少女","v":"美少女"},{"n":"魔幻","v":"魔幻"},{"n":"经典","v":"经典"},{"n":"励志","v":"励志"},{"n":"少儿","v":"少儿"},{"n":"冒险","v":"冒险"},{"n":"搞笑","v":"搞笑"},{"n":"推理","v":"推理"},{"n":"恋爱","v":"恋爱"},{"n":"治愈","v":"治愈"},{"n":"幻想","v":"幻想"},{"n":"校园","v":"校园"},{"n":"动物","v":"动物"},{"n":"机战","v":"机战"},{"n":"亲子","v":"亲子"},{"n":"儿歌","v":"儿歌"},{"n":"运动","v":"运动"},{"n":"悬疑","v":"悬疑"},{"n":"怪物","v":"怪物"},{"n":"战争","v":"战争"},{"n":"益智","v":"益智"},{"n":"青春","v":"青春"},{"n":"童话","v":"童话"},{"n":"竞技","v":"竞技"},{"n":"动作","v":"动作"},{"n":"社会","v":"社会"},{"n":"友情","v":"友情"},{"n":"真人版","v":"真人版"},{"n":"电影版","v":"电影版"},{"n":"OVA版","v":"OVA版"}]},{"key":"year","name":"年代","value":[{"n":"全部年代","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"2007","v":"2007"},{"n":"2006","v":"2006"},{"n":"2005","v":"2005"},{"n":"2004","v":"2004"},{"n":"更早","v":"更早"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"内地","v":"大陆"},{"n":"美国","v":"美国"},{"n":"日本","v":"日本"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"}]}]},"xunlei8":{"list":[{"name":"类型","key":"cateId","value":[{"n":"全部","v":"0"},{"n":"科幻","v":"科幻"},{"n":"悬疑","v":"悬疑"},{"n":"情色","v":"情色"},{"n":"恐怖","v":"恐怖"},{"n":"奇幻","v":"奇幻"},{"n":"喜剧","v":"喜剧"},{"n":"战争","v":"战争"},{"n":"动作","v":"动作"},{"n":"动画","v":"动画"},{"n":"冒险","v":"冒险"},{"n":"爱情","v":"爱情"},{"n":"武侠","v":"武侠"},{"n":"犯罪","v":"犯罪"},{"n":"惊悚","v":"惊悚"},{"n":"剧情","v":"剧情"},{"n":"纪录片","v":"纪录片"},{"n":"运动","v":"运动"},{"n":"历史","v":"历史"},{"n":"西部","v":"西部"},{"n":"家庭","v":"家庭"},{"n":"音乐","v":"音乐"},{"n":"同性","v":"同性"}]},{"name":"年份","key":"year","value":[{"n":"全部","v":"0"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"更早","v":"更早"}]},{"name":"地区","key":"area","value":[{"n":"全部","v":"0"},{"n":"美国","v":"美国"},{"n":"中国大陆","v":"中国大陆"},{"n":"韩国","v":"韩国"},{"n":"日本","v":"日本"},{"n":"英国","v":"英国"},{"n":"印度","v":"印度"},{"n":"法国","v":"法国"},{"n":"俄罗斯","v":"俄罗斯"},{"n":"加拿大","v":"加拿大"},{"n":"德国","v":"德国"},{"n":"泰国","v":"泰国"},{"n":"西班牙","v":"西班牙"},{"n":"澳大利亚","v":"澳大利亚"},{"n":"意大利","v":"意大利"},{"n":"比利时","v":"比利时"},{"n":"中国台湾","v":"中国台湾"},{"n":"中国香港","v":"中国香港"}]},{"name":"排序","key":"sort","value":[{"n":"最近更新(默认)","v":"date"},{"n":"精彩热播","v":"hot"},{"n":"高分好评","v":"rating"}]}],"tv":[{"name":"类型","key":"cateId","value":[{"n":"全部","v":"0"},{"n":"科幻","v":"科幻"},{"n":"悬疑","v":"悬疑"},{"n":"情色","v":"情色"},{"n":"恐怖","v":"恐怖"},{"n":"奇幻","v":"奇幻"},{"n":"喜剧","v":"喜剧"},{"n":"战争","v":"战争"},{"n":"动作","v":"动作"},{"n":"动画","v":"动画"},{"n":"冒险","v":"冒险"},{"n":"爱情","v":"爱情"},{"n":"武侠","v":"武侠"},{"n":"犯罪","v":"犯罪"},{"n":"惊悚","v":"惊悚"},{"n":"剧情","v":"剧情"},{"n":"纪录片","v":"纪录片"},{"n":"运动","v":"运动"},{"n":"历史","v":"历史"},{"n":"西部","v":"西部"},{"n":"家庭","v":"家庭"},{"n":"音乐","v":"音乐"},{"n":"同性","v":"同性"}]},{"name":"年份","key":"year","value":[{"n":"全部","v":"0"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"更早","v":"更早"}]},{"name":"地区","key":"area","value":[{"n":"全部","v":"0"},{"n":"美国","v":"美国"},{"n":"中国大陆","v":"中国大陆"},{"n":"韩国","v":"韩国"},{"n":"日本","v":"日本"},{"n":"英国","v":"英国"},{"n":"印度","v":"印度"},{"n":"法国","v":"法国"},{"n":"俄罗斯","v":"俄罗斯"},{"n":"加拿大","v":"加拿大"},{"n":"德国","v":"德国"},{"n":"泰国","v":"泰国"},{"n":"西班牙","v":"西班牙"},{"n":"澳大利亚","v":"澳大利亚"},{"n":"意大利","v":"意大利"},{"n":"比利时","v":"比利时"},{"n":"中国台湾","v":"中国台湾"},{"n":"中国香港","v":"中国香港"}]},{"name":"排序","key":"sort","value":[{"n":"最近更新(默认)","v":"date"},{"n":"精彩热播","v":"hot"},{"n":"高分好评","v":"rating"}]}]},"dm84":{"1":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"奇幻","v":"奇幻"},{"n":"战斗","v":"战斗"},{"n":"玄幻","v":"玄幻"},{"n":"穿越","v":"穿越"},{"n":"科幻","v":"科幻"},{"n":"武侠","v":"武侠"},{"n":"热血","v":"热血"},{"n":"眈美","v":"眈美"},{"n":"搞笑","v":"搞笑"},{"n":"动态漫画","v":"动态漫画"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}],"2":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"冒险","v":"冒险"},{"n":"奇幻","v":"奇幻"},{"n":"战斗","v":"战斗"},{"n":"后宫","v":"后宫"},{"n":"热血","v":"热血"},{"n":"励志","v":"励志"},{"n":"搞笑","v":"搞笑"},{"n":"校园","v":"校园"},{"n":"机战","v":"机战"},{"n":"悬疑","v":"悬疑"},{"n":"治愈","v":"治愈"},{"n":"百合","v":"百合"},{"n":"恐怖","v":"恐怖"},{"n":"泡面番","v":"泡面番"},{"n":"恋爱","v":"恋爱"},{"n":"推理","v":"推理"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}],"3":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"科幻","v":"科幻"},{"n":"冒险","v":"冒险"},{"n":"战斗","v":"战斗"},{"n":"百合","v":"百合"},{"n":"奇幻","v":"奇幻"},{"n":"热血","v":"热血"},{"n":"搞笑","v":"搞笑"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}],"4":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"搞笑","v":"搞笑"},{"n":"奇幻","v":"奇幻"},{"n":"治愈","v":"治愈"},{"n":"科幻","v":"科幻"},{"n":"喜剧","v":"喜剧"},{"n":"冒险","v":"冒险"},{"n":"动作","v":"动作"},{"n":"爱情","v":"爱情"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}]},"dygang":{"my_dianying":[{"name":"类型","key":"cateId","value":[{"n":"最新电影(默认)","v":"ys"},{"n":"经典高清","v":"bd"},{"n":"国配电影","v":"gy"},{"n":"经典港片","v":"gp"}]}],"my_dianshiju":[{"name":"类型","key":"cateId","value":[{"n":"国剧(默认)","v":"dsj"},{"n":"日韩剧","v":"dsj1"},{"n":"美剧","v":"yx"}]}]}};
+
 // Older config.json sources that use JSON APIs. This is prepended with register.js.
 globalThis.leeLegacySources = [
-    { key: 'lee_iqiyi', name: '爱奇艺', type: 3, api: '/spider/lee_iqiyi/3', searchable: 1, quickSearch: 1, filterable: 1 },
-    { key: 'lee_mgtv', name: '芒果TV', type: 3, api: '/spider/lee_mgtv/3', searchable: 1, quickSearch: 1, filterable: 1 },
+    { key: 'lee_iqiyi', name: '爱奇艺', type: 3, api: '/spider/lee_iqiyi/3', searchable: 1, quickSearch: 1, filterable: 0 },
+    { key: 'lee_mgtv', name: '芒果TV', type: 3, api: '/spider/lee_mgtv/3', searchable: 1, quickSearch: 1, filterable: 0 },
     { key: 'lee_sp360', name: '360影视', type: 3, api: '/spider/lee_sp360/3', searchable: 1, quickSearch: 1, filterable: 1 },
 ];
 globalThis.registerLeeLegacy = async function registerLeeLegacy(server) {
@@ -138,7 +141,7 @@ globalThis.registerLeeLegacy = async function registerLeeLegacy(server) {
     }
     server.register(async (fastify) => {
         fastify.post('/init', async () => ({}));
-        fastify.post('/home', async () => ({ class: spCategories }));
+        fastify.post('/home', async () => ({ class: spCategories, filters: globalThis.leeLegacyFilters.sp360 }));
         fastify.post('/category', async (request) => {
             const id = String(request.body?.id || '');
             const page = pageOf(request);
@@ -210,7 +213,8 @@ globalThis.leeLegacyHtmlSources = [
     ['lee_xunlei8', '磁力 | 迅雷吧'],
     ['lee_piaohua', '磁力 | 新飘花电影网'],
     ['lee_dm84', '动漫 | 巴士'],
-].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`, searchable: 1, quickSearch: 1, filterable: 1 }));
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`, searchable: 1, quickSearch: 1,
+    filterable: ['lee_dygang', 'lee_xunlei8', 'lee_dm84'].includes(key) ? 1 : 0 }));
 
 globalThis.registerLeeLegacyHtml = async function registerLeeLegacyHtml(server, bridge) {
     const https = require('node:https');
@@ -442,7 +446,11 @@ globalThis.registerLeeLegacyHtml = async function registerLeeLegacyHtml(server, 
         server.register(async (fastify) => {
             fastify.post('/init', async () => ({}));
             fastify.post('/home', async () => {
-                if (key !== 'lee_xl720') return { class: categories[key] };
+                if (key !== 'lee_xl720') return { class: categories[key], filters: {
+                    lee_dygang: globalThis.leeLegacyFilters.dygang,
+                    lee_xunlei8: globalThis.leeLegacyFilters.xunlei8,
+                    lee_dm84: globalThis.leeLegacyFilters.dm84,
+                }[key] || {} };
                 const $ = $of(await getSite(key, base));
                 const list = [];
                 $('.sf-menu > li > a').each((_, el) => {
@@ -518,10 +526,24 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     ].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`, searchable: 1, quickSearch: 0, filterable: 0, changeable: 1 }));
     const siteSources = [
         ['lee_kuaiying', '快映 • 4K'], ['lee_seedhub', '种子 • 4K'],
-    ].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`, searchable: 1, quickSearch: 1, filterable: key === 'lee_kuaiying' ? 1 : 0, changeable: 1 }));
+    ].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`, searchable: 1, quickSearch: 1, filterable: 0, changeable: 1 }));
     const localSource = { key: 'lee_local', name: '本地 • 视频', type: 3, api: '/spider/lee_local/3', searchable: 0, filterable: 0, changeable: 0 };
+    const schoolSource = { key: 'lee_junior_school', name: '初中 | 课堂', type: 3, api: '/spider/lee_junior_school/3', searchable: 1, quickSearch: 0, filterable: 1, changeable: 0 };
     const marketSource = { key: 'lee_market', name: '版本 • 信息', type: 3, api: '/spider/lee_market/3', searchable: 0, filterable: 0, changeable: 0 };
-    const migratedSources = [ucSource, xunleiSource, localSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources];
+    const migratedSources = [ucSource, xunleiSource, localSource, schoolSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources];
+    const filteredBuiltIns = new Set([
+        'douban', 'wanou', 'muou', 'labi', 'shandian', 'zhizhen', 'duoduo', 'ouge', 'erxiao', 'huban',
+        'xiaoban', 'libvio', '4kzn', 'pinglian', 'doubi', 'juzhi', 'guazi', 'xifan', 'xifannext',
+        'ppnix', 'girigiri', 'ciyuancheng', 'kafei',
+    ].map((key) => `nodejs_${key}`));
+    const filterNames = {
+        u: '分类', type: '类型', cate: '专题', cateId: '类型', form: '形式', genre: '题材',
+        class: '类型', area: '地区', region: '地区', year: '年份', lang: '语言',
+        by: '排序', sort: '排序', order: '排序', rank: '榜单', number: '期数', folder: '收藏夹',
+        format: '形式', finished: '完结状态', tag: '标签', days: '时间范围', kind: '榜单类型',
+        section: '榜单范围', weekday: '星期', month: '月份', version: '版本', state: '改编',
+        grade: '年级', actor: '演员',
+    };
     const websiteStyle = `<style>
         [id$="-panel-sites"] .ant-table-tbody tr[data-row-key] > td:nth-child(2) span[title] {
             white-space: normal !important;
@@ -539,8 +561,23 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     });
 
     server.addHook('onSend', async (request, reply, payload) => {
-        if (request.method !== 'GET' || reply.statusCode !== 200) return payload;
+        if (reply.statusCode !== 200) return payload;
         const path = request.url.split('?')[0];
+        if (request.method === 'POST' && /^\/spider\/[^/]+\/\d+\/home$/.test(path)) {
+            let home;
+            try { home = JSON.parse(String(payload)); } catch { return payload; }
+            let changed = false;
+            for (const filters of Object.values(home?.filters || {})) {
+                if (!Array.isArray(filters)) continue;
+                for (const filter of filters) {
+                    if (!filter || typeof filter !== 'object' || String(filter.name || '').trim()) continue;
+                    filter.name = filterNames[filter.key] || String(filter.key || '筛选');
+                    changed = true;
+                }
+            }
+            return changed ? JSON.stringify(home) : payload;
+        }
+        if (request.method !== 'GET') return payload;
         if (path === '/config' || path === '/full-config') {
             const result = JSON.parse(String(payload));
             const existing = result.video.sites.find((site) => site.key === 'nodejs_myquark');
@@ -553,6 +590,9 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
                 if (keys.has(key)) continue;
                 result.video.sites.push({ ...source, api: existing.api.replace(/\/myquark\/3$/, `/${source.key}/3`), key });
                 keys.add(key);
+            }
+            for (const site of result.video.sites) {
+                if (filteredBuiltIns.has(site.key)) site.filterable = 1;
             }
             if (path === '/config') {
                 const settings = request.leeSiteSettings;
@@ -848,6 +888,72 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
             req.end();
         });
     }
+
+    const schoolSubjects = {
+        math: '初中数学', chinese: '初中语文', english: '初中英语',
+        physics: '初中物理', chemistry: '初中化学', biology: '初中生物',
+        history: '初中历史', geography: '初中地理', politics: '初中道法',
+    };
+    const schoolFilters = Object.fromEntries(Object.keys(schoolSubjects).map((id) => [id, [
+        { key: 'grade', name: '年级', value: [{ n: '全部', v: '' }, { n: '初一', v: '初一' }, { n: '初二', v: '初二' }, { n: '初三', v: '初三' }] },
+        { key: 'order', name: '排序', value: [{ n: '综合', v: 'totalrank' }, { n: '最多播放', v: 'click' }, { n: '最新发布', v: 'pubdate' }, { n: '最多弹幕', v: 'dm' }] },
+    ]]));
+    const schoolHeaders = { Accept: 'application/json, text/plain, */*', Referer: 'https://www.bilibili.com/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151.0.0.0 Safari/537.36' };
+    if (config?.bilibili?.cookie) schoolHeaders.Cookie = config.bilibili.cookie;
+    const schoolText = (value) => String(value || '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    const schoolPic = (value) => String(value || '').replace(/^\/\//, 'https://');
+    async function schoolApi(path, params) {
+        const result = await searchRequest(`https://api.bilibili.com${path}?${new URLSearchParams(params)}`, 'GET', undefined, schoolHeaders);
+        if (Number(result.code) !== 0) throw new Error(result.message || 'Bilibili request failed');
+        return result.data || {};
+    }
+    async function schoolSearch(keyword, page, order = 'totalrank') {
+        const data = await schoolApi('/x/web-interface/search/type', { search_type: 'video', keyword, page, order });
+        const list = (data.result || []).filter((item) => /^BV[0-9A-Za-z]+$/.test(String(item.bvid || ''))).map((item) => ({
+            vod_id: item.bvid, vod_name: schoolText(item.title), vod_pic: schoolPic(item.pic), vod_remarks: schoolText(item.author),
+        }));
+        const pagecount = Math.max(page, Number(data.numPages) || (list.length ? page + 1 : page));
+        return { page, pagecount, limit: list.length, total: Number(data.numResults) || list.length, list };
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: Object.entries(schoolSubjects).map(([type_id, type_name]) => ({ type_id, type_name })), filters: schoolFilters }));
+        fastify.post('/category', async (request) => {
+            const page = Math.max(1, Number.parseInt(request.body?.page, 10) || 1);
+            const keyword = schoolSubjects[String(request.body?.id || '')];
+            const filters = request.body?.extend || {};
+            const grade = ['初一', '初二', '初三'].includes(filters.grade) ? filters.grade : '';
+            const order = ['totalrank', 'click', 'pubdate', 'dm'].includes(filters.order) ? filters.order : 'totalrank';
+            return keyword ? schoolSearch(`${keyword}${grade ? ` ${grade}` : ''}`, page, order) : { page, pagecount: page, list: [] };
+        });
+        fastify.post('/search', async (request) => {
+            const page = Math.max(1, Number.parseInt(request.body?.page, 10) || 1);
+            const keyword = String(request.body?.wd || '').trim();
+            return keyword ? schoolSearch(keyword, page) : { page, pagecount: page, list: [] };
+        });
+        fastify.post('/detail', async (request) => {
+            const bvid = String(Array.isArray(request.body?.id) ? request.body.id[0] : request.body?.id || '');
+            if (!/^BV[0-9A-Za-z]+$/.test(bvid)) return { list: [] };
+            const data = await schoolApi('/x/web-interface/view', { bvid });
+            const pages = data.pages?.length ? data.pages : [{ cid: data.cid, part: data.title }];
+            return { list: [{
+                vod_id: bvid, vod_name: schoolText(data.title), vod_pic: schoolPic(data.pic),
+                vod_content: String(data.desc || ''), vod_actor: String(data.owner?.name || ''),
+                vod_play_from: '哔哩哔哩',
+                vod_play_url: pages.filter((part) => Number(part.cid) > 0).map((part, index) =>
+                    `${schoolText(part.part || `第${index + 1}集`).replace(/[$#]/g, ' ')}$${bvid}_${part.cid}`).join('#'),
+            }] };
+        });
+        fastify.post('/play', async (request) => {
+            const match = String(request.body?.id || '').match(/^(BV[0-9A-Za-z]+)_(\d+)$/);
+            if (!match) return { parse: 0, url: '' };
+            const data = await schoolApi('/x/player/playurl', { bvid: match[1], cid: match[2], qn: 80, fnval: 0 });
+            const url = String(data.durl?.[0]?.url || '');
+            return url ? { parse: 0, url, header: { 'User-Agent': schoolHeaders['User-Agent'], Referer: schoolHeaders.Referer } }
+                : { parse: 1, url: `https://www.bilibili.com/video/${match[1]}` };
+        });
+    }, { prefix: schoolSource.api });
 
     const nameContains = (name, keyword) => String(name || '').includes(keyword);
     const asVideo = (name, url, remarks = '', pic = '') => ({
