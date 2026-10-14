@@ -163,72 +163,37 @@ module.exports.default = {
     },
     // 网盘站域名表对齐上游 douer / peekpro 包（引擎读 *.urls）
     muou: {
-        urls: ['https://123.666291.xyz', 'https://666.666291.xyz', 'https://www.muou.asia', 'https://www.muou.site'],
+        urls: ['https://123.666291.xyz', 'https://666.666291.xyz', 'https://www.muoua.top', 'https://333.333291.xyz'],
     },
     wanou: {
-        urls: [
-            'https://www.wogg.live',
-            'https://woggpan.888484.xyz',
-            'https://wogg.xxooo.cf',
-            'https://woggpan.xxooo.cf',
-            'https://wogg.333232.xyz',
-            'https://www.wogg.lol',
-            'https://www.wogg.one',
-        ],
+        urls: ['https://www.wogg.live', 'https://woggpan.888484.xyz'],
     },
     wogg: {
-        urls: [
-            'https://wogg.333232.xyz',
-            'https://wogg.xxooo.cf',
-            'https://woggpan.888484.xyz',
-            'https://www.wogg.lol',
-            'https://www.wogg.one',
-        ],
+        urls: ['https://www.wogg.live', 'https://woggpan.888484.xyz'],
     },
     leijing: {
         urls: ['https://www.leijing1.com', 'https://leijing1.com', 'https://www.leijing.xyz'],
     },
     duoduo: {
-        urls: ['https://tv.214521.xyz', 'https://tv.yydsys.cc', 'https://tv.yydsys.top'],
+        urls: ['https://tv.yydsys.cc', 'https://tv.214521.xyz'],
     },
     zhizhen: {
-        urls: [
-            'http://www.miqk.cc',
-            'https://mihdr.top',
-            'https://www.mihdr.top',
-            'https://www.miqk.cc',
-            'https://www.zhizhenpan.fun',
-            'https://xiaomi666.fun',
-            'https://xiaomiai.site',
-        ],
+        urls: ['https://www.zhizhen8.click', 'https://www.mihdr.top'],
     },
     ouge: {
-        urls: ['https://woog.430520.xyz', 'https://woog.nxog.eu.org', 'https://woog.nxog.fun'],
+        urls: ['https://woog.nxog.eu.org', 'https://woog.430520.xyz'],
     },
     labi: {
-        urls: [
-            'http://feimo.fun',
-            'http://fmao.shop',
-            'http://fmao.site',
-            'http://xiaocge.fun',
-            'http://xiaocgege.shop',
-            'https://feimao666.fun',
-        ],
+        urls: ['http://tvpanpan.site', 'https://www.mmpanpan.site'],
     },
     huban: {
-        urls: ['http://38.76.197.172:16969', 'http://xhban.xyz:20720'],
+        urls: ['http://xhban.xyz', 'http://38.76.197.172:16969'],
     },
     erxiao: {
-        urls: [
-            'https://www.2xiaopan.top/',
-            'https://2xiaopan.top/',
-            'https://www.erxiaozhan.top/',
-            'https://www.2xiaozhan.top/',
-            'https://wexwp.cc/',
-        ],
+        urls: ['https://www.2xiaopan.one'],
     },
     shandian: {
-        urls: ['http://shandian.blog', 'https://sd.sduc.site'],
+        urls: ['http://shandian.blog'],
     },
     tgsou: {
         tgPic: true,
@@ -301,15 +266,15 @@ module.exports.default = {
     },
     live2vod: {
         sources: [
-            { name: 'IPTV', url: 'https://ipv.qq1000.site/IPTV.txt', img: '' },
+            { name: 'IPTV', url: 'https://iptv-org.github.io/iptv/countries/cn.m3u', img: '' },
             {
                 name: '范明明',
                 url: 'https://cdn.jsdelivr.net/gh/fanmingming/live@refs/heads/main/tv/m3u/ipv6.m3u',
                 img: '',
             },
-            { name: '电视', url: 'https://tv.iill.top/m3u/Gather', img: '' },
-            { name: '网络', url: 'https://m.iill.top/Live.m3u', img: '' },
-            { name: '体育', url: 'https://tv.iill.top/m3u/Sport', img: '' },
+            { name: '电视', url: 'https://cdn.jsdelivr.net/gh/YueChan/Live@refs/heads/main/GNTV.m3u', img: '' },
+            { name: '网络', url: 'https://cdn.jsdelivr.net/gh/fanmingming/live@refs/heads/main/tv/m3u/itv.m3u', img: '' },
+            { name: '体育', url: 'https://iptv-org.github.io/iptv/categories/sports.m3u', img: '' },
             { name: '哔哩', url: 'https://sub.ottiptv.cc/bililive.m3u', img: '' },
             { name: '虎牙', url: 'https://sub.ottiptv.cc/huyayqk.m3u', img: '' },
             { name: '斗鱼', url: 'https://sub.ottiptv.cc/douyuyqk.m3u', img: '' },
