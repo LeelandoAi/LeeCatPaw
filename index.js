@@ -1265,6 +1265,3921 @@ globalThis.registerLeeHeTun = async function registerLeeHeTun(server) {
     },{prefix:globalThis.leeHeTunSource.api});
 };
 
+// 悟圣、星果、星星三个聚合入口共用同一个上游接口。
+globalThis.leeXingGuoSources = [
+    ['lee_duoju_wusheng', '多聚短剧 · 悟圣'],
+    ['lee_zhenguo_xingguo', '真果鉴 · 星果'],
+    ['lee_quanju_xingxing', '全聚合短剧 · 星星'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeXingGuo = async function registerLeeXingGuo(server) {
+    const http = require('node:http');
+    const host = 'http://read.api.duodutek.com';
+    const fixed = {
+        productId: '2a8c14d1-72e7-498b-af23-381028eb47c0',
+        vestId: '2be070e0-c824-4d0e-a67a-8f688890cadb',
+        channel: 'oppo19', osType: 'android', version: '20',
+        token: '202509271001001446030204698626',
+    };
+    const categories = [['1287', '甜宠'], ['1288', '逆袭'], ['1289', '热血'],
+        ['1290', '现代'], ['1291', '古代']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+
+    function get(path, query) {
+        const url = `${host}${path}?${new URLSearchParams({ ...fixed, ...query })}`;
+        return new Promise((resolve, reject) => {
+            const request = http.get(url, { timeout: 20000,
+                headers: { 'User-Agent': 'okhttp/5.1.0', Accept: 'application/json' } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    if (response.statusCode < 200 || response.statusCode >= 300)
+                        return reject(new Error(`星果接口 HTTP ${response.statusCode}`));
+                    try {
+                        const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+                        if (result.code !== undefined && ![0, 200].includes(Number(result.code)))
+                            throw new Error(`星果接口错误 ${result.code}`);
+                        resolve(result);
+                    } catch (error) { reject(error); }
+                });
+            });
+            request.on('timeout', () => request.destroy(new Error('星果接口超时')));
+            request.on('error', reject);
+        });
+    }
+
+    const cards = (rows) => (Array.isArray(rows) ? rows : []).flatMap((row) => {
+        const id = clean(row?.id || row?.bookId), name = clean(row?.name || row?.title);
+        if (!id || !name) return [];
+        return [{ vod_id: `${id}@${name}`, vod_name: name, vod_pic: clean(row.icon || row.cover),
+            vod_remarks: row.chapterCount ? `全${row.chapterCount}集` : `${clean(row.heat)}播放`,
+            vod_content: clean(row.introduction || row.desc) }];
+    });
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 20 ? page + 1 : page,
+        limit: 20, total: list.length });
+    async function listing(id, page) {
+        const data = (await get('/novel-api/app/pageModel/getResourceById',
+            { resourceId: id, pageNum: page, pageSize: 20 })).data || {};
+        return paged(cards(data.datalist), page);
+    }
+    async function search(keyword, page) {
+        const data = (await get('/novel-api/basedata/book/searchBook',
+            { key: keyword, pageNum: page, pageSize: 20 })).data || {};
+        return paged(cards(data.datalist), page);
+    }
+    function media(chapter) {
+        for (const group of chapter.shortPlayList || []) {
+            for (const video of group.chapterShortPlayVoList || []) {
+                if (/^https?:\/\//.test(clean(video.shortPlayUrl))) return video.shortPlayUrl;
+            }
+        }
+        return '';
+    }
+    async function detail(raw) {
+        const [bookId, ...title] = raw.split('@');
+        if (!bookId) return { list: [] };
+        const response = await get('/novel-api/basedata/book/getChapterList', { bookId });
+        const chapters = Array.isArray(response.data) ? response.data : [];
+        const episodes = chapters.flatMap((chapter, index) => {
+            const url = media(chapter);
+            if (!url) return [];
+            const name = clean(chapter.chapterName) || `第${chapter.chapterIndex || index + 1}集`;
+            return [`${name.replace(/[$#]/g, '_')}$${url}`];
+        });
+        if (!episodes.length) return { list: [] };
+        const first = chapters[0] || {};
+        return { list: [{ vod_id: raw, vod_name: title.join('@') || clean(first.bookName),
+            vod_pic: clean(first.iconUrl || first.icon), vod_content: clean(first.introduction),
+            vod_play_from: '星果', vod_play_url: episodes.join('#') }] };
+    }
+
+    for (const source of globalThis.leeXingGuoSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: categories.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: (await listing('1287', 1)).list }));
+            fastify.post('/category', async (request) => listing(one(request.body?.id) || '1287',
+                pageOf(request.body?.page)));
+            fastify.post('/search', async (request) => search(one(request.body?.wd),
+                pageOf(request.body?.page)));
+            fastify.post('/detail', async (request) => detail(one(request.body?.id)));
+            fastify.post('/play', async (request) => {
+                const url = one(request.body?.id);
+                if (!/^https?:\/\//.test(url)) throw new Error('星果分集没有可播放地址');
+                return { parse: 0, url, header: { 'User-Agent': 'okhttp/5.1.0' } };
+            });
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeWeiGuanSources = [
+    ['lee_duoju_weiguan', '多聚短剧 · 围观'],
+    ['lee_zhenguo_guanguo', '真果鉴 · 观果'],
+    ['lee_quanju_weiguan', '全聚合短剧 · 围观'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeWeiGuan = async function registerLeeWeiGuan(server) {
+    const https = require('node:https');
+    const host = 'https://api.drama.9ddm.com';
+    const ua = 'okhttp/4.10.0';
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    function call(path, body) {
+        const payload = body === undefined ? undefined : JSON.stringify(body);
+        return new Promise((resolve, reject) => {
+            const request = https.request(host + path, { method: payload ? 'POST' : 'GET',
+                timeout: 20000, headers: { 'User-Agent': ua, Accept: 'application/json, text/plain, */*',
+                    Origin: host, Referer: `${host}/`,
+                    ...(payload ? { 'Content-Type': 'application/json; charset=utf-8',
+                        'Content-Length': Buffer.byteLength(payload) } : {}) } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    if (response.statusCode < 200 || response.statusCode >= 300)
+                        return reject(new Error(`围观接口 HTTP ${response.statusCode}`));
+                    try {
+                        const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+                        if (!Array.isArray(result.data)) throw new Error(`围观接口无数据: ${result.msg || ''}`);
+                        resolve(result.data);
+                    } catch (error) { reject(error); }
+                });
+            });
+            request.on('timeout', () => request.destroy(new Error('围观接口超时')));
+            request.on('error', reject);
+            request.end(payload);
+        });
+    }
+    const find = (word, page) => call('/drama/home/search?version_code=1500&os_type=1',
+        { audience: '全部受众', page, pageSize: 30, searchWord: word, subject: '全部主题' });
+    const episodes = (id) => call(`/drama/home/shortVideoDetail?version_code=1000&os_type=1&oneId=${encodeURIComponent(id)}&page=1&pageSize=1000`);
+    const order = (row, index) => Number(row.playOrder) || Number(row.episode) || index + 1;
+    function media(row) {
+        let value = row.playSetting ?? row.videoClarityList;
+        if (typeof value === 'string') {
+            try { value = JSON.parse(value); } catch { return clean(row.playUrl); }
+        }
+        if (Array.isArray(value)) {
+            const best = value.find((item) => /1080|超清/.test(clean(item?.clarity))) || value[0] || {};
+            return clean(best.url || best.playUrl || row.playUrl);
+        }
+        if (value && typeof value === 'object')
+            return clean(value.super || value.high || value.normal || value.url || value.playUrl || row.playUrl);
+        return clean(row.playUrl);
+    }
+    const cards = (rows) => rows.flatMap((row) => {
+        const id = clean(row?.oneId), title = clean(row?.title);
+        return id && title ? [{ vod_id: id, vod_name: title,
+            vod_pic: clean(row.vertPoster || row.horizonPoster),
+            vod_remarks: row.episodeCount ? `共${row.episodeCount}集` : '' }] : [];
+    });
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 30 ? page + 1 : page,
+        limit: 30, total: list.length });
+    async function detail(id) {
+        if (!id) return { list: [] };
+        const rows = await episodes(id);
+        const first = rows[0] || {};
+        const urls = rows.flatMap((row, index) => /^https?:\/\//.test(media(row))
+            ? [`第${order(row, index)}集$weiguan://${id}/${order(row, index)}`] : []);
+        if (!urls.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: clean(first.title),
+            vod_pic: clean(first.vertPoster || first.horizonPoster),
+            vod_content: clean(first.description || first.desc), vod_play_from: '围观',
+            vod_play_url: urls.join('#') }] };
+    }
+    async function play(id) {
+        let url = id;
+        if (id.startsWith('weiguan://')) {
+            const match = /^weiguan:\/\/(.+)\/(\d+)$/.exec(id);
+            if (!match) throw new Error('围观分集参数无效');
+            const rows = await episodes(match[1]);
+            url = media(rows.find((row, index) => order(row, index) === Number(match[2])) || {});
+        }
+        if (!/^https?:\/\//.test(url)) throw new Error('围观分集没有可播放地址');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: `${host}/` } };
+    }
+    for (const source of globalThis.leeWeiGuanSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: [{ type_id: 'all', type_name: '全部' }],
+                list: cards(await find('', 1)) }));
+            fastify.post('/category', async (request) => {
+                const page = pageOf(request.body?.page);
+                return paged(cards(await find('', page)), page);
+            });
+            fastify.post('/search', async (request) => {
+                const page = pageOf(request.body?.page);
+                return paged(cards(await find(one(request.body?.wd), page)), page);
+            });
+            fastify.post('/detail', async (request) => detail(one(request.body?.id)));
+            fastify.post('/play', async (request) => play(one(request.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeKuwoSource = { key: 'lee_duoju_kuwo', name: '多聚短剧 · 酷我',
+    type: 3, api: '/spider/lee_duoju_kuwo/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeKuwo = async function registerLeeKuwo(server) {
+    const http = require('node:http');
+    const api = 'http://wapi.kuwo.cn/openapi/v1/shortplay';
+    const cats = [['10', '猜你想看'], ['11', '土味爱情'], ['12', '更多精彩'],
+        ['13', '霸道总裁的人生'], ['14', '赘婿当道'], ['15', '漫漫追妻路'], ['16', '家庭情感']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const request = (url) => new Promise((resolve, reject) => {
+        const call = http.get(url, { timeout: 20000,
+            headers: { 'User-Agent': 'okhttp/5.1.0', Accept: 'application/json' } }, (response) => {
+            const chunks = [];
+            response.on('data', (chunk) => chunks.push(chunk));
+            response.on('end', () => response.statusCode >= 200 && response.statusCode < 300
+                ? resolve(Buffer.concat(chunks).toString('utf8'))
+                : reject(new Error(`酷我接口 HTTP ${response.statusCode}`)));
+        });
+        call.on('timeout', () => call.destroy(new Error('酷我接口超时')));
+        call.on('error', reject);
+    });
+    async function get(url) {
+        const result = JSON.parse(await request(url));
+        if (result.code !== undefined && ![0, 200].includes(Number(result.code)))
+            throw new Error(`酷我接口错误 ${result.code}`);
+        return result;
+    }
+    function cards(items) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = String(item?.url || '').trim(), name = String(item?.title || item?.subTitle || '').trim();
+            if (!id || !name || seen.has(id)) return [];
+            seen.add(id);
+            const pic = String(item.img || '').trim();
+            return [{ vod_id: id, vod_name: name, vod_pic: pic ? new URL(pic, `${api}/`).href : '',
+                vod_remarks: item.currrentDesc || (item.songNum ? `${item.songNum}集全` : ''),
+                vod_class: '酷我短剧' }];
+        });
+    }
+    async function listing(category, page) {
+        if (page > 60) return [];
+        const url = `${api}/moduleMore?currentPage=${page}&moduleId=${encodeURIComponent(category)}&rn=12`;
+        return cards((await get(url)).data?.list);
+    }
+    const paged = (list, page, total = list.length) => ({ list, page,
+        pagecount: total === list.length && list.length === 12 ? page + 1 : Math.max(1, Math.ceil(total / 12)),
+        limit: 12, total });
+    async function search(wd, page) {
+        if (!wd) return paged([], page);
+        const lists = await Promise.all(cats.flatMap(([id]) => [listing(id, 1), listing(id, 2)]));
+        const seen = new Set(), hits = [];
+        for (const list of lists) for (const item of list) {
+            if (item.vod_name.includes(wd) && !seen.has(item.vod_id) && hits.length < 30) {
+                seen.add(item.vod_id); hits.push(item);
+            }
+        }
+        return paged(hits.slice((page - 1) * 12, page * 12), page, hits.length);
+    }
+    async function detail(id) {
+        const raw = id.includes(':') ? id.slice(id.indexOf(':') + 1) : id;
+        const data = (await get(`${api}/videoList?albumId=${encodeURIComponent(raw)}`)).data || {};
+        const episodes = (data.list || []).flatMap((item, index) => {
+            const vid = Number(item.mvpayinfo?.vid || 0);
+            if (!Number.isInteger(vid) || vid <= 0) return [];
+            const name = String(item.name || `第${index + 1}集`).replace(/[$#]/g, '_');
+            return [`${name}$kuwo://${raw}/${vid}`];
+        });
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: raw, vod_name: data.shortinfo?.title || `酷我短剧 ${raw}`,
+            vod_pic: data.shortinfo?.cover || '', vod_remarks: `共${episodes.length}集`,
+            vod_play_from: '酷我', vod_play_url: episodes.join('#') }] };
+    }
+    async function play(id) {
+        const vid = id.slice(id.lastIndexOf('/') + 1);
+        if (!/^\d+$/.test(vid)) throw new Error('酷我分集 ID 无效');
+        const result = await request(`http://nmobi.kuwo.cn/mobi.s?f=web&type=get_url_by_vid&vid=${vid}`);
+        const media = result.match(/^\s*url=(\S+)/m)?.[1] || '';
+        if (!/^https?:\/\//.test(media)) throw new Error('酷我未返回媒体地址');
+        return { parse: 0, url: media, header: { 'User-Agent': 'okhttp/5.1.0' } };
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('10', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id) || '10',
+            pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeKuwoSource.api });
+};
+
+globalThis.leeDamangSource = { key: 'lee_duoju_damang', name: '多聚短剧 · 大芒',
+    type: 3, api: '/spider/lee_duoju_damang/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeDamang = async function registerLeeDamang(server) {
+    const http = require('node:http');
+    const https = require('node:https');
+    const api = 'https://damang.api.mgtv.com';
+    const did = '2ebfeec0a5ad5c0357bae448b8658cc3';
+    const cats = [['aiqing', '爱情', '1273154'], ['dushi', '都市', '1279863'],
+        ['guzhuang', '古装', '1273153'], ['yanqing', '言情', '1273190'],
+        ['qihuan', '奇幻', '2924543'], ['zhenrenxiu', '真人秀', '1657120'],
+        ['xuanyi', '悬疑', '1310272'], ['wangju', '网剧', '2844459'],
+        ['qingchun', '青春', '2836677']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    function request(url) {
+        return new Promise((resolve, reject) => {
+            const client = url.startsWith('https:') ? https : http;
+            const call = client.get(url, { timeout: 20000,
+                headers: { Accept: 'application/json, text/plain, */*', Referer: `${api}/` } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => response.statusCode >= 200 && response.statusCode < 300
+                    ? resolve(Buffer.concat(chunks).toString('utf8'))
+                    : reject(new Error(`大芒接口 HTTP ${response.statusCode}`)));
+            });
+            call.on('timeout', () => call.destroy(new Error('大芒接口超时')));
+            call.on('error', reject);
+        });
+    }
+    async function get(url) {
+        const result = JSON.parse(await request(url));
+        if (result.code !== undefined && Number(result.code) !== 200)
+            throw new Error(`大芒接口错误 ${result.code}`);
+        return result;
+    }
+    function cards(items, category) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = clean(item?.albumId), name = clean(item?.albumTitle || item?.title);
+            if (!id || !name || seen.has(id)) return [];
+            seen.add(id);
+            const cover = clean(item.verticalImg);
+            return [{ vod_id: id, vod_name: name, vod_pic: cover ? new URL(cover, `${api}/`).href : '',
+                vod_remarks: clean(item.albumUpdateSerialNoDesc), vod_class: category }];
+        });
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 12 ? page + 1 : page,
+        limit: 12, total: list.length });
+    async function listing(id, page) {
+        const [, tag, tagId] = cats.find(([key]) => key === id) || cats[0];
+        const url = `${api}/newbee/manage/page/film/library/v3?did=${did}&pageSize=12`
+            + `&pageNum=${page}&tagName=${encodeURIComponent(tag)}&tagId=${tagId}`;
+        return cards((await get(url)).data?.list, tag);
+    }
+    async function search(wd, page) {
+        const url = `${api}/newbee/search/key/words?keyWords=${encodeURIComponent(wd)}`
+            + `&screenType=1&pageNum=${page}&pageSize=12`;
+        return paged(cards((await get(url)).data?.videos, ''), page);
+    }
+    async function detail(id) {
+        const url = `${api}/newbee/play/page/detail?did=${did}&albumId=${encodeURIComponent(id)}&vid=`;
+        const album = (await get(url)).data?.album || {};
+        const seen = new Set(), episodes = [];
+        for (const [index, item] of (album.anthologies || []).entries()) {
+            const vid = clean(item.vid), n = Number(item.serialno) || index + 1;
+            if (!vid || seen.has(n)) continue;
+            seen.add(n); episodes.push(`第${n}集$damang://${vid}`);
+        }
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: clean(album.albumTitle), vod_pic: clean(album.verticalImg),
+            vod_content: clean(album.albumBrief),
+            vod_class: (album.tagList || []).map((x) => clean(x.tagName)).filter(Boolean).join(' · '),
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '大芒',
+            vod_play_url: episodes.join('#') }] };
+    }
+    async function play(id) {
+        if (!id.startsWith('damang://')) throw new Error('大芒分集 ID 无效');
+        const vid = id.slice(9);
+        const url = 'http://mobile.api.mgtv.com/v8/video/getSource?playType=28&fileSourceType=2'
+            + `&seekSourceType=2&definition=3&_support=10100001&osVersion=10&videoId=${encodeURIComponent(vid)}`;
+        for (let attempt = 0; attempt < 5; attempt++) {
+            const data = (await get(url)).data || {};
+            for (const source of data.videoSources || []) {
+                const media = clean(source.disp?.info);
+                if (/^https?:\/\//.test(media)) return { parse: 0, url: media,
+                    header: { 'User-Agent': 'libmpv', Referer: '' } };
+            }
+            if (attempt < 4) await new Promise((resolve) => setTimeout(resolve, 1200));
+        }
+        throw new Error('大芒没有返回媒体地址');
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing(cats[0][0], 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+            pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeDamangSource.api });
+};
+
+globalThis.leeHaokanSources = [
+    ['lee_duoju_haokan', '多聚短剧 · 好看'],
+    ['lee_quanju_haokan', '全聚合短剧 · 好看'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 0, quickSearch: 0, filterable: 0 }));
+
+globalThis.registerLeeHaokan = async function registerLeeHaokan(server) {
+    const https = require('node:https');
+    const host = 'https://sv.baidu.com';
+    const query = 'log=vhk&tn=1020970b&ctn=1008350n&blur=1';
+    const ua = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 '
+        + '(KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36';
+    const cats = [['reboduanju', '热播剧', '1'], ['xinju', '新剧', '2'],
+        ['zhanshen', '战神', '1001'], ['shenhao', '神豪', '2001'], ['shenyi', '神医', '1002'],
+        ['tianchong', '甜宠', '1007'], ['zhuixu', '赘婿', '1003'],
+        ['chuanyue', '穿越重生', '2004'], ['yineng', '异能', '2005'],
+        ['nuelian', '虐恋', '1006'], ['gongdou', '宫斗宅斗', '2006'],
+        ['xuanhuan', '玄幻', '2009']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    function post(path, fields) {
+        return new Promise((resolve, reject) => {
+            const body = new URLSearchParams(fields).toString();
+            const req = https.request(`${host}${path}`, { method: 'POST', timeout: 20000,
+                headers: { 'User-Agent': ua, 'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Length': Buffer.byteLength(body) } }, (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`好看接口 HTTP ${res.statusCode}`));
+                    try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+                    catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('好看接口超时')));
+            req.on('error', reject); req.end(body);
+        });
+    }
+    function cards(rows, category) {
+        return (Array.isArray(rows) ? rows : []).flatMap((row) => {
+            const id = clean(row?.playlet_id), name = clean(row?.playlet_title);
+            if (!id || !name) return [];
+            return [{ vod_id: id, vod_name: name, vod_pic: clean(row.playlet_poster),
+                vod_remarks: row.episodes_num ? `更新${row.episodes_num}集` : '',
+                vod_class: category }];
+        });
+    }
+    async function listing(id, page) {
+        const [, name, tagId] = cats.find(([key]) => key === id) || cats[0];
+        const result = await post(`/haokan/ui-feed/playletTagsFeed?${query}`,
+            { tag_id: tagId, pn: String(page), rn: '12' });
+        return cards(result.data?.list, name);
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 12 ? page + 1 : page,
+        limit: 12, total: list.length });
+    async function detail(raw) {
+        const [id, progress = 'undefined'] = raw.split('@');
+        const result = await post(`/haokan/ui-video/playlet/rec/detail?${query}`,
+            { playlet_id: id, vid: progress });
+        const data = result.data || {}, vids = Array.isArray(data.vid_list) ? data.vid_list : [];
+        const episodes = vids.flatMap((vid, index) => clean(vid)
+            ? [`第${index + 1}集$haokan://${clean(vid)}`] : []);
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: clean(data.playlet_title),
+            vod_pic: clean(data.playlet_poster), vod_content: clean(data.description),
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '好看',
+            vod_play_url: episodes.join('#') }] };
+    }
+    async function play(id) {
+        if (!id.startsWith('haokan://')) throw new Error('好看分集 ID 无效');
+        const result = await post(`/appui/api?cmd=video/relate&${query}`,
+            { method: 'post', vid: id.slice(9) });
+        const rows = result['video/relate']?.data?.cur_video?.clarityUrl || [];
+        const best = rows.filter((item) => /^https?:\/\//.test(clean(item.url)))
+            .sort((a, b) => Number(b.video_quality || 0) - Number(a.video_quality || 0))[0];
+        if (!best) throw new Error('好看未返回媒体地址');
+        return { parse: 0, url: best.url, header: { 'User-Agent': ua, Referer: `${host}/` } };
+    }
+    globalThis.leeHaokanHandlers = { detail, play };
+    for (const source of globalThis.leeHaokanSources) server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing(cats[0][0], 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+            pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged([], pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: source.api });
+};
+
+globalThis.leeBaiduSources = [
+    ['lee_duoju_baidu', '多聚短剧 · 百度'],
+    ['lee_quanju_baidu', '全聚合短剧 · 百度'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 0, quickSearch: 0, filterable: 0 }));
+
+globalThis.registerLeeBaidu = async function registerLeeBaidu(server) {
+    const https = require('node:https');
+    const crypto = require('node:crypto');
+    const host = 'https://mbd.baidu.com';
+    const ua = 'Dalvik/2.1.0 (Linux; U; Android 9; 22081212C Build/PQ3B.190801.002) '
+        + 'Talos/1.8.13 SP-engine/3.47.0 bd_dvt/1 baiduboxapp/15.21.0.10 (Baidu; P1 9)';
+    const cookie = 'BAIDUCUID=0Ovgu0uAvu0_828wj8Hma_8i28joaSuIlOvOigiAH88ikS8f0k35aD6mA';
+    const cats = [['quanbu', '全部'], ['shenyi', '神医'], ['dushi', '都市'],
+        ['xiandaiyanqing', '现代言情'], ['yineng', '异能'], ['nixi', '逆袭'],
+        ['tianchong', '甜宠'], ['zongcai', '总裁'], ['mengbao', '萌宝'],
+        ['zhanshen', '战神'], ['gongdouzhaidou', '宫斗宅斗'], ['shenhao', '神豪'],
+        ['nuelian', '虐恋'], ['shanhun', '闪婚'], ['xuanhuan', '玄幻'],
+        ['chuanyuechongsheng', '穿越重生'], ['niandai', '年代'],
+        ['jiatinglunli', '家庭伦理'], ['gudaiyanqing', '古代言情'],
+        ['wuxiawuda', '武侠武打'], ['zhuixu', '赘婿'], ['qingchunxiaoyuan', '青春校园']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    function post(url, fields) {
+        return new Promise((resolve, reject) => {
+            const body = new URLSearchParams(fields).toString();
+            const req = https.request(url, { method: 'POST', timeout: 20000,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': ua,
+                    Cookie: cookie, 'Content-Length': Buffer.byteLength(body) } }, (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`百度短剧接口 HTTP ${res.statusCode}`));
+                    try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+                    catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('百度短剧接口超时')));
+            req.on('error', reject); req.end(body);
+        });
+    }
+    async function listing(id, page) {
+        const name = cats.find(([key]) => key === id)?.[1] || '全部';
+        const stamp = Math.floor(Date.now() / 1000);
+        const version = crypto.createHash('md5').update(`${stamp}v2`).digest('hex');
+        const data = { data: { refreshIndex: page, timestamp: stamp, version,
+            themes: [{ kind: '综合', names: ['新剧'] },
+                { kind: '题材', names: [name === '全部' ? '' : name] }],
+            extRequest: { flow_tabid: '13' }, from: 'feed', page: 'channel_video_landing',
+            pd: 'feed', theme: '' } };
+        const result = await post(`${host}/feedapi/v1/videoserver/playlets/list?service=bdbox`,
+            { data: JSON.stringify(data) });
+        const rows = result.data?.items || [];
+        return (Array.isArray(rows) ? rows : []).flatMap((row) => {
+            const vid = String(row.collId || '').trim(), title = String(row.title || '').trim();
+            if (!vid || !title) return [];
+            return [{ vod_id: vid, vod_name: title, vod_pic: String(row.img || ''),
+                vod_remarks: String(row.updateStatus || '全集'), vod_class: name }];
+        });
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 12 ? page + 1 : page,
+        limit: 12, total: list.length });
+    for (const source of globalThis.leeBaiduSources) server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('quanbu', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+            pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged([], pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => {
+            const result = await globalThis.leeHaokanHandlers.detail(one(req.body?.id));
+            return { list: (result.list || []).map((vod) => ({ ...vod, vod_play_from: '百度',
+                vod_play_url: vod.vod_play_url.replace(/haokan:\/\//g, 'baidu://') })) };
+        });
+        fastify.post('/play', async (req) => globalThis.leeHaokanHandlers.play(
+            one(req.body?.id).replace(/^baidu:\/\//, 'haokan://')));
+    }, { prefix: source.api });
+};
+
+globalThis.leeXingYaSources = [
+    ['lee_duoju_xingya', '多聚短剧 · 星芽'],
+    ['lee_quanju_xingya', '全聚合短剧 · 星芽'],
+    ['lee_zhenguo_yaguo', '真果鉴 · 芽果'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+globalThis.leeQiXingSource = { key: 'lee_duoju_qixing', name: '多聚短剧 · 七星',
+    type: 3, api: '/spider/lee_duoju_qixing/3', searchable: 1,
+    quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeXingYa = async function registerLeeXingYa(server) {
+    const https = require('node:https');
+    const host = 'https://app.whjzjx.cn';
+    const device = '24250683a3bdb3f118dff25ba4b1cba1a';
+    const devToken = 'Bnf9uRPIcKTIOZasAUgUJAUDXhIOlB4lpDKsyLD4yvKm708G4J8PN1Z-gMaFgPwkRvqJrEje81VRxh41IaSj0lN'
+        + 'WuoRLUg1r08Z1f0IqSv2q1lvfxrYckKavmnAPYLdkT9P1fPFNRt0RuN3DLLFZqApRDdPD3mM2jB6d79CF2LtM*';
+    const appUa = 'Mozilla/5.0 (Linux; Android 9; RMX1931 Build/PQ3A.190605.05081124; wv) '
+        + 'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Mobile Safari/537.36';
+    const cats = [['juchang', '剧场', '1'], ['reboduanju', '热播剧', '2'],
+        ['huiyuan', '会员专享', '8'], ['xingxuan', '星选好剧', '7'],
+        ['xinju', '新剧', '3'], ['yangguang', '阳光剧场', '5']];
+    const baseHeaders = { 'User-Agent': 'okhttp/4.10.0', 'x-app-id': '7', platform: '1',
+        version_name: '3.3.1', app_version: '3.3.1', device_platform: 'android',
+        device_id: device, device_type: 'RMX1931', device_brand: 'realme',
+        os_version: '9', channel: 'default',
+        uuid: 'randomUUID_914e7a9b-deac-4f80-9247-db56669187df' };
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    let token = '';
+    function request(url, method, headers, body) {
+        return new Promise((resolve, reject) => {
+            const payload = body == null ? '' : String(body);
+            const req = https.request(url, { method, timeout: 20000,
+                headers: { ...headers, ...(body == null ? {} : { 'Content-Length': Buffer.byteLength(payload) }) } },
+            (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`星芽接口 HTTP ${res.statusCode}`));
+                    try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+                    catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('星芽接口超时')));
+            req.on('error', reject); req.end(payload);
+        });
+    }
+    async function login() {
+        const body = `device=${device}&install_first_open=false&first_install_time=1723214205125`
+            + '&last_update_time=1723214205125&report_link_url=';
+        const res = await request('https://u.shytkjgs.com/user/v1/account/login', 'POST',
+            { ...baseHeaders, 'Content-Type': 'application/x-www-form-urlencoded' }, body);
+        token = clean(res.data?.token);
+        if (!token) throw new Error('星芽登录未返回 token');
+    }
+    async function call(path, method = 'GET', payload) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            if (!token) await login();
+            const headers = { ...baseHeaders, authorization: token, dev_token: devToken,
+                user_agent: appUa, support_h265: '1' };
+            if (payload !== undefined) headers['Content-Type'] = 'application/json';
+            try {
+                const result = await request(`${host}${path}`, method, headers,
+                    payload === undefined ? undefined : JSON.stringify(payload));
+                if (!result.data) throw new Error(`星芽接口无数据 ${result.msg || ''}`);
+                return result.data;
+            } catch (error) {
+                if (attempt === 0 && /HTTP 40[13]|token|登录/i.test(error.message)) { token = ''; continue; }
+                throw error;
+            }
+        }
+        throw new Error('星芽鉴权失败');
+    }
+    function cards(items, category) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = clean(item?.id), name = clean(item?.title);
+            if (!id || !name || seen.has(id)) return [];
+            seen.add(id);
+            return [{ vod_id: id, vod_name: name, vod_pic: clean(item.cover_url),
+                vod_remarks: item.total ? `共${item.total}集` : '', vod_class: category }];
+        });
+    }
+    async function listing(id, page) {
+        const [, name, classId] = cats.find(([key]) => key === id) || cats[0];
+        const data = await call(`/cloud/v2/theater/home_page?theater_class_id=${classId}`
+            + `&type=1&class2_ids=0&page_num=${page}&page_size=24`);
+        return cards((data.list || []).map((row) => row.theater), name);
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 24 ? page + 1 : page,
+        limit: 24, total: list.length });
+    async function search(wd, page) {
+        if (!wd) return paged([], page);
+        const data = await call('/v3/search', 'POST', { text: wd });
+        return paged(cards(data.theater?.search_data, '搜索'), page);
+    }
+    const detailData = (id) => call(`/v2/theater_parent/detail?theater_parent_id=${encodeURIComponent(id)}`);
+    async function detail(id) {
+        const data = await detailData(id);
+        const seen = new Set(), eps = [];
+        for (const [index, entry] of (data.theaters || []).entries()) {
+            const n = Number(entry.num) || index + 1;
+            if (seen.has(n)) continue;
+            seen.add(n);
+            const son = clean(entry.son_title);
+            const name = son && son !== clean(data.title) ? `第${n}集 ${son}` : `第${n}集`;
+            eps.push({ n, item: `${name.replace(/[$#]/g, '_')}$xingya://${id}/${n}` });
+        }
+        eps.sort((a, b) => a.n - b.n);
+        if (!eps.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: clean(data.title), vod_pic: clean(data.cover_url),
+            vod_content: clean(data.introduction), vod_remarks: `共${eps.length}集`,
+            vod_play_from: '星芽', vod_play_url: eps.map((x) => x.item).join('#') }] };
+    }
+    async function play(raw) {
+        const match = raw.match(/^xingya:\/\/([^/]+)\/(\d+)$/);
+        if (!match) throw new Error('星芽分集 ID 无效');
+        const data = await detailData(match[1]);
+        const ep = (data.theaters || []).find((x) => Number(x.num) === Number(match[2]));
+        const url = clean(ep?.son_video_url);
+        if (!/^https?:\/\//.test(url)) throw new Error('星芽未返回媒体地址');
+        return { parse: 0, url, header: { 'User-Agent': appUa, Referer: `${host}/` } };
+    }
+    for (const source of globalThis.leeXingYaSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('juchang', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+    const qixingCats = [['1', '剧场'], ['3', '新剧'], ['2', '热播'],
+        ['7', '星选'], ['5', '阳光']];
+    async function qixingList(id, page) {
+        const cat = qixingCats.find(([key]) => key === id) || qixingCats[0];
+        const data = await call(`/v1/theater/home_page?theater_class_id=${cat[0]}`
+            + `&page_num=${page}&page_size=24`);
+        return cards((data.list || []).map((row) => row.theater || row), cat[1]);
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: qixingCats.map(([type_id, type_name]) =>
+            ({ type_id, type_name })), list: await qixingList('1', 1) }));
+        fastify.post('/category', async (req) => paged(await qixingList(one(req.body?.id),
+            pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => {
+            const result = await detail(one(req.body?.id));
+            return { list: (result.list || []).map((vod) => ({ ...vod,
+                vod_play_from: '七星', vod_play_url: vod.vod_play_url.replace(/xingya:\/\//g, 'qixing://') })) };
+        });
+        fastify.post('/play', async (req) => play(one(req.body?.id).replace(/^qixing:\/\//, 'xingya://')));
+    }, { prefix: globalThis.leeQiXingSource.api });
+};
+
+globalThis.leeHemaSources = [
+    ['lee_duoju_hema', '多聚短剧 · 河马'],
+    ['lee_quanju_hema', '全聚合短剧 · 河马'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeHema = async function registerLeeHema(server) {
+    const https = require('node:https');
+    const crypto = require('node:crypto');
+    const host = 'https://freevideo.zqqds.cn';
+    const datas = 'e5f22c6e2c82fe001738cb9ce4696eab0556d064a55aef402e0fbe6b29a083f6538e4567de38e67de2071a49d9751526bfba45314e1fd4702b11c76ab9a3b5f873262854ba66e6715ed51364dbc6ee62c7180e047fcbcdbfd49874fc8f28674b16d90ca71a02de76c70598e0b75e647c37c2c19287e49be5f2a259d727dfc4df3d28802388bf3c356576b342e17e30a2ab74859263dba4d1c8eba79990d22d60d60927fdacb2addf2f0eaadd8887585ca2eb87f603faf0c207dda18cf67dc25b2199d303baff9e6605b3314a7d2631f62864f48619daceb9452f2b7b0667773553741856df030cca68af3c57810f983d452bb428ef5fc32206aef4865ae06c629bee7f5135547304acc7ef4e7c6df887308f2e79c493fd2ee03488722861b5bb51b09cb8911dfc92c288d94e601c066d2f9d612ad2c8d4eeb4920b1d44aff3e13fd75229b857f64925df1cf12f75a00d438c422ec1726462b915903f1dd1f4bb7cdf82cc15a6d507f80c789903e710f39a62aef073f3f93a6c681e75d295428aa290d7e98f82e7e9ad6e2b23d9086dfe8c63c5d8550b13fd61a77291473a8bdd43c7c2639f264be69d9d07f0585de4342a399275a64e7d1d4400b8ed4421a2f289f622e40cdd1cfc916a0b9ce747c924ac33e32d24b91ed5d64772d6ad6896412f52724006eabf12aaecfd6e81dad432c7b3800bbf793a1c375e3e7b4fb3b097724b5fc88a8c9bcf3dbc10cbdb252965';
+    const key = Buffer.from('647a6b6a67667978677368796c677a6d', 'hex');
+    const iv = Buffer.from('6170697570646f776e65646372797074', 'hex');
+    const cats = [['jingxuan', '精选', 53], ['guzhuang', '古装', 54],
+        ['chongsheng', '重生', 55], ['jiating', '家庭', 56], ['lianai', '恋爱', 57]];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    function seal(value) {
+        const cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
+        return Buffer.concat([cipher.update(Buffer.from(JSON.stringify(value))), cipher.final()])
+            .toString('hex').toUpperCase();
+    }
+    function unseal(value) {
+        const cipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+        const plain = Buffer.concat([cipher.update(Buffer.from(value, 'hex')), cipher.final()]);
+        return JSON.parse(plain.toString('utf8'));
+    }
+    function request(code, payload) {
+        return new Promise((resolve, reject) => {
+            const body = seal(payload);
+            const req = https.request(`${host}/free-video-portal/portal/${code}`,
+                { method: 'POST', timeout: 20000, headers: { datas,
+                    'Content-Type': 'text/plain', 'User-Agent': 'okhttp/4.10.0',
+                    Referer: host, 'Content-Length': Buffer.byteLength(body) } }, (res) => {
+                    const chunks = [];
+                    res.on('data', (chunk) => chunks.push(chunk));
+                    res.on('end', () => {
+                        if (res.statusCode < 200 || res.statusCode >= 300)
+                            return reject(new Error(`河马接口 HTTP ${res.statusCode}`));
+                        try {
+                            const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+                            if (!result.data) throw new Error('河马接口无数据');
+                            resolve(unseal(result.data));
+                        } catch (error) { reject(error); }
+                    });
+                });
+            req.on('timeout', () => req.destroy(new Error('河马接口超时')));
+            req.on('error', reject); req.end(body);
+        });
+    }
+    function cards(items, category) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = clean(item?.bookId), name = clean(item?.bookName);
+            if (!id || !name || seen.has(id)) return [];
+            seen.add(id);
+            return [{ vod_id: id, vod_name: name, vod_pic: clean(item.coverWap),
+                vod_remarks: item.updateNum ? `更新${item.updateNum}集` : '', vod_class: category }];
+        });
+    }
+    const paged = (list, page, size) => ({ list, page,
+        pagecount: list.length === size ? page + 1 : page, limit: size, total: list.length });
+    async function listing(id, page) {
+        const [, name, channel] = cats.find(([key]) => key === id) || cats[0];
+        const data = await request('1125', { recSwitch: true, storePageId: 10002,
+            channelGroupId: '10', channelId: channel, channelName: name,
+            lastColumnStyle: 3, fromColumnId: '1', pageFlag: String(page),
+            theaterSubscriptSwitch: true });
+        return cards(data.columnData?.[0]?.videoData, name);
+    }
+    async function search(wd, page) {
+        if (!wd) return paged([], page, 15);
+        const data = await request('1803', { keyword: wd, page, size: 15 });
+        return paged(cards(data.searchVos, ''), page, 15);
+    }
+    async function detail(id) {
+        const [infoRes, chapterRes] = await Promise.all([
+            request('1131', { bookId: id }),
+            request('1132', { bookId: id, chapterMin: 1, chapterMax: 10000 }),
+        ]);
+        const info = infoRes.videoInfo || {}, seen = new Set(), episodes = [];
+        for (const [index, chapter] of (chapterRes.chapterList || []).entries()) {
+            const chapterId = clean(chapter.chapterId), n = Number(chapter.chapterIndex) || index + 1;
+            if (!chapterId || seen.has(n)) continue;
+            seen.add(n);
+            const name = clean(chapter.chapterName) || `第${n}集`;
+            episodes.push({ n, row: `${name.replace(/[$#]/g, '_')}$hema://${id}/${chapterId}` });
+        }
+        episodes.sort((a, b) => a.n - b.n);
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: clean(info.bookName), vod_pic: clean(info.coverWap),
+            vod_class: clean(info.finishStatusCn), vod_content: clean(info.introduction),
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '河马',
+            vod_play_url: episodes.map((x) => x.row).join('#') }] };
+    }
+    async function play(raw) {
+        const match = raw.match(/^hema:\/\/([^/]+)\/(.+)$/);
+        if (!match) throw new Error('河马分集 ID 无效');
+        const data = await request('1133', { bookId: match[1], chapterId: match[2],
+            unClockType: 'pay', confirmPay: 2, autoPayFlag: true,
+            omap: { channelName: '精选', logId: '17a6500357709bb2547e1e122b438cfc',
+                originName: '书城', recId: 'bigdata_rec', scene: 'nsc_727',
+                sceneId: 'dzmf_video_sc_reco', strategyId: 'g6y6b5sq' } });
+        if (data.chaptersPayType !== '免费') throw new Error('河马该集需要付费');
+        const content = data.chapterInfo?.[0]?.content || {};
+        const media = clean(content.m3u8720p) || (content.mp4SwitchUrl || []).find((x) => clean(x));
+        if (!/^https?:\/\//.test(media || '')) throw new Error('河马未返回媒体地址');
+        return { parse: 0, url: media,
+            header: { 'User-Agent': 'okhttp/4.10.0', Referer: `${host}/` } };
+    }
+    for (const source of globalThis.leeHemaSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('jingxuan', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page), 15));
+            fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeXiFanSources = [
+    ['lee_duoju_xifan', '多聚短剧 · 西饭'],
+    ['lee_quanju_xifan', '全聚合短剧 · 西饭'],
+    ['lee_zhenguo_fanguo', '真果鉴 · 饭果'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeXiFan = async function registerLeeXiFan(server) {
+    const https = require('node:https');
+    const host = 'https://xifan-api-cn.youlishipin.com';
+    const cats = [['all', '全部', '68', '都市'], ['dushi', '都市', '68', '都市'],
+        ['qingchun', '青春', '68', '青春'], ['xiandaiyanqing', '现代言情', '81', '现代言情'],
+        ['haomen', '豪门', '81', '豪门'], ['danvzhu', '大女主', '80', '大女主'],
+        ['nixi', '逆袭', '79', '逆袭'], ['dalianuecha', '打脸虐渣', '79', '打脸虐渣'],
+        ['chuanyue', '穿越', '81', '穿越']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    function call(path) {
+        return new Promise((resolve, reject) => {
+            const req = https.get(`${host}${path}`, { timeout: 20000,
+                headers: { Accept: 'application/json, text/plain, */*',
+                    'User-Agent': 'okhttp/4.10.0' } }, (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`西饭接口 HTTP ${res.statusCode}`));
+                    try {
+                        const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+                        if (!result.result) throw new Error('西饭接口无数据');
+                        resolve(result.result);
+                    } catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('西饭接口超时')));
+            req.on('error', reject);
+        });
+    }
+    function cards(items, category) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = clean(item?.duanjuId || item?.duanjuID), name = clean(item?.title);
+            if (!id || !name) return [];
+            const vodId = item.source ? `${id}@${item.source}` : id;
+            if (seen.has(vodId)) return [];
+            seen.add(vodId);
+            return [{ vod_id: vodId, vod_name: name, vod_pic: clean(item.coverImageUrl),
+                vod_remarks: item.total ? `共${item.total}集` : '', vod_class: category }];
+        });
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 30 ? page + 1 : page,
+        limit: 30, total: list.length });
+    async function listing(id, page) {
+        const [, display, catId, catName] = cats.find(([key]) => key === id) || cats[0];
+        const path = `/xifan/drama/portalPage?reqType=aggregationPage&offset=${(page - 1) * 30}`
+            + `&categoryId=${catId}&categoryNames=${encodeURIComponent(catName)}&pageID=page_theater&appId=drama`;
+        const data = await call(path);
+        return cards((data.elements || []).flatMap((el) => (el.contents || []).map((x) => x.duanjuVo)), display);
+    }
+    async function search(wd, page) {
+        if (!wd) return paged([], page);
+        const requestId = `${Date.now()}aa498144140ef297`;
+        const path = `/xifan/search/getSearchList?reqType=search&offset=${(page - 1) * 30}`
+            + `&keyword=${encodeURIComponent(wd)}&requestId=${requestId}&appId=drama`;
+        const data = await call(path);
+        return paged(cards((data.elements || []).flatMap((el) =>
+            (el.contents || []).map((content) => content.duanjuVo)), '西饭'), page);
+    }
+    const splitId = (id) => { const at = id.indexOf('@');
+        return at < 0 ? [id, ''] : [id.slice(0, at), id.slice(at + 1)]; };
+    async function detailData(id) {
+        const [vid, source] = splitId(id);
+        return call(`/xifan/drama/getDuanjuInfo?duanjuId=${encodeURIComponent(vid)}`
+            + `&source=${encodeURIComponent(source)}&appId=drama`);
+    }
+    async function detail(id) {
+        const data = await detailData(id), seen = new Set(), episodes = [];
+        for (const [index, ep] of (data.episodeList || []).entries()) {
+            const n = Number(ep.index) || index + 1;
+            if (seen.has(n)) continue;
+            seen.add(n); episodes.push({ n, item: `第${n}集$xifan://${id}/${n}` });
+        }
+        episodes.sort((a, b) => a.n - b.n);
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: clean(data.title),
+            vod_pic: clean(data.coverImageUrl), vod_content: clean(data.desc || data.description),
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '西饭',
+            vod_play_url: episodes.map((x) => x.item).join('#') }] };
+    }
+    async function play(raw) {
+        const match = raw.match(/^xifan:\/\/(.+)\/(\d+)$/);
+        if (!match) throw new Error('西饭分集 ID 无效');
+        const data = await detailData(match[1]);
+        const ep = (data.episodeList || []).find((item, index) =>
+            (Number(item.index) || index + 1) === Number(match[2]));
+        const url = clean(ep?.playUrl);
+        if (!/^https?:\/\//.test(url)) throw new Error('西饭未返回媒体地址');
+        return { parse: 0, url, header: { 'User-Agent': 'Mozilla/5.0', Referer: `${host}/` } };
+    }
+    for (const source of globalThis.leeXiFanSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('all', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeQiMaoSources = [
+    ['lee_duoju_qimao', '多聚短剧 · 七猫'],
+    ['lee_quanju_qimao', '全聚合短剧 · 七猫'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeQiMao = async function registerLeeQiMao(server) {
+    const https = require('node:https');
+    const crypto = require('node:crypto');
+    const store = 'https://api-store.qmplaylet.com';
+    const read = 'https://api-read.qmplaylet.com';
+    const key = 'd3dGiJc651gSQ8w1';
+    const trackId = 'ec1280db127955061754851657967';
+    const charMap = {"+":"P","/":"X","0":"M","1":"U","2":"l","3":"E","4":"r","5":"Y","6":"W","7":"b","8":"d","9":"J","A":"9","B":"s","C":"a","D":"I","E":"0","F":"o","G":"y","H":"_","I":"H","J":"G","K":"i","L":"t","M":"g","N":"N","O":"A","P":"8","Q":"F","R":"k","S":"3","T":"h","U":"f","V":"R","W":"q","X":"C","Y":"4","Z":"p","a":"m","b":"B","c":"O","d":"u","e":"c","f":"6","g":"K","h":"x","i":"5","j":"T","k":"-","l":"2","m":"z","n":"S","o":"Z","p":"1","q":"V","r":"v","s":"j","t":"Q","u":"7","v":"D","w":"w","x":"n","y":"L","z":"e"};
+    const cats = [["0","推荐"],["-1","新剧"],["1273","都市情感"],["1272","古装"],["571","都市"],["1286","玄幻仙侠"],["570","奇幻"],["590","乡村"],["573","民国"],["572","年代"],["1288","青春校园"],["371","武侠"],["594","科幻"],["556","末世"],["1289","二次元"],["400","逆袭"],["373","穿越"],["795","复仇"],["787","系统"],["790","权谋"],["784","重生"],["1294","女性成长"],["716","打脸虐渣"],["480","闪婚"],["402","强者回归"],["715","追妻火葬场"],["670","家庭"],["558","马甲"],["724","职场"],["343","宫斗"],["1299","高手下山"],["1295","娱乐明星"],["727","异能"],["342","宅斗"],["712","替身"],["338","穿书"],["723","商战"],["1291","种田经商"],["1293","伦理"],["1290","社会话题"],["492","致富"],["1258","偷听心声"],["526","脑洞"],["624","豪门总裁"],["356","萌宝"],["527","战神"],["812","真假千金"],["36","赘婿"],["1269","神医"],["37","神豪"],["1296","小人物"],["545","团宠"],["464","欢喜冤家"],["617","女帝"],["1297","银发"],["28","兵王"],["16","虐恋"],["21","甜宠"],["27","悬疑"],["793","搞笑"],["1287","灵异"]];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    const md5 = (value) => crypto.createHash('md5').update(value).digest('hex');
+    function headers() {
+        const device = { static_score: '0.8', uuid: '00000000-7fc7-08dc-0000-000000000000',
+            'device-id': '20250220125449b9b8cac84c2dd3d035c9052a2572f7dd0122edde3cc42a70',
+            mac: '', sourceuid: 'aa7de295aad621a6', 'refresh-type': '0', model: '22021211RC',
+            'wlb-imei': '', 'client-id': 'aa7de295aad621a6', brand: 'Redmi', oaid: '',
+            'oaid-no-cache': '', 'sys-ver': '12', 'trusted-id': '', 'phone-level': 'H',
+            imei: '', 'wlb-uid': 'aa7de295aad621a6', 'session-id': String(Date.now()) };
+        const b64 = Buffer.from(JSON.stringify(device)).toString('base64');
+        const qmp = Array.from(b64, (ch) => charMap[ch] || ch).join('');
+        const sign = md5('AUTHORIZATION=app-version=10001application-id=com.duoduo.read'
+            + 'channel=unknownis-white=net-env=5platform=androidqm-params=' + qmp + 'reg=' + key);
+        return { 'net-env': '5', reg: '', channel: 'unknown', 'is-white': '',
+            platform: 'android', 'application-id': 'com.duoduo.read', authorization: '',
+            'app-version': '10001', 'user-agent': 'webviewversion/0', 'qm-params': qmp,
+            sign, 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
+                + '(KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36' };
+    }
+    function get(url) {
+        return new Promise((resolve, reject) => {
+            const req = https.get(url, { timeout: 20000, headers: headers() }, (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`七猫接口 HTTP ${res.statusCode}`));
+                    try {
+                        const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+                        if (result.errors) throw new Error(`七猫接口错误 ${result.errors.title || result.errors.code}`);
+                        resolve(result.data || result);
+                    } catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('七猫接口超时')));
+            req.on('error', reject);
+        });
+    }
+    function cards(items) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = clean(item?.playlet_id || item?.id);
+            const title = clean(item?.title).replace(/<[^>]*>/g, '');
+            if (!id || !title || seen.has(id)) return [];
+            seen.add(id);
+            const parts = [clean(item.tags), item.total_episode_num || item.total_num
+                ? `${item.total_episode_num || item.total_num}集` : '',
+            clean(item.hot_value) !== '0' ? clean(item.hot_value) : ''].filter(Boolean);
+            const cover = clean(item.image_link);
+            return [{ vod_id: id, vod_name: title,
+                vod_pic: cover ? new URL(cover, `${store}/`).href : '',
+                vod_remarks: parts.join(' · '), vod_class: clean(item.tags) }];
+        });
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 20, total: list.length });
+    async function listing(id, page) {
+        const tag = cats.some(([key]) => key === id) ? id : '0';
+        let query, sign;
+        if (page === 1) {
+            sign = md5(`operation=1playlet_privacy=1tag_id=${tag}${key}`);
+            query = `tag_id=${tag}&playlet_privacy=1&operation=1&sign=${sign}`;
+        } else {
+            sign = md5(`next_id=${page}operation=1playlet_privacy=1tag_id=${tag}${key}`);
+            query = `tag_id=${tag}&next_id=${page}&playlet_privacy=1&operation=1&sign=${sign}`;
+        }
+        const data = await get(`${store}/api/v1/playlet/index?${query}`);
+        return cards(data.list);
+    }
+    async function search(wd, page) {
+        if (!wd) return paged([], page);
+        const sign = md5(`extend=page=${page}read_preference=0track_id=${trackId}wd=${wd}${key}`);
+        const url = `${store}/api/v1/playlet/search?extend=&page=${page}&wd=${encodeURIComponent(wd)}`
+            + `&read_preference=0&track_id=${trackId}&sign=${sign}`;
+        return paged(cards((await get(url)).list), page);
+    }
+    const info = (id) => get(`${read}/player/api/v1/playlet/info?playlet_id=${encodeURIComponent(id)}`
+        + `&sign=${md5(`playlet_id=${id}${key}`)}`);
+    async function detail(id) {
+        const data = await info(id);
+        const seen = new Set(), episodes = [];
+        for (const item of data.play_list || []) {
+            const n = Number(item.sort);
+            if (!Number.isInteger(n) || n < 1 || seen.has(n)) continue;
+            seen.add(n); episodes.push({ n, row: `第${n}集$qimao://${id}/${n}` });
+        }
+        episodes.sort((a, b) => a.n - b.n);
+        if (!episodes.length) return { list: [] };
+        const cover = clean(data.image_link);
+        return { list: [{ vod_id: id, vod_name: clean(data.title),
+            vod_pic: cover ? new URL(cover, `${store}/`).href : '',
+            vod_content: clean(data.intro), vod_class: clean(data.tags),
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '七猫',
+            vod_play_url: episodes.map((x) => x.row).join('#') }] };
+    }
+    async function play(raw) {
+        const match = raw.match(/^qimao:\/\/([^/]+)\/(\d+)$/);
+        if (!match) throw new Error('七猫分集 ID 无效');
+        const data = await info(match[1]);
+        const ep = (data.play_list || []).find((x) => Number(x.sort) === Number(match[2]));
+        const url = clean(ep?.video_url);
+        if (!/^https?:\/\//.test(url)) throw new Error('七猫未返回媒体地址');
+        return { parse: 0, url, header: { Referer: `${store}/` } };
+    }
+    for (const source of globalThis.leeQiMaoSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('0', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeShanHaiSources = [
+    ['lee_duoju_shanhai', '多聚短剧 · 山海'],
+    ['lee_quanju_shanhai', '全聚合短剧 · 山海'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeShanHai = async function registerLeeShanHai(server) {
+    const https = require('node:https');
+    const crypto = require('node:crypto');
+    const host = 'https://api.app.gxshxy.com';
+    const loginKey = Buffer.from('B@ecf920Od8A4df7');
+    const gcmKey = Buffer.from('xxxxxxwhwqedqder');
+    const cats = [['jingxuan', '精选', '0'], ['renqi', '人气', '1'],
+        ['xinju', '新剧', '51'], ['tianchong', '甜宠', '46'], ['nixi', '逆袭', '6'],
+        ['qiangzhe', '强者回归', '50'], ['qihuan', '奇幻', '44'],
+        ['fuchou', '复仇', '49'], ['zhongguomeng', '中国梦', '41'], ['jiating', '家庭', '9']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    let token = '';
+    function request(url, method, headers, body) {
+        return new Promise((resolve, reject) => {
+            const payload = body == null ? '' : String(body);
+            const req = https.request(url, { method, timeout: 20000,
+                headers: { ...headers, ...(body == null ? {} : { 'Content-Length': Buffer.byteLength(payload) }) } },
+            (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`山海接口 HTTP ${res.statusCode}`));
+                    try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+                    catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('山海接口超时')));
+            req.on('error', reject); req.end(payload);
+        });
+    }
+    async function login() {
+        const payload = { device: '22ebfeec0a5ad3c0397bae448b8658cc3',
+            install_first_open: true, first_install_time: 1751687627754,
+            last_update_time: 1751687627754, report_link_url: '',
+            android_id: '8f7db6f23d745890', package_name: 'com.shanhai.duanju',
+            authorization: '', timestamp: Date.now() };
+        const cipher = crypto.createCipheriv('aes-128-ecb', loginKey, null);
+        const body = Buffer.concat([cipher.update(JSON.stringify(payload)), cipher.final()]).toString('base64');
+        const result = await request('https://u.app.gxshxy.com/user/v3/account/login', 'POST',
+            { 'Content-Type': 'application/json; charset=utf-8' }, body);
+        token = clean(result.data?.token);
+        if (!token) throw new Error('山海登录未返回 token');
+    }
+    function unseal(data) {
+        const nonce = Buffer.from(data.nonce || '', 'hex');
+        const blob = Buffer.from(data.data || '', 'hex');
+        if (blob.length <= 16) throw new Error('山海密文无效');
+        const decipher = crypto.createDecipheriv('aes-128-gcm', gcmKey, nonce);
+        decipher.setAuthTag(blob.subarray(blob.length - 16));
+        const plain = Buffer.concat([decipher.update(blob.subarray(0, -16)), decipher.final()]);
+        return JSON.parse(plain.toString('utf8'));
+    }
+    async function api(path) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            if (!token) await login();
+            try {
+                const result = await request(`${host}${path}`, 'GET', { authorization: token });
+                if (!result.data?.data) throw new Error(`山海接口无数据 ${result.code || ''}`);
+                return unseal(result.data);
+            } catch (error) {
+                if (attempt === 0) { token = ''; continue; }
+                throw error;
+            }
+        }
+        throw new Error('山海接口鉴权失败');
+    }
+    function cards(items, category) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((raw) => {
+            const item = raw?.theater || raw || {};
+            const id = clean(item.id), name = clean(item.title);
+            if (!id || !name || seen.has(id)) return [];
+            seen.add(id);
+            return [{ vod_id: id, vod_name: name, vod_pic: clean(item.cover_url),
+                vod_remarks: item.total ? `共${item.total}集` : '', vod_class: category }];
+        });
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 24 ? page + 1 : page,
+        limit: 24, total: list.length });
+    async function listing(id, page) {
+        const [, name, classId] = cats.find(([key]) => key === id) || cats[0];
+        const data = await api('/shanhai-theater/v2/theater_parent/cloud/v2/theater/home_page'
+            + `?theater_class_id=1&type=1&class2_ids=${classId}&page_num=${page}&page_size=24`);
+        return cards(data.items, name);
+    }
+    async function search(wd, page) {
+        if (!wd) return paged([], page);
+        if (!token) await login();
+        const result = await request(`${host}/v3/search`, 'POST',
+            { authorization: token, 'Content-Type': 'application/json',
+                Accept: 'application/json', 'User-Agent': 'okhttp/4.10.0' }, JSON.stringify({ text: wd }));
+        return paged(cards(result.data?.theater?.search_data, ''), page);
+    }
+    const detailData = (id) => api(`/shanhai-theater/v2/theater_parent/detail?theater_parent_id=${encodeURIComponent(id)}`);
+    async function detail(id) {
+        const data = await detailData(id);
+        const episodes = (data.theaters || []).map((entry, index) => {
+            const n = index + 1, name = clean(entry.son_title) || `第${n}集`;
+            return `${name.replace(/[$#]/g, '_')}$shanhai://${id}/${n}`;
+        });
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: clean(data.title), vod_pic: clean(data.cover_url),
+            vod_class: (data.desc_tags || []).join(' '), vod_content: clean(data.introduction),
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '山海',
+            vod_play_url: episodes.join('#') }] };
+    }
+    async function play(raw) {
+        const match = raw.match(/^shanhai:\/\/([^/]+)\/(\d+)$/);
+        if (!match) throw new Error('山海分集 ID 无效');
+        const data = await detailData(match[1]);
+        const url = clean(data.theaters?.[Number(match[2]) - 1]?.son_video_url);
+        if (!/^https?:\/\//.test(url)) throw new Error('山海未返回媒体地址');
+        return { parse: 0, url,
+            header: { 'User-Agent': 'okhttp/4.10.0', Referer: `${host}/` } };
+    }
+    for (const source of globalThis.leeShanHaiSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('jingxuan', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeYiMiSources = [
+    ['lee_duoju_yimi', '多聚短剧 · 薏米'],
+    ['lee_quanju_yimi', '全聚合短剧 · 薏米'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 0, quickSearch: 0, filterable: 0 }));
+
+globalThis.registerLeeYiMi = async function registerLeeYiMi(server) {
+    const https = require('node:https');
+    const crypto = require('node:crypto');
+    const host = 'https://yimi-api.zhangyue.com';
+    const common = 'p1=1750574688516674369&p16=22081212C&p2=341201&p21=10&p22=15&p24=0&p25=21200&p28=cca83346da195d11&p29=zy9351ae&p3=102120009&p31=29d1af74b128f29f&p33=com.zhangyue.app.shortplay&p34=force_fsg_nav_bar&p35=BUZGFVakskazFWG2XwZ/LNs4fOnQczc4iivy1qLFvZqmerp2Abe2hv5Tu1jOHQJO5PGANizg3JbzgaTOon0qkmQ==&p4=501609&p5=16&p7=cca83346da195d11&p9=3';
+    const user = 'usr=tj1290623468&zyeid=4fc4c6737a87b603e1b8ce9210032bae';
+    const listSec = 'AAF4IWZnITkqeX4hJCB5eio4IWc4IH4=';
+    const detailSec = 'AAFzKmZkKjIqenUqJCNycSo7Kmw4I3U=';
+    const key = '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDwCPsMptVn80Im4VVfJ2uAkjs7NpJzzsyGxleK1uN9ux/KTiY2o8kiXcRIcAYVChfdX4ywUs0jrjh8iTcC91r6qgeBaDS8wWsL5bZrn7O/8sqq2hbizV4AvvsqhxVJzRUJZjbNOcMZOPJoeL5K4U4YsiOyV8a9lt5C6zEC4Qy0xjscvOTGyVTqtWeJedEedXtiKLQxAiy6OKJxyHQqdwMHUfAgAbLzAHcVpg1RSXwud+5vtTJNXOXT98FHoFDcRIEcHiiqfU9dskzAhG2nPbFujO+YFq9tZBrWmrhPaXcHfXZqtEYePM4vuvMYjhmANdG4Ehl6pN9nuEaLZ+L35/3nAgMBAAECggEBAOe+M+s2E2ll8WMqQEs6+s5J4Ee9201Vxh8E1TYlW8Ni60FdjAVKwgCc+Mla5nRfp0TCYElH1+hv5vdNXsBNYhgKGm701Z27O4dkA2gK6vcSCFtFbb0Qu4YK3OFlQ8dZ6cqGVbhz4Qmz8k2s7UPMHKM5Mb+YgTc/tlxzR4FZF/RaY8MDpv6iMcXPY27xJzZAV1jROCXjZTZNYbgjsKDAbthRDkjMyuKCIdq7rAHrEyFSx3n7/uxnZYh42bXzWyyWudbkAJoq1ZYx+NyYj5TsN/WNoYbCPcX0Ko+CNnpkC/6qtQbHrBiMprnld67qdLCVhWpmOBYukXVPwFMJjOFlYKkCgYEA+WDh3LpitYSO6hn7mhnbqEQba13cutbJW9RQa0BjGf1OGXdqXpimcWK7viZYAKhLlyGWQmoWduDq4bjSRx7ZxY8pMtpIUWoVkKItD7D2yvmYN1guHNRpHlUIAsSH3HGwQIeXy36hJcB5gC+3XgRVPz/juTMWJDC0usECNFz17bsCgYEA9miWi6JPnZ1ffQzAyE+P6vGC/Vrl7Uyr9gqxI/OkZa8bUqfZtGo5UDGSaGRUsoTsYiEJ8m5blPY0X4xr5x1kO6rfk0gHxn1OXlCP42yT2+CqQvjNO2DHOnWNryKjmAqaAITbmC2lgj0PiiPO32ZT3aXTOgwxTKbFP3LBDmwA18UCgYAQuEgsbmqz1OFoHLnbySQLEhXsiuyDsmbpu0BxEG4UjgEwf+sn0IBIVeBUjWmVEbOPvHbAmTBMZCQbYjLnBdCACGswt6Xln4E2o0j2Jl1Fmpp0C3t7/1nU6MqStO6O/yhcCztIL4NKbq82wvw+V3gHt5bjEePIJWPYqZwmOp1ahQKBgCqfHKs6gBr7RbETq6T6XiJ9c/Lu7iaFxJjicJGPazhLeaZqcjXKye8dI/36nMvkQh8XJ+lPPXgeviBo4aEwbE4F2HZZVz72HcAin0DvXwQBcHH1J0rGCrAJ9V/91d5OtySv1mwUOTS16yIx3260/HyyWj8ILN7dWfEHoG0mMV8hAoGBAI0KBzR9WfzxNKI4ZqRD9/sN+SH4oxymo2oJ+FnOW7hk1E0EyrsGzIDCrS/f7MPzLJI7F4DULsrU5RIQyouIybZra29Vqe4L8kdIae5O0R4Y2r7gt/yWo4cWnW53Q0f5o7mzV10Dc8ewuT1DyJrt25dMWsGsP8rQ/0pVUBLEf93b\n-----END PRIVATE KEY-----';
+    const ua = 'Dalvik/2.1.0 (Linux; U; Android 15; 22081212C Build/AQ3A.241006.001)';
+    const cats = [["jingxuan","精选","channel_c6f50cd9"],["nixi","逆袭","channel_a8e10abc"],["fuchou","复仇","channel_d26dd434"],["lianai","恋爱","channel_75afe84a"],["chongsheng","重生","channel_2272aac5"],["gufeng","古风","channel_73190d4f"],["shenyi","神医","channel_2d7eae6b"],["yanqing","言情","channel_614820bd"],["dushi","都市","channel_13dfce8b"],["xuanyi","悬疑","channel_861b9642"],["lishi","历史","channel_18157927"]];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    const cache = new Map();
+    function call(path, query, sec) {
+        return new Promise((resolve, reject) => {
+            const timestamp = String(Date.now());
+            const message = `&${query}&${path}&${timestamp}&${sec}`;
+            const signature = crypto.sign('RSA-SHA256', Buffer.from(message), key).toString('base64');
+            const headers = { 'x-appid': 'zy9351ae', 'x-sig-timestamp': timestamp,
+                'x-sig-alg': 'RSA-SHA256', 'x-sig-sign': signature,
+                'x-sig-ver': 'v1.1', 'x-sig-sec': sec, 'User-Agent': ua };
+            const req = https.get(`${host}${path}?${query}`, { timeout: 20000, headers }, (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`薏米接口 HTTP ${res.statusCode}`));
+                    try {
+                        const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+                        if (!result.body) throw new Error('薏米接口无数据');
+                        resolve(result.body);
+                    } catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('薏米接口超时')));
+            req.on('error', reject);
+        });
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 10 ? page + 1 : page,
+        limit: 10, total: list.length });
+    async function listing(id, page) {
+        const [, display, channel] = cats.find(([key]) => key === id) || cats[0];
+        const query = `key=${encodeURIComponent(channel)}&${common}&page=${page}&pc=10&${user}`;
+        const body = await call('/bookstore/local/visual/channel/list', query, listSec);
+        const items = body.list?.[0]?.short_plays || [];
+        const seen = new Set();
+        return items.flatMap((item) => {
+            const vid = clean(item.id), name = clean(item.short_play_name);
+            if (!vid || !name || seen.has(vid)) return [];
+            seen.add(vid);
+            return [{ vod_id: vid, vod_name: name, vod_pic: clean(item.cover_url),
+                vod_remarks: item.favor_count_format ? `热度值:${item.favor_count_format}` : '',
+                vod_class: display }];
+        });
+    }
+    async function fetchAll(id) {
+        const saved = cache.get(id);
+        if (saved && Date.now() - saved.at < 300000) return saved.data;
+        const episodes = []; let name = '', intro = '', total = Infinity;
+        for (let start = 1; start <= Math.min(total, 2000); start += 30) {
+            const query = `end_id=${start + 29}&${common}&pc=10&play_id=${encodeURIComponent(id)}`
+                + `&start_id=${start}&${user}`;
+            const body = await call('/video/client/short_play/episode_list', query, detailSec);
+            if (start === 1) {
+                name = clean(body.name); intro = clean(body.introduce);
+                total = Number(body.target_count) || 2000;
+            }
+            const batch = Array.isArray(body.episode_list) ? body.episode_list : [];
+            if (!batch.length) break;
+            episodes.push(...batch);
+        }
+        const data = { name, intro, episodes }; cache.set(id, { at: Date.now(), data });
+        return data;
+    }
+    async function detail(id) {
+        const data = await fetchAll(id), seen = new Set(), episodes = [];
+        for (const [index, item] of data.episodes.entries()) {
+            const n = Number(item.order) || index + 1;
+            if (seen.has(n)) continue;
+            seen.add(n); episodes.push({ n, row: `第${n}集$yimi://${id}/${n}` });
+        }
+        episodes.sort((a, b) => a.n - b.n);
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: data.name || `薏米短剧 ${id}`,
+            vod_pic: '', vod_content: data.intro, vod_remarks: `共${episodes.length}集`,
+            vod_play_from: '薏米', vod_play_url: episodes.map((x) => x.row).join('#') }] };
+    }
+    function fixUrl(raw) {
+        const value = clean(raw);
+        if (value.includes('zhangyuecdn')) {
+            const at = value.indexOf('com');
+            if (at >= 0) return `https://mother-t.d.ireader.com${value.slice(at + 3)}`;
+        }
+        return value;
+    }
+    async function play(raw) {
+        const match = raw.match(/^yimi:\/\/([^/]+)\/(\d+)$/);
+        if (!match) throw new Error('薏米分集 ID 无效');
+        const data = await fetchAll(match[1]);
+        const ep = data.episodes.find((item, index) =>
+            (Number(item.order) || index + 1) === Number(match[2]));
+        const url = fixUrl(ep?.play_url || ep?.playUrl);
+        if (!/^https?:\/\//.test(url)) throw new Error('薏米未返回媒体地址');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: `${host}/` } };
+    }
+    for (const source of globalThis.leeYiMiSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('jingxuan', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => paged([], pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeXiFuSources = [
+    ['lee_duoju_xifu', '多聚短剧 · 喜福'],
+    ['lee_quanju_xifu', '全聚合短剧 · 喜福'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 0, quickSearch: 0, filterable: 0 }));
+
+globalThis.registerLeeXiFu = async function registerLeeXiFu(server) {
+    const https = require('node:https');
+    const crypto = require('node:crypto');
+    const host = 'https://minidrama-api.contentchina.com';
+    const origin = 'https://minidrama.contentchina.com';
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        + '(KHTML, like Gecko) Chrome/120.0 Safari/537.36';
+    const cats = [['3', '爽剧'], ['6', '甜宠'], ['5', '逆袭'], ['1', '现代言情'],
+        ['4', '都市'], ['23', '玄幻'], ['16', '古代言情']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    function get(url) {
+        return new Promise((resolve, reject) => {
+            const req = https.get(url, { timeout: 20000,
+                headers: { 'User-Agent': ua, Origin: origin, Referer: `${origin}/`,
+                    Accept: 'application/json, text/plain, */*' } }, (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`喜福接口 HTTP ${res.statusCode}`));
+                    try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+                    catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('喜福接口超时')));
+            req.on('error', reject);
+        });
+    }
+    async function api(path) {
+        const result = await get(`${host}${path}`);
+        if (!result.data) throw new Error('喜福接口无数据');
+        return result.data;
+    }
+    function cards(items, category) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = clean(item?.albumId), name = clean(item?.title);
+            if (!id || !name || seen.has(id)) return [];
+            seen.add(id);
+            const cover = clean(item.coverUrl);
+            return [{ vod_id: id, vod_name: name,
+                vod_pic: cover ? new URL(cover, host).href : '',
+                vod_remarks: Number(item.total) > 0 ? `共${item.total}集` : '',
+                vod_class: category }];
+        });
+    }
+    async function listRaw(id, page) {
+        const cat = cats.some(([key]) => key === id) ? id : '';
+        let path = `/web/v1/drama/list?pageSize=24&currentPage=${page}`;
+        if (cat) path += `&filterCategories[]=${encodeURIComponent(cat)}`;
+        const data = await api(path);
+        const items = data.data || [];
+        return Array.isArray(items) ? items : [];
+    }
+    async function listing(id, page) {
+        let rows = await listRaw(id, page);
+        if (!rows.length && id) rows = await listRaw('', page);
+        return cards(rows, cats.find(([key]) => key === id)?.[1] || '全部');
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 24 ? page + 1 : page,
+        limit: 24, total: list.length });
+    async function detail(id) {
+        let match;
+        for (const cat of ['', ...cats.map(([key]) => key)]) {
+            const rows = await listRaw(cat, 1);
+            match = rows.find((item) => clean(item.albumId) === id);
+            if (match) break;
+        }
+        const total = Math.max(1, Number(match?.total) || 1);
+        const episodes = Array.from({ length: total }, (_, index) =>
+            `第${index + 1}集$xifu://${id}/${index + 1}`);
+        return { list: [{ vod_id: id, vod_name: clean(match?.title) || `喜福短剧 ${id}`,
+            vod_pic: match?.coverUrl ? new URL(match.coverUrl, host).href : '',
+            vod_remarks: `共${total}集`, vod_play_from: '喜福',
+            vod_play_url: episodes.join('#') }] };
+    }
+    const pct = (value) => encodeURIComponent(String(value)).replace(/[!'()*]/g,
+        (ch) => `%${ch.charCodeAt(0).toString(16).toUpperCase()}`);
+    function vodUrl(vid, encodedAuth) {
+        const credential = JSON.parse(Buffer.from(encodedAuth, 'base64').toString('utf8'));
+        if (!credential.AccessKeyId) throw new Error('喜福凭证无效');
+        const region = credential.Region || 'cn-shanghai';
+        const params = { Action: 'GetPlayInfo', Version: '2017-03-21', Format: 'JSON',
+            AccessKeyId: credential.AccessKeyId, SecurityToken: credential.SecurityToken || '',
+            VideoId: vid, AuthInfo: credential.AuthInfo || '',
+            Timestamp: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'),
+            SignatureMethod: 'HMAC-SHA1', SignatureVersion: '1.0',
+            SignatureNonce: process.hrtime.bigint().toString() };
+        if (credential.PlayConfig != null) params.PlayConfig = JSON.stringify(credential.PlayConfig);
+        const canonical = Object.keys(params).sort().map((key) => `${pct(key)}=${pct(params[key])}`).join('&');
+        const stringToSign = `GET&%2F&${pct(canonical)}`;
+        const signature = crypto.createHmac('sha1', `${credential.AccessKeySecret || ''}&`)
+            .update(stringToSign).digest('base64');
+        return `https://vod.${region}.aliyuncs.com/?${canonical}&Signature=${pct(signature)}`;
+    }
+    async function play(raw) {
+        const match = raw.match(/^xifu:\/\/(.+)\/(\d+)$/);
+        if (!match) throw new Error('喜福分集 ID 无效');
+        const auth = await api(`/web/v1/drama/play_auth?albumId=${encodeURIComponent(match[1])}`
+            + `&seq=${match[2]}`);
+        if (!auth.vid || !auth.playAuth) throw new Error('喜福未返回播放凭证');
+        const response = await get(vodUrl(auth.vid, auth.playAuth));
+        const rows = response.PlayInfoList?.PlayInfo || response.PlayInfo || [];
+        const infos = Array.isArray(rows) ? rows : [rows];
+        const playable = infos.filter((item) => /^https?:\/\//.test(clean(item.PlayURL)));
+        const best = playable.find((item) => item.Status === 'Normal') || playable[0];
+        if (!best) throw new Error('喜福未返回媒体地址');
+        return { parse: 0, url: best.PlayURL,
+            header: { 'User-Agent': ua, Referer: `${origin}/` } };
+    }
+    for (const source of globalThis.leeXiFuSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => paged([], pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeNiuNiuSources = [
+    ['lee_duoju_niuniu', '多聚短剧 · 牛牛'],
+    ['lee_quanju_niuniu', '全聚合短剧 · 牛牛'],
+].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeNiuNiu = async function registerLeeNiuNiu(server) {
+    const https = require('node:https');
+    const crypto = require('node:crypto');
+    const host = 'https://new.tianjinzhitongdaohe.com';
+    const csjHost = 'https://csj-sp.csjdeveloper.com';
+    const hmacKey = 'aceaa47f96b4875d446b2e1d97e03bbb';
+    const siteId = '5627189';
+    const cats = [['', '全部'], ['现言', '现言'], ['古言', '古言'], ['历史', '历史'],
+        ['都市', '都市'], ['亲情', '亲情'], ['玄幻', '玄幻'], ['热血', '热血'],
+        ['动作', '动作'], ['喜剧', '喜剧'], ['悬疑', '悬疑'], ['军事', '军事'],
+        ['二次元', '二次元'], ['其他剧情', '其他剧情']];
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const clean = (value) => String(value ?? '').trim();
+    const deviceId = crypto.randomUUID();
+    let token = '';
+    let csjToken = '', csjTokenAt = 0;
+    function request(url, method, headers, body) {
+        return new Promise((resolve, reject) => {
+            const payload = body == null ? '' : String(body);
+            const req = https.request(url, { method, timeout: 20000,
+                headers: { ...headers, ...(body == null ? {} : { 'Content-Length': Buffer.byteLength(payload) }) } },
+            (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    if (res.statusCode < 200 || res.statusCode >= 300)
+                        return reject(new Error(`牛牛接口 HTTP ${res.statusCode}`));
+                    try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+                    catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('牛牛接口超时')));
+            req.on('error', reject); req.end(payload);
+        });
+    }
+    async function visitor() {
+        const result = await request(`${host}/api/v1/app/user/visitorInfo`, 'GET',
+            { deviceid: deviceId, token: '', client: 'app', devicetype: 'Android',
+                'User-Agent': 'okhttp/4.12.0' });
+        token = clean(result.data?.token);
+        if (!token) throw new Error('牛牛游客接口未返回 token');
+    }
+    async function post(path, body) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            if (!token) await visitor();
+            const result = await request(`${host}${path}`, 'POST',
+                { token, deviceid: deviceId, 'Content-Type': 'application/json;charset=UTF-8',
+                    'User-Agent': 'okhttp/4.12.0' }, JSON.stringify(body));
+            if (Number(result.code) === 2006 && attempt === 0) { token = ''; continue; }
+            if (![0, 200].includes(Number(result.code)))
+                throw new Error(`牛牛接口错误 ${result.code} ${result.msg || ''}`);
+            return result.data || {};
+        }
+        throw new Error('牛牛游客鉴权失败');
+    }
+    const hmac = (message) => crypto.createHmac('sha256', hmacKey).update(message).digest('hex');
+    function aes(plain, key) {
+        const cipher = crypto.createCipheriv('aes-128-ecb', Buffer.from(key), null);
+        return Buffer.concat([cipher.update(plain), cipher.final()]).toString('base64');
+    }
+    function unaes(encoded, key) {
+        const cipher = crypto.createDecipheriv('aes-128-ecb', Buffer.from(key), null);
+        return JSON.parse(Buffer.concat([cipher.update(Buffer.from(encoded, 'base64')),
+            cipher.final()]).toString('utf8'));
+    }
+    function postRaw(url, headers, body) {
+        return new Promise((resolve, reject) => {
+            const req = https.request(url, { method: 'POST', timeout: 20000,
+                headers: { ...headers, 'Content-Length': Buffer.byteLength(body) } }, (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => res.statusCode >= 200 && res.statusCode < 300
+                    ? resolve(Buffer.concat(chunks).toString('utf8'))
+                    : reject(new Error(`牛牛 CSJ 接口 HTTP ${res.statusCode}`)));
+            });
+            req.on('timeout', () => req.destroy(new Error('牛牛 CSJ 接口超时')));
+            req.on('error', reject); req.end(body);
+        });
+    }
+    function loginBody() {
+        return 'ac=wifi&os=Android&vod_version=1.10.21.6-tob&os_version=9&type=1'
+            + '&clientVersion=v5.2.5&uuid=Y4WNZ3SAWK7MAJMH7CXCDHJ4VMPVFRZQTBSIA4XTYO4AWEUHIK6Q01'
+            + '&resolution=1280*2618&openudid=889edced38f1069b&dt=Pixel%204'
+            + '&sha1=46121F77CE2FCAD3DBC3B9EC8A24908C1A8AD6D9&os_api=28'
+            + '&install_id=1549688030634536&device_brand=google&sdk_version=1.1.3.0'
+            + '&package_name=com.niuniu.ztdh.app&siteid=' + siteId
+            + '&dev_log_aid=667431&oaid=&timestamp=' + Math.floor(Date.now() / 1000);
+    }
+    async function csjLogin(force = false) {
+        if (!force && csjToken && Date.now() - csjTokenAt < 1800000) return csjToken;
+        const plain = loginBody(), ts = String(Math.floor(Date.now() / 1000));
+        const key = 'dafdb3d2a5c343d6', nonce = 'VX1KKGtoBDCi1fB1';
+        const result = await postRaw(`${csjHost}/csj_sp/api/v1/user/login?siteid=${siteId}`,
+            { 'X-Salt': '786774955F', 'X-Nonce': nonce, 'X-Timestamp': ts,
+                'X-Signature': hmac(ts + nonce + plain),
+                'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'okhttp/4.12.0' },
+            aes(plain, key));
+        csjToken = clean(unaes(result, key).data?.access_token);
+        if (!csjToken) throw new Error('牛牛 CSJ 登录未返回 access_token');
+        csjTokenAt = Date.now(); return csjToken;
+    }
+    async function csjPost(path, plain) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const access = await csjLogin(attempt > 0);
+            const ts = String(Math.floor(Date.now() / 1000));
+            const key = 'ce49b18dd4e0a4d8', nonce = 'X9UknYKtLa3DmtjC';
+            const result = await postRaw(`${csjHost}${path}`,
+                { 'X-Salt': 'FD8188A8D5', 'X-Nonce': nonce, 'X-Timestamp': ts,
+                    'X-Access-Token': access, 'X-Signature': hmac(ts + nonce + plain),
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': 'okhttp/3.12.11' }, aes(plain, key));
+            const data = unaes(result, key);
+            if ([0, 200].includes(Number(data.ret || 0)) &&
+                    [0, 200].includes(Number(data.code || 0))) return data;
+            csjToken = '';
+        }
+        throw new Error('牛牛 CSJ 接口返回错误');
+    }
+    function csjBody(id, index) {
+        const ts = Math.floor(Date.now() / 1000);
+        return 'not_include=0&lock_free=1&type=1&clientVersion=v5.2.5'
+            + '&uuid=6IDYUSASPQY5BBVACWQW3LLTPV4V7DE26UOCX5TZTVUGX4VUJNXQ01'
+            + '&resolution=1080*2320&openudid=82f4175d577a2939&dt=22021211RC&os_api=31'
+            + '&install_id=1496879012031075&sdk_version=1.1.3.0&siteid=' + siteId
+            + '&dev_log_aid=667431&oaid=abec0dfff623201b&timestamp=' + ts
+            + '&direction=0&ac=mobile&os=Android&vod_version=1.10.21.6-tob'
+            + '&os_version=12&count=1&index=' + index + '&lock_index=' + index
+            + (id ? '&shortplay_id=' + id : '')
+            + '&sha1=46121F77CE2FCAD3DBC3B9EC8A24908C1A8AD6D9'
+            + '&device_brand=Redmi&package_name=com.niuniu.ztdh.app';
+    }
+    function unlockBody(id, index) {
+        return 'ac=mobile&os=Android&vod_version=1.10.21.6-tob&os_version=12'
+            + '&lock_ad=1&lock_free=1&type=1&clientVersion=v5.2.5'
+            + '&uuid=6IDYUSASPQY5BBVACWQW3LLTPV4V7DE26UOCX5TZTVUGX4VUJNXQ01'
+            + '&resolution=1080*2320&openudid=82f4175d577a2939&shortplay_id=' + id
+            + '&dt=22021211RC&sha1=46121F77CE2FCAD3DBC3B9EC8A24908C1A8AD6D9'
+            + '&lock_index=' + index + '&os_api=31&install_id=1496879012031075'
+            + '&device_brand=Redmi&sdk_version=1.1.3.0&package_name=com.niuniu.ztdh.app'
+            + '&siteid=' + siteId + '&dev_log_aid=667431&oaid=abec0dfff623201b'
+            + '&timestamp=' + Math.floor(Date.now() / 1000);
+    }
+    const csjDetail = (id, index) => csjPost(`/csj_sp/api/v1/shortplay/detail?siteid=${siteId}`,
+        csjBody(id, index));
+    function cards(items) {
+        const seen = new Set();
+        return (Array.isArray(items) ? items : []).flatMap((item) => {
+            const id = clean(item?.id), name = clean(item?.name);
+            if (!id || id === '0' || !name || seen.has(id)) return [];
+            seen.add(id);
+            const count = Number(item.totalEpisode) || 0;
+            const remarks = [clean(item.type), count > 0 ? `共${count}集` : ''].filter(Boolean).join(' · ');
+            return [{ vod_id: id, vod_name: name, vod_pic: clean(item.cover),
+                vod_remarks: remarks, vod_class: '牛牛短剧' }];
+        });
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 40 ? page + 1 : page,
+        limit: 40, total: list.length });
+    async function listing(id, page) {
+        const data = await post('/api/v1/app/screen/screenMovie',
+            { condition: { classify: id === '全部' ? '' : id, typeId: 'S1' },
+                pageNum: page, pageSize: 40 });
+        return cards(data.records);
+    }
+    async function search(wd, page) {
+        if (!wd) return paged([], page);
+        const data = await post('/api/v1/app/search/searchMovie',
+            { condition: { typeId: 'S1', value: wd }, pageNum: page, pageSize: 40 });
+        return paged(cards(data.records), page);
+    }
+    const num = (value) => /^\d+$/.test(value) ? Number(value) : value;
+    async function detail(id) {
+        const desc = await post('/api/v1/app/play/movieDesc', { id: num(id), typeId: 'S1' });
+        const data = await post('/api/v1/app/play/movieDetails',
+            { id: num(id), source: 0, typeId: 'S1', userId: '546932' });
+        const episodes = (data.episodeList || []).flatMap((item, index) => {
+            const epId = clean(item.id); if (!epId) return [];
+            const number = clean(item.episode) || String(index + 1);
+            const name = number.includes('集') ? number : `第${number}集`;
+            return [`${name.replace(/[$#]/g, '_')}$niuniu://${id}/f${epId}`];
+        });
+        const third = clean(data.thirdPlayId);
+        if (!episodes.length && third && third !== '0') {
+            const csj = await csjDetail(third, 1);
+            for (const entry of csj.data?.episode_right_list || []) {
+                const index = Number(entry.index);
+                if (index > 0) episodes.push(`第${index}集$niuniu://${third}/t${index}`);
+            }
+        }
+        if (!episodes.length) return { list: [] };
+        const content = [desc.classify ? `类型：${desc.classify}` : '',
+            desc.score ? `评分：${desc.score}` : '',
+            desc.introduce || data.introduce ? `简介：${desc.introduce || data.introduce}` : '']
+            .filter(Boolean).join('\n');
+        return { list: [{ vod_id: id, vod_name: clean(desc.name || data.name) || `牛牛短剧 ${id}`,
+            vod_pic: clean(desc.cover || data.cover), vod_content: content,
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '牛牛',
+            vod_play_url: episodes.join('#') }] };
+    }
+    async function play(raw) {
+        const match = raw.match(/^niuniu:\/\/([^/]+)\/([ft])(.+)$/);
+        if (!match) throw new Error('牛牛分集 ID 无效');
+        if (match[2] === 't') {
+            const index = Number(match[3]);
+            if (!Number.isInteger(index) || index < 1) throw new Error('牛牛 CSJ 集数无效');
+            try { await csjPost(`/csj_sp/api/v1/pay/ad_unlock?siteid=${siteId}`,
+                unlockBody(match[1], index)); } catch { /* 免费章节可直接取地址 */ }
+            const csj = await csjDetail(match[1], index);
+            for (const item of csj.data?.list || []) {
+                const encoded = clean(item.video_model?.video_list?.video_1?.main_url);
+                if (!encoded) continue;
+                const url = Buffer.from(encoded, 'base64').toString('utf8').trim();
+                if (/^https?:\/\//.test(url)) return { parse: 0, url,
+                    header: { 'User-Agent': 'okhttp/4.12.0' } };
+            }
+            throw new Error('牛牛 CSJ 未返回媒体地址');
+        }
+        const data = await post('/api/v1/app/play/movieDetails',
+            { id: num(match[3]), source: 0, typeId: 'S1', userId: '546932',
+                episodeId: num(match[1]) });
+        const url = clean(data.url);
+        if (!/^https?:\/\//.test(url)) throw new Error('牛牛未返回媒体地址');
+        return { parse: 0, url, header: { 'User-Agent': 'okhttp/4.12.0' } };
+    }
+    for (const source of globalThis.leeNiuNiuSources) {
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing('', 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id),
+                pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => search(one(req.body?.wd), pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeSouJuSource = { key: 'lee_duoju_souju', name: '多聚短剧 · 搜剧AI',
+    type: 3, api: '/spider/lee_duoju_souju/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeSouJu = async function registerLeeSouJu(server) {
+    const crypto = require('node:crypto');
+    const base = 'https://souju.ai';
+    const key = 'f39d73aa7a6426203cdee1ef17b31d3b7ea8c23f4c59c62a3a8aa0f39ee5e79d';
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
+    const cats = ['全部', '脑洞悬疑', '古装仙侠', '现代都市', '女频恋爱', '言情总裁',
+        '年代穿越', '现代言情', '反转爽剧', '重生民国'];
+    const epCache = new Map();
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    function headers(method, path) {
+        const ts = String(Date.now()), nonce = crypto.randomBytes(16).toString('hex');
+        const sig = crypto.createHmac('sha256', key).update(`${method}\n${path}\n${ts}\n${nonce}`).digest('hex');
+        return { 'User-Agent': ua, Accept: 'application/json',
+            'x-ai-movie-client-name': 'movie-search-frontend',
+            'x-ai-movie-client-version': '1.0.0',
+            'x-ai-movie-build-version': 'aimovie-v2026.09.28.4-f41bc3c82d76-web',
+            'x-ai-movie-protocol-version': '2026-07-05.library-v2.playback-v1',
+            'x-ai-movie-timestamp': ts, 'x-ai-movie-nonce': nonce, 'x-ai-movie-signature': sig };
+    }
+    async function api(path, body) {
+        const method = body ? 'POST' : 'GET';
+        const response = await fetch(base + path, { method,
+            headers: { ...headers(method, path), ...(body ? { 'Content-Type': 'application/json' } : {}) },
+            body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`搜剧AI HTTP ${response.status}`);
+        return response.json();
+    }
+    const absolute = (v) => v?.startsWith('/') ? base + v : v || '';
+    function cards(rows) {
+        return (rows || []).filter((r) => r?.id && r?.title && !r?.availability?.disabled)
+            .map((r) => ({ vod_id: String(r.id), vod_name: String(r.title),
+                vod_pic: absolute(r.poster_url), vod_class: (r.genres || []).join('/'),
+                vod_remarks: [r.year, r.remarks].filter(Boolean).join(' · ') }));
+    }
+    async function browse(cat, wd, page) {
+        if (page > 20) return [];
+        const query = new URLSearchParams({ kind: 'short_drama',
+            intent: wd ? 'catalog_search' : 'latest_catalog' });
+        if (wd) query.set('query', wd);
+        else if (cat && cat !== 'all') query.set('genre', cat);
+        query.set('page', String(page)); query.set('limit', '24');
+        return cards((await api(`/v1/browse/catalog?${query}`)).cards);
+    }
+    async function episodes(vid) {
+        if (epCache.has(vid)) return epCache.get(vid);
+        const all = [];
+        for (let offset = 0; offset < 2000; offset += 100) {
+            const data = await api(`/v1/catalog/${encodeURIComponent(vid)}/episodes?limit=100&offset=${offset}&order=asc`);
+            all.push(...(data.episodes || []).filter((e) => e.token));
+            if (!data.episode_pagination?.has_more && !data.pagination?.has_more) break;
+        }
+        all.sort((a, b) => Number(a.number || a.key || 0) - Number(b.number || b.key || 0));
+        if (epCache.size > 240) epCache.clear();
+        epCache.set(vid, all);
+        return all;
+    }
+    async function detail(vid) {
+        const data = await api(`/v1/catalog/${encodeURIComponent(vid)}?episodes=window&episode_limit=1`);
+        const eps = await episodes(vid);
+        if (!eps.length) return { list: [] };
+        return { list: [{ vod_id: vid, vod_name: data.title || vid,
+            vod_pic: absolute(data.poster_url), vod_content: data.overview || data.description || '',
+            vod_remarks: `共${eps.length}集`, vod_play_from: '搜剧AI',
+            vod_play_url: eps.map((e, i) => `${String(e.title || `第${e.number || i + 1}集`).replace(/[$#]/g, '_')}$souju://${vid}/${i + 1}`).join('#') }] };
+    }
+    async function mediaWorks(url) {
+        try {
+            const response = await fetch(url, { headers: { Range: 'bytes=0-63', 'User-Agent': ua,
+                Referer: base + '/' }, signal: AbortSignal.timeout(10000) });
+            if (!response.ok) return false;
+            const bytes = Buffer.from(await response.arrayBuffer());
+            const sample = bytes.subarray(0, 200).toString();
+            return sample.startsWith('#EXTM3U') || sample.includes('ftyp') ||
+                (bytes.length > 0 && bytes[0] === 0x47);
+        } catch { return false; }
+    }
+    async function play(id) {
+        const match = /^souju:\/\/([^/]+)\/(\d+)$/.exec(id);
+        if (!match) throw new Error('搜剧AI 分集 ID 无效');
+        const eps = await episodes(match[1]), episode = eps[Number(match[2]) - 1];
+        if (!episode?.token) throw new Error('搜剧AI 分集不存在');
+        const resolved = await api(`/v1/playback/resolve/${encodeURIComponent(episode.token)}`);
+        const lines = (resolved.line_options || []).filter((l) => l.url)
+            .sort((a, b) => Number(b.url_kind === 'mp4') - Number(a.url_kind === 'mp4'));
+        for (const line of lines) {
+            let url = line.url;
+            if (url.startsWith('resolve://')) {
+                const data = await api('/v1/playback/resolve-line?view=compact', {
+                    ticket: url.slice(10), selection: { playback_source_id: line.playback_source_id || '',
+                        provider_id: line.provider_id || '' } });
+                url = data.line?.url || '';
+            }
+            if (/^https?:\/\//.test(url) && await mediaWorks(url))
+                return { parse: 0, url, header: { 'User-Agent': ua, Referer: base + '/' } };
+        }
+        throw new Error('搜剧AI 无可播放线路');
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 24 ? page + 1 : page,
+        limit: 24, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map((v) => ({ type_id: v === '全部' ? 'all' : v, type_name: v })),
+            list: await browse('all', '', 1) }));
+        fastify.post('/category', async (req) => paged(await browse(one(req.body?.id), '', pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await browse('', one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeSouJuSource.api });
+};
+
+globalThis.leeYiZkSource = { key: 'lee_duoju_yizk', name: '多聚短剧 · 一直看',
+    type: 3, api: '/spider/lee_duoju_yizk/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeYiZk = async function registerLeeYiZk(server) {
+    let hosts = ['https://1zk.top', 'https://1zk.me'], current = hosts[0];
+    const ua = 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/131.0 Safari/537.36';
+    const fixedCats = [['all', '全部'], ['sqqsfvqirt0c', '华语'], ['jr4jltgb5bct', '东瀛'],
+        ['967tfsdaht5i', '欧美'], ['ovamj5o7x0gs', '三级'], ['fs7hmy32jqfm', 'Ai短剧']];
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    async function request(host, path, body) {
+        const response = await fetch(host + path, { method: body ? 'POST' : 'GET',
+            headers: { 'User-Agent': ua, Accept: 'application/json', Referer: host + '/',
+                ...(body ? { 'Content-Type': 'application/json' } : {}) },
+            body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`一直看 HTTP ${response.status}`);
+        const result = await response.json();
+        if (result.code !== 0) throw new Error(`一直看错误 ${result.code}`);
+        return result.data;
+    }
+    async function refreshHosts() {
+        for (const entry of ['yizk.net', '7kan.net']) {
+            try {
+                const result = await fetch(`https://${entry}/api/router/list`, {
+                    headers: { 'User-Agent': ua }, signal: AbortSignal.timeout(15000) });
+                const routes = (await result.json()).data?.routes || [];
+                const found = routes.map((r) => r.domain ? `https://${r.domain}` : '').filter(Boolean);
+                if (found.length) return found;
+            } catch { /* 当前入口不可达时尝试下一条。 */ }
+        }
+        return [];
+    }
+    async function api(path, body) {
+        for (let round = 0; round < 2; round++) {
+            for (const host of hosts) {
+                try { const data = await request(host, path, body); current = host; return data; }
+                catch { /* 域名池逐条重试。 */ }
+            }
+            const refreshed = await refreshHosts();
+            if (!refreshed.length) break;
+            hosts = refreshed;
+        }
+        throw new Error('一直看所有入口不可用');
+    }
+    function cards(data) {
+        return (data?.list || []).filter((r) => r.token && r.title).map((r) => ({
+            vod_id: String(r.token), vod_name: String(r.title), vod_pic: r.cover_url || '',
+            vod_remarks: Number(r.episode_count) > 1 ? `共${r.episode_count}集` : '',
+            vod_class: r.category?.name || '' }));
+    }
+    async function listing(cat, page, wd = '') {
+        if (page > 100) return [];
+        const path = wd ? `/api/v1/films?keyword=${encodeURIComponent(wd)}&page=${page}&pageSize=24`
+            : cat && cat !== 'all' ? `/api/v1/categories/${encodeURIComponent(cat)}/films?page=${page}&pageSize=24`
+                : `/api/v1/films?page=${page}&pageSize=24`;
+        return cards(await api(path));
+    }
+    async function categories() {
+        const found = new Map(fixedCats);
+        for (const row of await api('/api/v1/categories')) {
+            if (row?.token && row?.name && (!row.parent_id || Number(row.parent_id) === 0))
+                found.set(String(row.token), String(row.name));
+        }
+        return [...found].map(([type_id, type_name]) => ({ type_id, type_name }));
+    }
+    async function detail(id) {
+        const row = await api(`/api/v1/films/${encodeURIComponent(id)}`);
+        const count = Math.min(1000, Math.max(1, Number(row.episode_count) || 1));
+        return { list: [{ vod_id: row.token || id, vod_name: row.title || id,
+            vod_pic: row.cover_url || '', vod_content: row.description || '',
+            vod_class: row.category?.name || '', vod_remarks: `共${count}集`,
+            vod_play_from: '一直看', vod_play_url: Array.from({ length: count }, (_, i) =>
+                `第${i + 1}集$yizk://${id}/${i + 1}`).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^yizk:\/\/([^/]+)\/(\d+)$/.exec(id);
+        if (!match) throw new Error('一直看分集 ID 无效');
+        const data = await api(`/api/v1/films/${encodeURIComponent(match[1])}/play`,
+            { episode: Number(match[2]), source: 'direct' });
+        if (!/^https?:\/\//.test(data?.playUrl || '')) throw new Error('一直看播放地址无效');
+        return { parse: 0, url: data.playUrl, header: { Referer: current + '/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 24 ? page + 1 : page,
+        limit: 24, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: await categories(), list: await listing('all', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await listing('', pageOf(req.body?.page), one(req.body?.wd)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeYiZkSource.api });
+};
+
+globalThis.leeHuangGuo2Source = { key: 'lee_duoju_huangguo2', name: '多聚短剧 · 黄果2',
+    type: 3, api: '/spider/lee_duoju_huangguo2/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeHuangGuo2 = async function registerLeeHuangGuo2(server) {
+    const base = 'https://huangguo.video';
+    const https = require('node:https');
+    const ua = 'Mozilla/5.0 (Linux; Android 13)';
+    const cats = [['all', '全部'], ['3', '连续剧'], ['1', 'MV/音乐剧'], ['2', '短片'],
+        ['4', '片段'], ['updates', '最近更新'], ['ranking', '排行榜']];
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    const clean = (s) => String(s || '').replace(/<[^>]*>/g, '').replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&').replace(/&#39;/g, "'").trim();
+    const abs = (s) => s?.startsWith('http') ? s : s ? new URL(s, base).href : '';
+    function get(path) {
+        return new Promise((resolve, reject) => {
+            const request = https.get(base + path, { timeout: 20000,
+                headers: { 'User-Agent': ua, Referer: base + '/' } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => response.statusCode === 200
+                    ? resolve(Buffer.concat(chunks).toString('utf8'))
+                    : reject(new Error(`黄果2 HTTP ${response.statusCode}`)));
+            });
+            request.on('timeout', () => request.destroy(new Error('黄果2 请求超时')));
+            request.on('error', reject);
+        });
+    }
+    function cards(html, cls) {
+        const starts = [...html.matchAll(/<article\s+class="[^"]*\bvideo-card\b[^"]*"[^>]*>/gi)];
+        return starts.flatMap((start, i) => {
+            const chunk = html.slice(start.index, starts[i + 1]?.index ?? html.length);
+            const link = /href="(?:https?:\/\/[^/"]+)?\/(series|video)\/([0-9a-zA-Z]+)/i.exec(chunk);
+            const name = clean(/<img[^>]*\balt="([^"]*)"/i.exec(chunk)?.[1]
+                || /<p[^>]*class="[^"]*\bmt-2\.5\b[^"]*"[^>]*>([\s\S]*?)<\/p>/i.exec(chunk)?.[1]);
+            if (!link || !name) return [];
+            const pic = /<img[^>]*\bsrc="([^"]+)"/i.exec(chunk)?.[1] || '';
+            const mark = /bg-black\/(?:50|55)[^>]*>([^<]+)</i.exec(chunk)?.[1] || '';
+            return [{ vod_id: `${link[1]}-${link[2]}`, vod_name: name,
+                vod_pic: abs(pic), vod_remarks: clean(mark), vod_class: cls }];
+        });
+    }
+    async function listing(cat, page) {
+        const path = ['updates', 'ranking'].includes(cat) ? `/${cat}?page=${page}`
+            : `/videos?category=${encodeURIComponent(cat || 'all')}&page=${page}`;
+        return cards(await get(path), cats.find(([id]) => id === cat)?.[1] || '');
+    }
+    async function search(wd, page) {
+        if (!wd) return [];
+        const found = cards(await get(`/search?q=${encodeURIComponent(wd)}${page > 1 ? `&page=${page}` : ''}`), '');
+        if (found.length) return found;
+        const seen = new Set(), matches = [];
+        for (let p = 1; p <= 5 && matches.length < page * 24; p++) {
+            for (const card of await listing('all', p)) {
+                if (card.vod_name.includes(wd) && !seen.has(card.vod_id)) {
+                    seen.add(card.vod_id); matches.push(card);
+                }
+            }
+        }
+        return matches.slice((page - 1) * 24, page * 24);
+    }
+    async function detail(id) {
+        const match = /^(series|video)-([A-Za-z0-9]+)$/.exec(id);
+        if (!match) throw new Error('黄果2 影片 ID 无效');
+        const html = await get(`/${match[1]}/${match[2]}`);
+        const name = clean(/<h1[^>]*>([\s\S]*?)<\/h1>/i.exec(html)?.[1]) || id;
+        const pic = abs(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i.exec(html)?.[1]);
+        const description = clean(/<meta[^>]*name="description"[^>]*content="([^"]*)"/i.exec(html)?.[1]);
+        const videos = match[1] === 'video' ? [match[2]]
+            : [...new Set([...html.matchAll(/href="(?:https?:\/\/[^/"]+)?\/video\/([0-9a-zA-Z]+)/gi)]
+                .map((m) => m[1]))];
+        if (!videos.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: name, vod_pic: pic, vod_content: description,
+            vod_remarks: `共${videos.length}集`, vod_play_from: '黄果2',
+            vod_play_url: videos.map((vid, i) => `第${i + 1}集$huangguo2://video-${vid}/1`).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^huangguo2:\/\/video-([A-Za-z0-9]+)\/\d+$/.exec(id);
+        if (!match) throw new Error('黄果2 分集 ID 无效');
+        const html = await get(`/video/${match[1]}`);
+        const src = /data-hls="([^"]+)"/i.exec(html)?.[1] || '';
+        const url = abs(src.replace(/&amp;/g, '&'));
+        if (!url.includes('.m3u8')) throw new Error('黄果2 无 HLS 播放地址');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: base + '/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 24, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('all', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeHuangGuo2Source.api });
+};
+
+globalThis.leeHeGuoSource = { key: 'lee_zhenguo_heguo', name: '真果鉴 · 河果',
+    type: 3, api: '/spider/lee_zhenguo_heguo/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeHeGuo = async function registerLeeHeGuo(server) {
+    const base = 'https://www.kuaikaw.cn';
+    const cats = [['462', '甜宠'], ['1102', '古装仙侠'], ['1145', '现代言情'],
+        ['1170', '青春'], ['585', '豪门恩怨'], ['417-464', '逆袭'], ['439-465', '重生'],
+        ['1159', '系统'], ['1147', '总裁'], ['943', '职场商战']];
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    const pick = (r, keys) => keys.map((k) => r?.[k]).find((v) => v !== undefined && v !== null && v !== '') || '';
+    async function get(path) {
+        const response = await fetch(base + path, { headers: { 'User-Agent': 'Mozilla/5.0', Referer: base + '/' },
+            signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`河果 HTTP ${response.status}`);
+        return response.text();
+    }
+    function props(html) {
+        const raw = /<script[^>]+id=["']__NEXT_DATA__["'][^>]*>(.*?)<\/script>/s.exec(html)?.[1];
+        if (!raw) throw new Error('河果缺少页面数据');
+        return JSON.parse(raw).props?.pageProps || {};
+    }
+    function card(row) {
+        const id = pick(row, ['bookId', 'book_id', 'id']);
+        if (!id) return null;
+        return { vod_id: String(id), vod_name: String(pick(row, ['bookName', 'title', 'name']) || id),
+            vod_pic: pick(row, ['coverWap', 'cover', 'coverUrl']),
+            vod_remarks: row.totalChapterNum ? `全${row.totalChapterNum}集` : '',
+            vod_content: pick(row, ['introduction', 'intro', 'description']) };
+    }
+    function cards(data) {
+        const list = [...(data.bookList || []), ...(data.bannerList || []), ...(data.recommendList || []),
+            ...(data.seoColumnVos || []).flatMap((r) => r.bookInfos || [])];
+        const seen = new Set();
+        return list.map(card).filter((r) => r && !seen.has(r.vod_id) && seen.add(r.vod_id));
+    }
+    async function listing(cat, page) {
+        const path = !cat && page === 1 ? '/' : `/browse/${encodeURIComponent(cat || '462')}/${page}`;
+        return cards(props(await get(path)));
+    }
+    async function search(wd) {
+        if (!wd) return [];
+        const response = await fetch(base + '/seo/video/6007', { method: 'POST',
+            headers: { 'User-Agent': 'Mozilla/5.0', Referer: base + '/', pname: 'www.kuaikaw.cn',
+                'Content-Type': 'application/json' },
+            body: JSON.stringify({ sourceType: 1, keyword: wd, index: 1 }),
+            signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`河果搜索 HTTP ${response.status}`);
+        return cards((await response.json()).data || {});
+    }
+    async function detail(id) {
+        const data = props(await get(`/drama/${encodeURIComponent(id)}`));
+        const row = data.bookInfoVo || {}, chapters = (data.chapterList || []).filter((r) =>
+            pick(r, ['chapterId', 'chapter_id', 'id']));
+        if (!chapters.length) return { list: [] };
+        chapters.sort((a, b) => Number(pick(a, ['chapterNum', 'sort', 'index']) || 0)
+            - Number(pick(b, ['chapterNum', 'sort', 'index']) || 0));
+        return { list: [{ ...card({ ...row, bookId: id }), vod_content: pick(row, ['introduction', 'intro', 'description']),
+            vod_remarks: `全${chapters.length}集`, vod_play_from: '河果',
+            vod_play_url: chapters.map((r, i) => {
+                const cid = pick(r, ['chapterId', 'chapter_id', 'id']);
+                const name = String(pick(r, ['chapterName', 'title']) || `第${i + 1}集`).replace(/[$#]/g, '_');
+                return `${name}$heguo://${id}/${cid}`;
+            }).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^heguo:\/\/([^/]+)\/([^/]+)$/.exec(id);
+        if (!match) throw new Error('河果分集 ID 无效');
+        const path = `/episode/${encodeURIComponent(match[1])}/${encodeURIComponent(match[2])}`;
+        const html = await get(path), data = props(html);
+        const video = data.chapterInfo?.chapterVideoVo || {};
+        const url = pick(video, ['mp4', 'mp4720p', 'vodMp4Url'])
+            || /https?:\/\/[^"'\\\s<>]+\.(?:mp4|m3u8)[^"'\\\s<>]*/.exec(html)?.[0];
+        if (!/^https?:\/\//.test(url || '')) throw new Error('河果没有媒体地址');
+        return { parse: 0, url, header: { Referer: base + path } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 10 ? page + 1 : page,
+        limit: 20, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeHeGuoSource.api });
+};
+
+globalThis.leeHuangJuSource = { key: 'lee_duoju_huangju', name: '多聚短剧 · 黄菊',
+    type: 3, api: '/spider/lee_duoju_huangju/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeHuangJu = async function registerLeeHuangJu(server) {
+    const crypto = require('node:crypto');
+    const domains = ['huangju.net', 'yanyushorttv.cc', 'yanyushorttv.top'];
+    const cats = [['@recommend', '推荐'], ['@new', '最新'], ['@hot', '热门'], ['adult', 'AI成人短剧']];
+    const ua = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36';
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    let domainIndex = 0, token = '', deviceId = crypto.randomUUID();
+    const site = () => `https://${domains[domainIndex]}`;
+    const apiBase = () => `https://api.${domains[domainIndex]}`;
+    async function request(method, route, body, authorized = true) {
+        for (let domainTry = 0; domainTry < domains.length; domainTry++) {
+            try {
+                if (authorized && !token) await guest();
+                for (let authTry = 0; authTry < 2; authTry++) {
+                    const response = await fetch(apiBase() + route, { method,
+                        headers: { 'User-Agent': ua, Accept: 'application/json, text/plain, */*',
+                            Referer: site() + '/', Origin: site(),
+                            ...(body ? { 'Content-Type': 'application/json' } : {}),
+                            ...(authorized ? { Authorization: `Bearer ${token}` } : {}) },
+                        body: body ? JSON.stringify(body) : undefined,
+                        signal: AbortSignal.timeout(20000) });
+                    if ([401, 403].includes(response.status) && authorized && authTry === 0) {
+                        token = ''; await guest(); continue;
+                    }
+                    if (!response.ok) throw new Error(`黄菊 HTTP ${response.status}`);
+                    return { data: await response.json(), cookies: response.headers.get('set-cookie') || '' };
+                }
+            } catch (error) {
+                if (domainTry === domains.length - 1) throw error;
+                domainIndex = (domainIndex + 1) % domains.length; token = '';
+            }
+        }
+        throw new Error('黄菊所有域名不可用');
+    }
+    async function guest() {
+        const response = await fetch(apiBase() + '/auth/guest', { method: 'POST',
+            headers: { 'User-Agent': ua, Accept: 'application/json', Referer: site() + '/',
+                Origin: site(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceId }), signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`黄菊授权 HTTP ${response.status}`);
+        const result = await response.json();
+        token = result.token || result.data?.token || '';
+        if (!token) throw new Error('黄菊未返回访客授权');
+    }
+    const payload = (r) => r?.data && !r?.id && !r?.items && !r?.url ? r.data : r;
+    const cover = (v) => typeof v === 'string' ? v ? new URL(v, site() + '/').href : ''
+        : Array.isArray(v) ? cover(v[0]) : v ? cover(v.url || v.contentUrl || v.thumbnailUrl) : '';
+    function cards(data) {
+        const seen = new Set();
+        return (payload(data)?.items || []).flatMap((r) => {
+            const id = String(r.id || ''), slug = String(r.slug || '');
+            if (!id || !slug || !r.title || seen.has(`${slug}-${id}`)) return [];
+            seen.add(`${slug}-${id}`);
+            return [{ vod_id: `${slug}-${id}`, vod_name: r.title, vod_pic: cover(r.coverUrl),
+                vod_remarks: [r.status === 'completed' ? '完结' : r.status === 'ongoing' ? '连载中' : '',
+                    r.totalEpisodes ? `全${r.totalEpisodes}集` : ''].filter(Boolean).join(' '),
+                vod_class: typeof r.category === 'string' ? r.category : r.category?.name || '',
+                vod_content: r.description || '' }];
+        });
+    }
+    async function listing(cat, page, wd = '') {
+        const query = new URLSearchParams({ page: String(page) });
+        if (wd) query.set('q', wd);
+        else if (cat === '@new') query.set('sort', 'new');
+        else if (cat === '@hot') query.set('sort', 'hot');
+        else if (cat && !['@recommend', 'all'].includes(cat)) query.set('category', cat);
+        return cards((await request('GET', `/dramas?${query}`)).data);
+    }
+    async function detail(id) {
+        if (!/^[^/:?#%]+-[^/:?#%]+$/.test(id)) throw new Error('黄菊剧集 ID 无效');
+        const row = payload((await request('GET', `/dramas/${encodeURIComponent(id)}`)).data) || {};
+        if (!id.endsWith(`-${row.id}`)) throw new Error('黄菊详情与请求不符');
+        const episodes = (row.episodes || []).filter((e) => e?.id && e.playable !== false);
+        if (!episodes.length) return { list: [] };
+        const numbered = episodes.map((e, i) => ({ no: Number(e.epNo) || i + 1, id: e.id }))
+            .sort((a, b) => a.no - b.no);
+        return { list: [{ vod_id: id, vod_name: row.title || id, vod_pic: cover(row.coverUrl),
+            vod_content: row.description || '', vod_remarks: `共${numbered.length}集`,
+            vod_play_from: '黄菊', vod_play_url: numbered.map((e) =>
+                `第${e.no}集$huangju://${encodeURIComponent(e.id)}`).join('#') }] };
+    }
+    async function play(id) {
+        const ep = decodeURIComponent(id.replace(/^huangju:\/\//, ''));
+        if (!ep || /[/:?#%|"<>]/.test(ep)) throw new Error('黄菊分集 ID 无效');
+        const result = await request('GET', `/play/${encodeURIComponent(ep)}`);
+        const row = payload(result.data) || {};
+        const names = ['CloudFront-Policy', 'CloudFront-Signature', 'CloudFront-Key-Pair-Id'];
+        const cookies = names.map((name) => {
+            const found = new RegExp(`(?:^|[,;\\s])${name}=([^;,\\s"']+)`).exec(result.cookies);
+            return found ? `${name}=${found[1]}` : '';
+        });
+        if (cookies.some((c) => !c)) throw new Error('黄菊媒体凭证不完整');
+        if (row.expiresAt && Date.now() / 1000 >= Number(row.expiresAt) / (Number(row.expiresAt) > 1e11 ? 1000 : 1))
+            throw new Error('黄菊媒体凭证已过期');
+        const url = row.url ? new URL(row.url, site() + '/').href : '';
+        if (!/^https?:\/\//.test(url)) throw new Error('黄菊无媒体地址');
+        return { parse: 0, url, header: { Referer: site() + '/', Cookie: cookies.join('; ') } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length === 20 ? page + 1 : page,
+        limit: 20, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('@recommend', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await listing('', pageOf(req.body?.page), one(req.body?.wd)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeHuangJuSource.api });
+};
+
+globalThis.leeXiangJiaoSource = { key: 'lee_duoju_xiangjiao', name: '多聚短剧 · 香蕉',
+    type: 3, api: '/spider/lee_duoju_xiangjiao/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeXiangJiao = async function registerLeeXiangJiao(server) {
+    const crypto = require('node:crypto');
+    const base = 'https://xiangjiaoai.ai';
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)';
+    const cats = [['hot', '精选推荐'], ['theater', '全部剧场'], ['cat:明星换脸', '明星换脸'],
+        ['cat:影视魔改', '影视魔改'], ['cat:动漫游戏', '动漫游戏'], ['cat:穿越重生', '穿越重生'],
+        ['cat:系统异能', '系统异能'], ['cat:仙侠修真', '仙侠修真'], ['cat:古装权谋', '古装权谋']];
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    const deviceId = crypto.randomBytes(16).toString('hex');
+    let token = '', tokenAt = 0, catIds = new Map(), catAt = 0;
+    async function api(method, path, body, auth = '') {
+        const response = await fetch(base + path, { method, headers: {
+            'User-Agent': ua, Accept: 'application/json, text/plain, */*',
+            Origin: base, 'Content-Type': 'application/json',
+            ...(auth ? { Authorization: `Bearer ${auth}` } : {}) },
+            body: body ? JSON.stringify(body) : undefined,
+            signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`香蕉 HTTP ${response.status}`);
+        return response.json();
+    }
+    async function guest() {
+        if (token && Date.now() - tokenAt < 30 * 60 * 1000) return token;
+        const result = await api('POST', '/api/guest-sessions', { device_id: deviceId });
+        token = result.data?.access_token || result.access_token || '';
+        if (!token) throw new Error('香蕉未返回访客令牌');
+        tokenAt = Date.now(); return token;
+    }
+    async function categoryId(name) {
+        if (Date.now() - catAt > 10 * 60 * 1000 || !catIds.size) {
+            const result = await api('GET', '/api/categories');
+            catIds = new Map((result.data || []).filter((r) => r.id && r.name)
+                .map((r) => [r.name, String(r.id)]));
+            catAt = Date.now();
+        }
+        return catIds.get(name) || '';
+    }
+    function card(raw) {
+        const r = raw.drama ? { ...raw.drama, image_url: raw.drama.image_url || raw.image_url } : raw;
+        if (!r?.id || !r?.title) return null;
+        const count = Number(r.episode_count || r.latest_episode_number) || 0;
+        return { vod_id: String(r.id), vod_name: String(r.title),
+            vod_pic: r.cover_url || r.image_url || '',
+            vod_remarks: count ? `${r.serial_status === 'finished' ? '全' : '更新至'}${count}集`
+                : r.serial_status === 'finished' ? '已完结' : '',
+            vod_class: (r.tags || []).slice(0, 4).map((t) => t.name).filter(Boolean).join(','),
+            vod_content: r.description || '' };
+    }
+    const cards = (rows) => (rows || []).map(card).filter(Boolean);
+    async function listing(cat, page) {
+        if (cat === 'hot') return page === 1 ? cards((await api('GET', '/api/home/hot')).data?.items) : [];
+        const query = new URLSearchParams({ limit: String(Math.min(300, page * 30)) });
+        if (cat?.startsWith('cat:')) {
+            const id = await categoryId(cat.slice(4));
+            if (!id) return [];
+            query.set('category_id', id);
+        }
+        const all = cards((await api('GET', `/api/theater?${query}`)).data?.items);
+        return all.slice((page - 1) * 30, page * 30);
+    }
+    async function search(wd, page) {
+        if (!wd) return [];
+        return cards((await api('GET', `/api/search?q=${encodeURIComponent(wd)}&page=${page}`)).data?.items);
+    }
+    async function detail(id) {
+        const info = (await api('GET', `/api/dramas/${encodeURIComponent(id)}`)).data || {};
+        const eps = (await api('GET', `/api/dramas/${encodeURIComponent(id)}/episodes`)).data || [];
+        const seen = new Set(), list = eps.filter((e) => e?.id && !seen.has(e.episode_number)
+            && seen.add(e.episode_number)).sort((a, b) => Number(a.episode_number) - Number(b.episode_number));
+        if (!list.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: info.title || id,
+            vod_pic: info.cover_url || '', vod_content: info.description || '',
+            vod_remarks: `共${list.length}集`, vod_play_from: '香蕉',
+            vod_play_url: list.map((e, i) => `${String(e.title || `第${e.episode_number || i + 1}集`).replace(/[$#]/g, '_')}$xiangjiao://${id}/${e.id}`).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^xiangjiao:\/\/([^/]+)\/([^/]+)$/.exec(id);
+        if (!match) throw new Error('香蕉分集 ID 无效');
+        for (let i = 0; i < 2; i++) {
+            try {
+                const result = await api('POST', '/api/playback/sessions',
+                    { episode_id: match[2] }, await guest());
+                const url = result.data?.media?.manifest_url || '';
+                if (!/^https?:\/\//.test(url)) throw new Error('香蕉未返回媒体地址');
+                return { parse: 0, url, header: { 'User-Agent': ua, Referer: base + '/' } };
+            } catch (error) { token = ''; if (i) throw error; }
+        }
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 30 ? page + 1 : page,
+        limit: 30, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('hot', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeXiangJiaoSource.api });
+};
+
+globalThis.leeMaoGuoSource = { key: 'lee_zhenguo_maoguo', name: '真果鉴 · 猫果',
+    type: 3, api: '/spider/lee_zhenguo_maoguo/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeMaoGuo = async function registerLeeMaoGuo(server) {
+    const crypto = require('node:crypto');
+    const store = 'https://api-store.qmplaylet.com', read = 'https://api-read.qmplaylet.com';
+    const key = 'd3dGiJc651gSQ8w1', track = 'ec1280db127955061754851657967';
+    const sourceChars = '+/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const targetChars = 'PXMUlErYWbdJ9saI0oy_HGitgNA8Fk3hfRqC4pmBOuc6Kx5T-2zSZ1VvjQ7DwnLe';
+    const charMap = new Map([...sourceChars].map((c, i) => [c, targetChars[i]]));
+    const md5 = (s) => crypto.createHash('md5').update(s).digest('hex');
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    function headers() {
+        const payload = { static_score: '0.8', uuid: '00000000-7fc7-08dc-0000-000000000000',
+            'device-id': '20250220125449b9b8cac84c2dd3d035c9052a2572f7dd0122edde3cc42a70',
+            mac: '', sourceuid: 'aa7de295aad621a6', 'refresh-type': '0', model: '22021211RC',
+            'wlb-imei': '', 'client-id': 'aa7de295aad621a6', brand: 'Redmi', oaid: '',
+            'oaid-no-cache': '', 'sys-ver': '12', 'trusted-id': '', 'phone-level': 'H',
+            imei: '', 'wlb-uid': 'aa7de295aad621a6', 'session-id': String(Date.now()) };
+        const qm = [...Buffer.from(JSON.stringify(payload)).toString('base64')]
+            .map((c) => charMap.get(c) || c).join('');
+        const sign = md5('AUTHORIZATION=app-version=10001application-id=com.duoduo.read'
+            + 'channel=unknownis-white=net-env=5platform=androidqm-params=' + qm + 'reg=' + key);
+        return { 'net-env': '5', reg: '', channel: 'unknown', 'is-white': '', platform: 'android',
+            'application-id': 'com.duoduo.read', authorization: '', 'app-version': '10001',
+            'User-Agent': 'webviewversion/0', 'qm-params': qm, sign, Accept: 'application/json',
+            'X-Requested-With': 'com.duoduo.read' };
+    }
+    async function api(base, path, signed) {
+        const url = base + path + (path.includes('?') ? '&' : '?') + 'sign=' + md5(signed + key);
+        const response = await fetch(url, { headers: headers(), signal: AbortSignal.timeout(15000) });
+        if (!response.ok) throw new Error(`猫果 HTTP ${response.status}`);
+        return response.json();
+    }
+    const pick = (r, keys) => keys.map((k) => r?.[k]).find((v) => v !== undefined && v !== null && v !== '') || '';
+    function card(r) {
+        const id = pick(r, ['playlet_id', 'playletId', 'id']);
+        if (!id) return null;
+        const count = Number(pick(r, ['total_episode_num', 'totalEpisodeNum', 'total'])) || 0;
+        return { vod_id: String(id), vod_name: String(pick(r, ['title', 'playlet_name', 'name']) || id),
+            vod_pic: pick(r, ['image_link', 'imageLink', 'cover', 'cover_url']),
+            vod_remarks: count ? `全${count}集` : '',
+            vod_content: pick(r, ['intro', 'description', 'desc']) };
+    }
+    const cards = (rows) => (rows || []).map(card).filter(Boolean);
+    async function categories() {
+        let result;
+        try { result = await api(store, '/api/v1/playlet/tag/list?operation=1', 'operation=1'); }
+        catch { return [{ type_id: '0', type_name: '推荐' }]; }
+        const found = (result.data?.list || []).map((r) => ({
+            type_id: String(pick(r, ['tag_id', 'id'])),
+            type_name: String(pick(r, ['tag_name', 'name', 'title'])) }))
+            .filter((r) => r.type_id && r.type_name);
+        return found.length ? found.slice(0, 24) : [{ type_id: '0', type_name: '推荐' }];
+    }
+    async function listing(cat, page) {
+        const id = /^\d+$/.test(cat) ? cat : '0';
+        const suffix = page > 1 ? `&next_id=${page}` : '';
+        const path = `/api/v1/playlet/index?tag_id=${id}&playlet_privacy=1&operation=1${suffix}`;
+        const sign = (page > 1 ? `next_id=${page}` : '') + `operation=1playlet_privacy=1tag_id=${id}`;
+        return cards((await api(store, path, sign)).data?.list);
+    }
+    async function search(wd) {
+        if (!wd) return [];
+        const sign = `extend=page=1read_preference=0track_id=${track}wd=${wd}`;
+        const path = `/api/v1/playlet/search?extend=&page=1&wd=${encodeURIComponent(wd)}`
+            + `&read_preference=0&track_id=${track}`;
+        return cards((await api(store, path, sign)).data?.list);
+    }
+    async function detail(id) {
+        const data = (await api(read, `/player/api/v1/playlet/info?playlet_id=${encodeURIComponent(id)}`,
+            `playlet_id=${id}`)).data || {};
+        const eps = (data.play_list || []).filter((e) => pick(e, ['video_url', 'videoUrl', 'url']));
+        if (!eps.length) return { list: [] };
+        eps.sort((a, b) => Number(pick(a, ['sort', 'episode', 'index']))
+            - Number(pick(b, ['sort', 'episode', 'index'])));
+        const vod = card({ ...data, playlet_id: id }) || { vod_id: id, vod_name: id };
+        return { list: [{ ...vod, vod_remarks: `全${eps.length}集`, vod_play_from: '猫果',
+            vod_play_url: eps.map((e, i) => {
+                const no = Number(pick(e, ['sort', 'episode', 'index'])) || i + 1;
+                const name = String(pick(e, ['title', 'name']) || `第${no}集`).replace(/[$#]/g, '_');
+                return `${name}$maoguo://${encodeURIComponent(pick(e, ['video_url', 'videoUrl', 'url']))}`;
+            }).join('#') }] };
+    }
+    function play(id) {
+        const url = decodeURIComponent(id.replace(/^maoguo:\/\//, ''));
+        if (!/^https?:\/\//.test(url)) throw new Error('猫果分集地址无效');
+        return { parse: 0, url, header: {} };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 63, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: await categories(), list: await listing('0', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeMaoGuoSource.api });
+};
+
+globalThis.leeHuangDou2Source = { key: 'lee_duoju_huangdou2', name: '多聚短剧 · 黄豆2',
+    type: 3, api: '/spider/lee_duoju_huangdou2/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeHuangDou2 = async function registerLeeHuangDou2(server) {
+    const base = 'https://aihuangdou.com', ua = 'Mozilla/5.0 (Linux; Android 13)';
+    const cats = [['home', '首页'], ['ai-duanju', 'AI短剧'], ['ai-manju', 'AI漫剧'],
+        ['rankings', '榜单']];
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    const clean = (s) => String(s || '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
+    const abs = (s) => s?.startsWith('http') ? s : s ? new URL(s, base).href : '';
+    async function get(path) {
+        const response = await fetch(base + path, { headers: { 'User-Agent': ua, Referer: base + '/',
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+        signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`黄豆2 HTTP ${response.status}`);
+        return response.text();
+    }
+    function cards(html, cat) {
+        const starts = [...html.matchAll(/<(?:article|li|div)\s+class="[^"]*(?:drama-card|rank-runner|rank-row)(?:"|\s)/gi)];
+        const seen = new Set();
+        return starts.flatMap((start, i) => {
+            const block = html.slice(start.index, starts[i + 1]?.index ?? html.length);
+            const link = /href="(?:https?:\/\/[^/"]+)?(\/drama\/\d+\/)"/i.exec(block);
+            if (!link) return [];
+            const id = link[1].replace(/^\/|\/$/g, '');
+            if (seen.has(id)) return [];
+            const title = clean(/data-track-item-name="([^"]+)"/i.exec(block)?.[1]
+                || /<h[23][^>]*>([\s\S]*?)<\/h[23]>/i.exec(block)?.[1]
+                || /\balt="([^"]+)"/i.exec(block)?.[1]);
+            if (!title) return [];
+            seen.add(id);
+            const image = /\b(?:data-src|data-original|data-lazy-src|src)="([^" ]+)"/i.exec(block)?.[1] || '';
+            const cover = /^(data:|.*placeholder|.*loading)/i.test(image) ? '' : abs(image);
+            const remark = clean(/class="eps-flag"[^>]*>([\s\S]*?)<\/span>/i.exec(block)?.[1]);
+            const score = clean(/class="card-score"[^>]*>([\s\S]*?)<\/em>/i.exec(block)?.[1]);
+            return [{ vod_id: id, vod_name: title, vod_pic: cover,
+                vod_remarks: [score ? `评分${score}` : '', remark].filter(Boolean).join(' · '),
+                vod_class: cat }];
+        });
+    }
+    async function listing(cat, page) {
+        const root = cat === 'home' ? '/' : `/${cat || 'home'}/`;
+        const path = page === 1 ? root : `${root.replace(/\/$/, '')}/${page}/`;
+        return cards(await get(path), cats.find(([id]) => id === cat)?.[1] || '');
+    }
+    async function search(wd, page) {
+        if (!wd) return [];
+        return cards(await get(`/search/?q=${encodeURIComponent(wd)}${page > 1 ? `&page=${page}` : ''}`), '');
+    }
+    async function detail(id) {
+        if (!/^drama\/\d+$/.test(id)) throw new Error('黄豆2 剧集 ID 无效');
+        const html = await get(`/${id}/`);
+        const title = clean(/<h1[^>]*>([\s\S]*?)<\/h1>/i.exec(html)?.[1]) || id;
+        const total = Number(/data-total="(\d+)"/i.exec(html)?.[1] || 0);
+        const numbered = total > 0 && total <= 2000 ? Array.from({ length: total }, (_, i) => i + 1)
+            : [...new Set([...html.matchAll(/title="第\s*(\d+)\s*集"/gi)].map((m) => Number(m[1])))];
+        if (!numbered.length && /href="[^"]*\/video\/\d+\//i.test(html)) numbered.push(1);
+        if (!numbered.length) return { list: [] };
+        const desc = clean(/<meta[^>]*name="description"[^>]*content="([^"]*)"/i.exec(html)?.[1]);
+        const pic = /\b(?:data-src|data-original|src)="(https?:\/\/pic\.[^"]+)"/i.exec(html)?.[1] || '';
+        return { list: [{ vod_id: id, vod_name: title, vod_pic: pic, vod_content: desc,
+            vod_remarks: `共${numbered.length}集`, vod_play_from: '黄豆2',
+            vod_play_url: numbered.map((no) => `第${no}集$huangdou2://${id}/${no}`).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^huangdou2:\/\/(drama\/\d+)\/(\d+)$/.exec(id);
+        if (!match) throw new Error('黄豆2 分集 ID 无效');
+        const leaf = match[1].split('/').pop(), seq = Number(match[2]);
+        const html = await get(`/video/${leaf}/${seq > 1 ? `${seq}/` : ''}`);
+        const raw = /<script[^>]*id="ninePlayData"[^>]*>([\s\S]*?)<\/script>/i.exec(html)?.[1];
+        if (!raw) throw new Error('黄豆2 播放数据缺失');
+        const data = JSON.parse(raw), ep = data.current || data.episode || {};
+        const url = ep.src || ep.videoUrl || ep.playUrl || ep.url ||
+            (String(ep.srcHevc || '').includes('.m3u8') ? ep.srcHevc : '');
+        if (!/^https?:\/\//.test(url)) throw new Error('黄豆2 播放地址无效');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: base + '/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 30, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('home', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeHuangDou2Source.api });
+};
+
+globalThis.leeNuxtHtmlSources = [
+    { key: 'lee_duoju_chengguo', name: '多聚短剧 · 橙果', api: '/spider/lee_duoju_chengguo/3' },
+    { key: 'lee_duoju_huanggua', name: '多聚短剧 · 黄瓜', api: '/spider/lee_duoju_huanggua/3' },
+].map((r) => ({ ...r, type: 3, searchable: 1, quickSearch: 0, filterable: 0 }));
+
+globalThis.registerLeeNuxtHtml = async function registerLeeNuxtHtml(server) {
+    const configs = [
+        { source: globalThis.leeNuxtHtmlSources[0], base: 'https://chengguodj.com',
+            scheme: 'chengguo://', cats: [['yuanchuang', '原创', '/yuanchuang'],
+                ['mogai', '魔改', '/mogai'], ['manju', '漫剧', '/manju'],
+                ['zhenren', '真人', '/zhenren'], ['aiduanju', 'AI短剧', '/aiduanju'],
+                ['browse', '全部', '/browse']] },
+        { source: globalThis.leeNuxtHtmlSources[1], base: 'https://hgdju4.com',
+            scheme: 'huanggua://', cats: [['recommend', '推荐', '/'],
+                ['yuanchuang', '原创', '/yuanchuang'], ['mogai', '魔改', '/mogai'],
+                ['manju', 'AI漫剧', '/manju'], ['zhenren', '真人短剧', '/zhenren'],
+                ['aiduanju', 'AI短剧', '/aiduanju'], ['browse', '全部', '/browse'],
+                ['browse-new', '最新', '/browse?sort=new']] },
+    ];
+    const ua = 'Mozilla/5.0';
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    const clean = (s) => String(s || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+    for (const config of configs) {
+        let host = config.source.key.endsWith('huanggua') ? '' : config.base;
+        async function raw(url) {
+            const response = await fetch(url, { headers: { 'User-Agent': ua, Referer: url },
+                signal: AbortSignal.timeout(15000) });
+            if (!response.ok) throw new Error(`${config.source.name} HTTP ${response.status}`);
+            return response.text();
+        }
+        async function discover() {
+            if (host) return host;
+            const landing = await raw(config.base + '/');
+            const mirrors = [...new Set([...landing.matchAll(/https?:\/\/[a-z0-9-]{2,24}\.[a-z0-9]{5,20}\.cc/gi)]
+                .map((m) => m[0]))].filter((url) => !url.includes('hgdju'));
+            for (const candidate of mirrors) {
+                try {
+                    const html = await raw(candidate + '/');
+                    if (html.includes('data-xpch="card-drama"')) { host = candidate; return host; }
+                } catch { /* 继续检查下一个镜像。 */ }
+            }
+            throw new Error('黄瓜没有可用镜像');
+        }
+        async function get(path) {
+            const base = await discover();
+            try { return await raw(base + path); }
+            catch (error) {
+                if (base === config.base) throw error;
+                host = ''; const next = await discover();
+                return raw(next + path);
+            }
+        }
+        const abs = (s) => s?.startsWith('http') ? s : s ? new URL(s, host || config.base).href : '';
+        function cards(html, category) {
+            const blocks = [...html.matchAll(/<article\b[^>]*data-xpch="card-drama"[^>]*>[\s\S]*?<\/article>/gi)];
+            const seen = new Set();
+            return blocks.flatMap(([block]) => {
+                const link = /href="\/drama\/([A-Za-z0-9-]+)"/i.exec(block);
+                const name = clean(/<img[^>]*\balt="([^"]+)"/i.exec(block)?.[1]);
+                if (!link || !name || seen.has(link[1])) return [];
+                seen.add(link[1]);
+                const pic = /<img[^>]*\b(?:z-image-loader-url|data-cover-fb|data-src|src)="([^"]+)"/i.exec(block)?.[1] || '';
+                const mark = /(?:更新至|共|全)\s*\d+\s*集/.exec(clean(block))?.[0] || '';
+                return [{ vod_id: link[1], vod_name: name, vod_pic: abs(pic),
+                    vod_remarks: mark, vod_class: category }];
+            });
+        }
+        async function listing(cat, page) {
+            const entry = config.cats.find(([id]) => id === cat) || config.cats[0];
+            const path = entry[2] + (page > 1 ? `${entry[2].includes('?') ? '&' : '?'}page=${page}` : '');
+            return cards(await get(path), entry[1]);
+        }
+        async function search(wd, page) {
+            if (!wd) return [];
+            const path = `/search?q=${encodeURIComponent(wd)}${page > 1 ? `&page=${page}` : ''}`;
+            return cards(await get(path), '');
+        }
+        async function detail(id) {
+            if (!/^[A-Za-z0-9-]{1,64}$/.test(id)) throw new Error('短剧 ID 无效');
+            const html = await get(`/drama/${encodeURIComponent(id)}`);
+            const title = clean(/<h1[^>]*>([\s\S]*?)<\/h1>/i.exec(html)?.[1]) || id;
+            const desc = clean(/<meta[^>]*name="description"[^>]*content="([^"]*)"/i.exec(html)?.[1]);
+            const pic = abs(/\b(?:z-image-loader-url|data-cover-fb|data-src|src)="([^"]+)"/i.exec(html)?.[1]);
+            const episodes = [...new Set([...html.matchAll(new RegExp(`href="/play/${id}/(\\d+)"`, 'gi'))]
+                .map((m) => Number(m[1])))].sort((a, b) => a - b);
+            if (!episodes.length) return { list: [] };
+            return { list: [{ vod_id: id, vod_name: title, vod_pic: pic, vod_content: desc,
+                vod_remarks: `共${episodes.length}集`, vod_play_from: config.source.name.split(' · ')[1],
+                vod_play_url: episodes.map((no) => `第${no}集$${config.scheme}${id}/${no}`).join('#') }] };
+        }
+        async function play(id) {
+            const match = new RegExp(`^${config.scheme.replace('://', ':\\/\\/')}([A-Za-z0-9-]+)/(\\d+)$`).exec(id);
+            if (!match) throw new Error('分集 ID 无效');
+            const html = (await get(`/play/${match[1]}/${match[2]}`))
+                .replace(/\\u0026/g, '&').replace(/\\u002F/g, '/').replace(/\\\//g, '/');
+            const url = /https?:\/\/[^\s"'<>\\]{10,200}\.m3u8[^\s"'<>\\]{0,300}/i.exec(html)?.[0]
+                ?.replace(/&amp;/g, '&') || '';
+            if (!/^https?:\/\//.test(url)) throw new Error('播放页没有 HLS 地址');
+            return { parse: 0, url, header: { 'User-Agent': ua, Referer: (host || config.base) + '/' } };
+        }
+        const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+            limit: 24, total: list.length });
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => ({ class: config.cats.map(([type_id, type_name]) =>
+                ({ type_id, type_name })), list: await listing(config.cats[0][0], 1) }));
+            fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+            fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+            fastify.post('/play', async (req) => play(one(req.body?.id)));
+        }, { prefix: config.source.api });
+    }
+};
+
+globalThis.leeDj51Source = { key: 'lee_duoju_dj51', name: '多聚短剧 · 51短剧',
+    type: 3, api: '/spider/lee_duoju_dj51/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeDj51 = async function registerLeeDj51(server) {
+    const base = 'https://arab.bqdikpcrx.cc', ua = 'Mozilla/5.0 (Linux; Android 13)';
+    const cats = [['rank', '总榜', '/rank/']];
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    const clean = (s) => String(s || '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim();
+    async function get(path) {
+        const response = await fetch(base + path, { headers: { 'User-Agent': ua, Referer: base + '/' },
+            signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`51短剧 HTTP ${response.status}`);
+        return response.text();
+    }
+    function rows(html) {
+        const raw = /<script[^>]*id="__NUXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i.exec(html)?.[1];
+        try { return raw ? JSON.parse(raw) : []; } catch { return []; }
+    }
+    function resolve(table, value, depth = 0) {
+        if (depth > 24) return null;
+        if (Number.isInteger(value)) return value >= 0 && value < table.length
+            ? resolve(table, table[value], depth + 1) : value;
+        if (Array.isArray(value) && value.length === 2 &&
+            ['Reactive', 'ShallowReactive', 'Ref', 'ShallowRef', 'EmptyRef', 'EmptyShallowRef'].includes(value[0]))
+            return resolve(table, value[1], depth + 1);
+        return value;
+    }
+    const field = (table, obj, keys) => keys.map((k) => resolve(table, obj?.[k]))
+        .find((v) => v !== undefined && v !== null && v !== '') ?? '';
+    function cards(html, cls) {
+        const pattern = /<a\b[^>]*href="\/play\/(\d+)\/1\/"[^>]*>/gi;
+        const seen = new Set(), found = [];
+        for (const match of html.matchAll(pattern)) {
+            const id = match[1]; if (seen.has(id)) continue;
+            const near = html.slice(Math.max(0, match.index - 1200), match.index + 1200);
+            const label = clean(/aria-label="([^"]+)"/i.exec(match[0])?.[1]);
+            const alt = clean(/\balt="([^"]+)"/i.exec(near)?.[1]);
+            const title = label && !label.includes('播放') ? label : alt;
+            if (!title || title === 'logo') continue;
+            seen.add(id);
+            const image = /(?:data-src|src)="(\/_img\/[^" ]+|https?:\/\/[^" ]*pic[^" ]*)"/i.exec(near)?.[1] || '';
+            found.push({ vod_id: id, vod_name: title, vod_pic: image ? new URL(image, base).href : '',
+                vod_remarks: '', vod_class: cls });
+        }
+        return found;
+    }
+    async function listing(cat, page) {
+        const entry = cats.find(([id]) => id === cat) || cats[0];
+        const path = page > 1 ? `${entry[2].replace(/\/$/, '')}/page/${page}/` : entry[2];
+        return cards(await get(encodeURI(path)), entry[1]);
+    }
+    async function search(wd, page) {
+        if (!wd) return [];
+        const html = await get(`/search/?keyword=${encodeURIComponent(wd)}${page > 1 ? `&page=${page}` : ''}`);
+        const hits = cards(html, '51短剧').filter((v) => v.vod_name.toLowerCase().includes(wd.toLowerCase()));
+        if (hits.length) return hits;
+        const lists = [await listing('rank', 1)];
+        const seen = new Set();
+        return lists.flat().filter((v) => v.vod_name.toLowerCase().includes(wd.toLowerCase())
+            && !seen.has(v.vod_id) && seen.add(v.vod_id));
+    }
+    async function detail(id) {
+        if (!/^\d+$/.test(id)) throw new Error('51短剧 ID 无效');
+        let html;
+        try { html = await get(`/play/${id}/1/`); }
+        catch { return { list: [] }; }
+        const table = rows(html);
+        const info = table.find((r) => r && typeof r === 'object' && !Array.isArray(r) &&
+            'drama_name' in r) || {};
+        const episodes = new Map();
+        for (const entry of table) {
+            if (!entry || typeof entry !== 'object' || Array.isArray(entry) || !('episode_title' in entry)) continue;
+            const no = Number(field(table, entry, ['sort']));
+            if (no > 0 && !episodes.has(no)) episodes.set(no, String(field(table, entry, ['episode_title']) || `第${no}集`));
+        }
+        if (!episodes.size) return { list: [] };
+        const sorted = [...episodes].sort((a, b) => a[0] - b[0]);
+        return { list: [{ vod_id: id, vod_name: String(field(table, info, ['drama_name', 'video_title']) || id),
+            vod_pic: String(field(table, info, ['cover_img', 'cover']) || ''),
+            vod_content: String(field(table, info, ['description']) || ''),
+            vod_remarks: `共${sorted.length}集`, vod_play_from: '51短剧',
+            vod_play_url: sorted.map(([no, title]) =>
+                `${title.replace(/[$#]/g, '_')}$dj51://${id}/${no}`).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^dj51:\/\/(\d+)\/(\d+)$/.exec(id);
+        if (!match) throw new Error('51短剧分集 ID 无效');
+        const html = (await get(`/play/${match[1]}/${match[2]}/`))
+            .replace(/\\u0026/g, '&').replace(/\\\//g, '/');
+        let media = '';
+        const table = rows(html);
+        for (const entry of table) {
+            if (!entry || typeof entry !== 'object' || Array.isArray(entry) || !('episode_title' in entry)) continue;
+            if (Number(field(table, entry, ['sort'])) === Number(match[2])) {
+                const candidate = String(field(table, entry, ['video_url']) || '');
+                if (candidate.includes('.m3u8')) { media = candidate; break; }
+            }
+        }
+        if (!media) media = /https?:\/\/[^\s"'<>\\]{10,200}\.m3u8[^\s"'<>\\]{0,200}/i.exec(html)?.[0] || '';
+        if (!/^https?:\/\//.test(media)) throw new Error('51短剧无媒体地址');
+        return { parse: 0, url: media, header: { 'User-Agent': ua, Referer: base + '/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 20, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('rank', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeDj51Source.api });
+};
+
+globalThis.leeMd2048Source = { key: 'lee_duoju_md2048', name: '多聚短剧 · 2048',
+    type: 3, api: '/spider/lee_duoju_md2048/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeMd2048 = async function registerLeeMd2048(server) {
+    const domains = ['https://2048ai.vip', 'https://mdcmai4.xyz',
+        'https://2048ai.xyz', 'https://mdcmai5.xyz'];
+    const cats = [['cat-29', 'AI短剧'], ['cat-6', '麻豆原创AI'], ['cat-9', '麻豆传媒'],
+        ['cat-13', '清纯少女'], ['cat-2', 'AV中文字幕'], ['cat-1', '国产自拍'],
+        ['cat-4', '探花大神'], ['cat-7', '91大神'], ['cat-14', '重口调教'],
+        ['cat-22', '白虎嫩妹'], ['cat-23', '家庭乱伦'], ['cat-19', '黑料吃瓜'],
+        ['posts', '吃瓜图文'], ['all', '全部视频']];
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)';
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    let current = domains[0];
+    async function api(path) {
+        let failure;
+        for (const domain of [current, ...domains.filter((d) => d !== current)]) {
+            try {
+                const response = await fetch(domain + '/api/v1' + path, { headers: {
+                    'User-Agent': ua, Accept: 'application/json, text/plain, */*',
+                    Origin: domain, Referer: domain + '/' }, signal: AbortSignal.timeout(20000) });
+                if (!response.ok) throw new Error(`2048 HTTP ${response.status}`);
+                const result = await response.json();
+                if (result.code !== 200) throw new Error(`2048 接口错误 ${result.code}`);
+                current = domain; return result.data || {};
+            } catch (error) { failure = error; }
+        }
+        throw failure;
+    }
+    const abs = (v) => v?.startsWith('http') ? v : v ? new URL(v, current).href : '';
+    function card(kind, row) {
+        if (!/^\d+$/.test(String(row.id || '')) || !row.title) return null;
+        const seconds = Number(row.durationSec) || 0, views = Number(row.viewCount) || 0;
+        const remarks = [seconds > 0 ? `${Math.floor(seconds / 60)}分${seconds % 60}秒` : '',
+            views > 0 ? `${views}次播放` : '', row.authorName || ''].filter(Boolean).join(' · ');
+        return { vod_id: `${kind}-${row.id}`, vod_name: row.title,
+            vod_pic: abs(row.coverUrl || row.cover), vod_remarks: remarks,
+            vod_class: row.categoryName || '', vod_content: row.description || row.content || '' };
+    }
+    async function listing(cat, page) {
+        const path = cat === 'posts' ? `/posts?page=${page}&size=24`
+            : `/videos?${cat?.startsWith('cat-') ? `categoryId=${cat.slice(4)}&` : ''}page=${page}&size=24`;
+        const kind = cat === 'posts' ? 'posts' : 'videos';
+        return (await api(path)).items?.map((r) => card(kind, r)).filter(Boolean) || [];
+    }
+    async function search(wd, page) {
+        if (!wd) return [];
+        const pages = Math.min(5, Math.max(3, page * 2));
+        const tasks = ['cat-29', 'all'].flatMap((cat) =>
+            Array.from({ length: pages }, (_, i) => listing(cat, i + 1)));
+        const settled = await Promise.allSettled(tasks);
+        if (settled.every((entry) => entry.status === 'rejected')) throw settled[0].reason;
+        const seen = new Set(), matches = [];
+        for (const entry of settled) if (entry.status === 'fulfilled') {
+            for (const row of entry.value) {
+                if (row.vod_name.toLowerCase().includes(wd.toLowerCase()) && !seen.has(row.vod_id)) {
+                    seen.add(row.vod_id); matches.push(row);
+                }
+            }
+        }
+        return matches.slice((page - 1) * 24, page * 24);
+    }
+    async function detail(id) {
+        const match = /^(videos|posts)-(\d+)$/.exec(id);
+        if (!match) throw new Error('2048 影片 ID 无效');
+        const row = await api(`/${match[1]}/${match[2]}`);
+        const vod = card(match[1], row);
+        if (!vod) return { list: [] };
+        return { list: [{ ...vod, vod_play_from: '2048',
+            vod_play_url: `播放$md2048://${id}/1` }] };
+    }
+    async function play(id) {
+        const match = /^md2048:\/\/(videos|posts)-(\d+)\/1$/.exec(id);
+        if (!match) throw new Error('2048 播放 ID 无效');
+        const row = await api(`/${match[1]}/${match[2]}`);
+        const source = row.videoUrl || row.playUrl || row.url || '';
+        if (!source) throw new Error('2048 没有视频源');
+        return { parse: 0, url: `${current}/api/v1/m3u8/proxy?path=${encodeURIComponent(source)}`,
+            header: { 'User-Agent': ua, Referer: current + '/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 24 ? page + 1 : page,
+        limit: 24, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('cat-29', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeMd2048Source.api });
+};
+
+globalThis.leeDj91Source = { key: 'lee_duoju_dj91', name: '多聚短剧 · 91',
+    type: 3, api: '/spider/lee_duoju_dj91/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeDj91 = async function registerLeeDj91(server) {
+    const domains = ['https://91crdj.com', 'https://0303.lwbcbync.cc', 'https://j6bmio.lwbcbync.cc'];
+    const cats = [['duanju', '短剧'], ['manju', '漫剧'], ['zhenrenju', '真人剧'],
+        ['shipin', '视频'], ['paihang', '排行'], ['biaoqian:aiduanju', 'AI短剧']];
+    const ua = 'Mozilla/5.0 (Linux; Android 13)';
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    const clean = (s) => String(s || '').replace(/<[^>]*>/g, ' ').replace(/&amp;/g, '&')
+        .replace(/\s+/g, ' ').trim();
+    let current = domains[0];
+    async function get(path) {
+        let failure;
+        for (const domain of [current, ...domains.filter((d) => d !== current)]) {
+            try {
+                const response = await fetch(domain + path, { headers: {
+                    'User-Agent': ua, Referer: domain + '/' }, signal: AbortSignal.timeout(20000) });
+                if (!response.ok) throw new Error(`91 HTTP ${response.status}`);
+                current = domain; return response.text();
+            } catch (error) { failure = error; }
+        }
+        throw failure;
+    }
+    const abs = (s) => s?.startsWith('http') ? s : s ? new URL(s, current).href : '';
+    function cards(html, cat) {
+        const starts = [...html.matchAll(/<a\s+class="[^"]*\bcard\b[^"]*"/gi)];
+        const seen = new Set();
+        return starts.flatMap((start, i) => {
+            const block = html.slice(start.index, starts[i + 1]?.index ?? html.length);
+            const link = /href="(?:https?:\/\/[^/"]+)?(\/(?:duanju|manju|zhenrenju|shipin|paihang)\/\d+-[^"/]+\/)"/i.exec(block);
+            if (!link) return [];
+            const id = link[1].replace(/^\/|\/$/g, ''); if (seen.has(id)) return [];
+            const rawName = /data-track-item-name="([^"]+)"/i.exec(block)?.[1]
+                || /\balt="([^"]+)"/i.exec(block)?.[1]
+                || /<h[23][^>]*>([\s\S]*?)<\/h[23]>/i.exec(block)?.[1];
+            const name = clean(rawName).replace(/^《|》$|封面$/g, '');
+            if (!name) return [];
+            seen.add(id);
+            const pic = /\b(?:data-src|data-original|data-lazy-src|src)="([^" ]+)"/i.exec(block)?.[1] || '';
+            const mark = clean(/class="eps-flag"[^>]*>([\s\S]*?)<\/span>/i.exec(block)?.[1]);
+            return [{ vod_id: id, vod_name: name, vod_pic: /^(data:|.*placeholder)/i.test(pic) ? '' : abs(pic),
+                vod_remarks: mark, vod_class: cat }];
+        });
+    }
+    async function listing(cat, page) {
+        const entry = cats.find(([id]) => id === cat) || cats[0];
+        const root = entry[0].startsWith('biaoqian:') ? `/biaoqian/${encodeURIComponent(entry[0].slice(9))}/`
+            : `/${entry[0]}/`;
+        const path = page === 1 ? root : `${root.replace(/\/$/, '')}/page/${page}/`;
+        return cards(await get(path), entry[1]);
+    }
+    async function search(wd, page) {
+        if (!wd) return [];
+        return cards(await get(`/search/?q=${encodeURIComponent(wd)}${page > 1 ? `&page=${page}` : ''}`), '');
+    }
+    async function detail(id) {
+        if (!/^(duanju|manju|zhenrenju|shipin|paihang)\/\d+-[^/]+$/.test(id))
+            throw new Error('91 剧集 ID 无效');
+        const html = await get(`/${id}/`);
+        const total = Number(/data-total="(\d+)"/i.exec(html)?.[1] || 0);
+        let episodes = total > 0 && total <= 2000 ? Array.from({ length: total }, (_, i) => i + 1)
+            : [...new Set([...html.matchAll(/title="第\s*(\d+)\s*集"/gi)].map((m) => Number(m[1])))];
+        if (!episodes.length) episodes = [...new Set([...html.matchAll(new RegExp(`href="(?:https?:\\/\\/[^/" ]+)?\\/${id}\\/(\\d+)\\/"`, 'gi'))]
+            .map((m) => Number(m[1])))];
+        if (!episodes.length) return { list: [] };
+        episodes.sort((a, b) => a - b);
+        const title = clean(/<h1[^>]*>([\s\S]*?)<\/h1>/i.exec(html)?.[1]) || id;
+        const desc = clean(/<meta[^>]*name="description"[^>]*content="([^"]*)"/i.exec(html)?.[1]);
+        return { list: [{ vod_id: id, vod_name: title, vod_content: desc,
+            vod_remarks: `共${episodes.length}集`, vod_play_from: '91',
+            vod_play_url: episodes.map((no) => `第${no}集$dj91://${id}/${no}`).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^dj91:\/\/((?:duanju|manju|zhenrenju|shipin|paihang)\/\d+-[^/]+)\/(\d+)$/.exec(id);
+        if (!match) throw new Error('91 分集 ID 无效');
+        const html = await get(`/${match[1]}/${match[2]}/`);
+        const raw = /<script[^>]*id="playInitialData"[^>]*>([\s\S]*?)<\/script>/i.exec(html)?.[1];
+        if (!raw) throw new Error('91 播放数据缺失');
+        const data = JSON.parse(raw), ep = data.current || data.episode || {};
+        const url = ep.src || ep.videoUrl || ep.playUrl || ep.url ||
+            (String(ep.srcHevc || '').includes('.m3u8') ? ep.srcHevc : '');
+        if (!/^https?:\/\//.test(url)) throw new Error('91 播放地址无效');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: current + '/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 24, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing('duanju', 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeDj91Source.api });
+};
+
+globalThis.leeKuangBiaoSource = { key: 'lee_duoju_kuangbiao', name: '多聚短剧 · 狂飙',
+    type: 3, api: '/spider/lee_duoju_kuangbiao/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeKuangBiao = async function registerLeeKuangBiao(server) {
+    const base = 'https://ai.dramarush.tv', ua = 'Mozilla/5.0 (Linux; Android 12; Mobile)';
+    const cats = [['t-5jxcit', '短剧'], ['normal_short', '正规短剧'], ['adult_short', '成人短剧']];
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.min(6, Math.max(1, Number.parseInt(v, 10) || 1));
+    async function trpc(name, data) {
+        const url = `${base}/api/trpc/${name}?input=${encodeURIComponent(JSON.stringify({ json: data }))}`;
+        const response = await fetch(url, { headers: { 'User-Agent': ua, Referer: base + '/zh/',
+            Accept: 'application/json, text/plain, */*' }, signal: AbortSignal.timeout(20000) });
+        if (!response.ok) throw new Error(`狂飙 HTTP ${response.status}`);
+        return (await response.json())?.result?.data?.json || {};
+    }
+    const drama = (item) => item?.drama || item || {};
+    const card = (item, cat) => {
+        const d = drama(item), id = String(d.id || ''), title = String(d.title || '').trim();
+        if (!id || !title) return null;
+        const pic = String(d.cover || d.poster || '').replace('cdn.shorttv.online/lsj/', 'raw.shorttv.online/lsj/');
+        return { vod_id: id, vod_name: title, vod_pic: pic,
+            vod_remarks: d.totalEpisodes ? `${d.totalEpisodes}集` : '', vod_class: cat,
+            vod_content: String(d.description || '') };
+    };
+    const spec = (cat) => cat === 'normal_short' ? { contentKind: 'SHORT_DRAMA' }
+        : cat === 'adult_short' ? { tagSlug: 'adult' } : { categorySlug: 't-5jxcit' };
+    async function listing(cat, page) {
+        let cursor = '', data = {}, catName = cats.find(([id]) => id === cat)?.[1] || cats[0][1];
+        for (let i = 1; i <= page; i++) {
+            data = await trpc('feed.browse', { limit: 12, ...spec(cat), ...(cursor ? { cursor } : {}) });
+            cursor = String(data.nextCursor || '');
+            if (!cursor && i < page) return [];
+        }
+        return (data.items || []).map((item) => card(item, catName)).filter(Boolean);
+    }
+    async function detail(id) {
+        if (!/^[a-z0-9-]{8,80}$/i.test(id)) throw new Error('狂飙剧集 ID 无效');
+        const body = await trpc('episode.watch', { dramaId: id, episodeNumber: 1 });
+        const d = body.drama || {};
+        const episodes = (body.episodes || []).filter((ep) => ep?.index > 0 && ep?.id &&
+            !ep.locked && !ep.unavailable && (ep.isFree || ep.accessState === 'FREE'));
+        if (!episodes.length) return { list: [] };
+        const total = Math.min(80, Math.max(Number(d.totalEpisodes) || 0, episodes.length));
+        const play = episodes.filter((ep) => Number(ep.index) <= 80)
+            .map((ep) => `第${ep.index}集$kuangbiao://${id}/${ep.index}`).join('#');
+        return { list: [{ vod_id: id, vod_name: d.title || id, vod_pic: d.cover || d.poster || '',
+            vod_content: d.description || '', vod_remarks: `可播${episodes.length}集/共${total}集`,
+            vod_play_from: '狂飙', vod_play_url: play }] };
+    }
+    async function play(id) {
+        const match = /^kuangbiao:\/\/([a-z0-9-]{8,80})\/(\d+)$/i.exec(id);
+        if (!match) throw new Error('狂飙分集 ID 无效');
+        const no = Number(match[2]), body = await trpc('episode.watch', { dramaId: match[1], episodeNumber: no });
+        const ep = (body.episodes || []).find((row) => Number(row.index) === no && row.id &&
+            !row.locked && !row.unavailable && (row.isFree || row.accessState === 'FREE'));
+        const epId = ep?.id;
+        if (!epId) throw new Error('狂飙分集不存在');
+        const url = `https://raw.shorttv.online/uploads/direct/${epId}/video.mp4`;
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: base + '/zh/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 12 ? page + 1 : page,
+        limit: 12, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing(cats[0][0], 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => {
+            const wd = one(req.body?.wd), page = pageOf(req.body?.page);
+            return paged(wd ? (await listing(cats[0][0], page)).filter((row) => row.vod_name.includes(wd)) : [], page);
+        });
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeKuangBiaoSource.api });
+};
+
+globalThis.leeHuangGuoAiSource = { key: 'lee_zhenguo_hgai', name: '真果鉴 · 黄果AI',
+    type: 3, api: '/spider/lee_zhenguo_hgai/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeHuangGuoAi = async function registerLeeHuangGuoAi(server) {
+    const https = require('node:https'), http = require('node:http'), tls = require('node:tls');
+    const bases = ['https://huangguoai.com', 'https://ttvoij.ediayikma.cc',
+        'https://thu.ediayikma.cc', 'https://pku.ediayikma.cc'];
+    const cats = [['ai-duanju', 'AI短剧'], ['ai-manju', 'AI漫剧'],
+        ['ai-huanlian', 'AI换脸'], ['ai-mogai', 'AI魔改']];
+    const ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)';
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    let current = bases[0];
+    const proxyUrl = process.env.HTTPS_PROXY || process.env.https_proxy;
+    const proxy = proxyUrl ? new URL(proxyUrl) : null;
+    class ProxyAgent extends https.Agent {
+        createConnection(options, callback) {
+            const tunnel = http.request({ host: proxy.hostname, port: proxy.port || 80,
+                method: 'CONNECT', path: `${options.host}:443` });
+            tunnel.once('connect', (response, socket) => {
+                if (response.statusCode !== 200) {
+                    socket.destroy(); callback(new Error(`代理 HTTP ${response.statusCode}`)); return;
+                }
+                const secure = tls.connect({ socket, servername: options.host });
+                secure.once('secureConnect', () => callback(null, secure));
+                secure.once('error', callback);
+            });
+            tunnel.once('error', callback);
+            tunnel.end();
+        }
+    }
+    const proxyAgent = proxy ? new ProxyAgent() : undefined;
+    function raw(url, base, depth = 0) {
+        return new Promise((resolve, reject) => {
+            const request = https.get(url, { timeout: 15000, agent: proxyAgent, headers: { 'User-Agent': ua,
+                Referer: base + '/', 'Accept-Language': 'zh-CN,zh;q=0.9' } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    if ([301, 302, 307, 308].includes(response.statusCode) && response.headers.location && depth < 4) {
+                        resolve(raw(new URL(response.headers.location, url).href, base, depth + 1));
+                    } else if (response.statusCode === 200) resolve(Buffer.concat(chunks).toString('utf8'));
+                    else reject(new Error(`黄果AI HTTP ${response.statusCode}`));
+                });
+            });
+            request.on('timeout', () => request.destroy(new Error('黄果AI 请求超时')));
+            request.on('error', reject);
+        });
+    }
+    async function get(path) {
+        let failure;
+        for (const base of [current, ...bases.filter((b) => b !== current)]) {
+            try {
+                const response = await raw(base + path, base);
+                current = base; return response;
+            } catch (error) { failure = error; }
+        }
+        throw failure;
+    }
+    const abs = (url) => url ? new URL(url, current).href : '';
+    const card = (item) => {
+        const id = String(item.id || item.videoId || ''), name = String(item.title || item.name || '').trim();
+        if (!id || !name) return null;
+        const count = Number(item.episode_count || item.episodeCount || 0);
+        return { vod_id: id, vod_name: name, vod_pic: abs(item.cover || item.coverUrl || ''),
+            vod_remarks: count ? `${item.is_finished ? '全' : '更新至'}${count}集` : '',
+            vod_content: String(item.description || item.desc || '') };
+    };
+    async function listing(cat, page) {
+        const raw = await get(`/api/videos/category/${encodeURIComponent(cat || cats[0][0])}?sort=hot&page=${page}&size=24`);
+        const items = JSON.parse(raw)?.data?.items || [];
+        return items.map(card).filter(Boolean);
+    }
+    async function pageData(id) {
+        if (!/^[A-Za-z0-9_-]{1,80}$/.test(id)) throw new Error('黄果AI剧集 ID 无效');
+        const html = await get(`/detail/${encodeURIComponent(id)}/`);
+        const raw = /<script[^>]*id="videoInitialData"[^>]*>([\s\S]*?)<\/script>/i.exec(html)?.[1];
+        if (!raw) throw new Error('黄果AI播放数据缺失');
+        const data = JSON.parse(raw.replaceAll('&quot;', '"').replaceAll('&amp;', '&'));
+        return { html, data };
+    }
+    async function detail(id) {
+        const { html, data } = await pageData(id), srcs = data.epPlaySrcs || {};
+        let eps = Object.keys(srcs).filter((key) => /^\d+$/.test(key) && /^https?:\/\//.test(srcs[key]))
+            .map(Number).sort((a, b) => a - b);
+        if (!eps.length && /^https?:\/\//.test(data.videoSrc || '')) eps = [1];
+        if (!eps.length) return { list: [] };
+        const title = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1]?.split(/[_-]/)[0]?.trim() || id;
+        const play = eps.map((ep) => `第${ep}集$hgai://${id}/${ep}`).join('#');
+        return { list: [{ vod_id: id, vod_name: title, vod_pic: abs(data.coverSrc || data.cover || ''),
+            vod_content: data.description || '', vod_remarks: `共${eps.length}集`,
+            vod_play_from: '黄果AI', vod_play_url: play }] };
+    }
+    async function play(id) {
+        const match = /^hgai:\/\/([A-Za-z0-9_-]{1,80})\/(\d+)$/.exec(id);
+        if (!match) throw new Error('黄果AI分集 ID 无效');
+        const { data } = await pageData(match[1]);
+        const url = data.epPlaySrcs?.[match[2]] || (match[2] === '1' ? data.videoSrc : '');
+        if (!/^https?:\/\//.test(url)) throw new Error('黄果AI分集无法播放');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: current + '/' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 24 ? page + 1 : page,
+        limit: 24, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: cats.map(([type_id, type_name]) => ({ type_id, type_name })),
+            list: await listing(cats[0][0], 1) }));
+        fastify.post('/category', async (req) => paged(await listing(one(req.body?.id), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => {
+            const wd = one(req.body?.wd), page = pageOf(req.body?.page);
+            if (!wd) return paged([], page);
+            const a = await listing(cats[0][0], 1), b = await listing(cats[0][0], 2);
+            return paged([...a, ...b].filter((row) => row.vod_name.includes(wd)), page);
+        });
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeHuangGuoAiSource.api });
+};
+
+globalThis.leeHuangDouSource = { key: 'lee_zhenguo_huangdou', name: '真果鉴 · 黄豆',
+    type: 3, api: '/spider/lee_zhenguo_huangdou/3', searchable: 1, quickSearch: 0, filterable: 0 };
+
+globalThis.registerLeeHuangDou = async function registerLeeHuangDou(server) {
+    const crypto = require('node:crypto'), zlib = require('node:zlib');
+    const hosts = ['https://tideember.cc', 'https://xqjurgek.top'];
+    const platformKey = '7961beb44246e3012ce228d6b5ced05a';
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36';
+    const sessionId = crypto.randomUUID(), deviceId = sessionId;
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    let host = hosts[0];
+    async function call(path, data) {
+        const rid = crypto.randomUUID(), iv = crypto.randomBytes(16),
+            key = crypto.createHmac('sha256', platformKey).update(Buffer.from(rid.replaceAll('-', ''), 'hex')).digest();
+        const plain = zlib.gzipSync(Buffer.from(JSON.stringify({ token: '', deviceId, data })));
+        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+        const body = Buffer.concat([iv, cipher.update(plain), cipher.final()]);
+        const ts = String(Math.floor(Date.now() / 1000));
+        const sign = crypto.createHash('sha256').update(`Dart|${sessionId}|${rid}|${ts}|${path}`).digest('hex') + '-' + ts;
+        let failure;
+        for (const base of [host, ...hosts.filter((x) => x !== host)]) {
+            try {
+                const response = await fetch(base + '/api' + path, { method: 'POST', body,
+                    headers: { 'User-Agent': ua, Accept: '*/*', Origin: base, Referer: base + '/home',
+                        'Content-Type': 'application/octet-stream', version: '2.0.0', deviceType: 'web',
+                        requestId: rid, sessionId, time: ts, sign }, signal: AbortSignal.timeout(25000) });
+                if (!response.ok) throw new Error(`黄豆 HTTP ${response.status}`);
+                const blob = Buffer.from(await response.arrayBuffer());
+                let decoded;
+                try { decoded = JSON.parse(blob.toString('utf8')); }
+                catch {
+                    const decipher = crypto.createDecipheriv('aes-256-cbc', key, blob.subarray(0, 16));
+                    let raw = Buffer.concat([decipher.update(blob.subarray(16)), decipher.final()]);
+                    if (raw[0] === 0x1f && raw[1] === 0x8b) raw = zlib.gunzipSync(raw);
+                    decoded = JSON.parse(raw.toString('utf8'));
+                }
+                if (decoded.status && decoded.status !== 'y')
+                    throw new Error(`黄豆接口拒绝：${decoded.message || decoded.msg || decoded.status}`);
+                host = base; return decoded.data || decoded;
+            } catch (error) { failure = error; }
+        }
+        throw failure;
+    }
+    function card(item) {
+        const id = String(item.id || item.drama_id || '').replace(/^rp_/, '');
+        if (!id) return null;
+        return { vod_id: id, vod_name: String(item.name || item.title || id),
+            vod_pic: item.img_y || item.img_x || item.img || item.cover || item.pic || '',
+            vod_remarks: item.update_label || item.corner || (item.episode_count ? `全${item.episode_count}集` : ''),
+            vod_class: item.category || item.category_name || '', vod_content: item.description || item.summary || '' };
+    }
+    async function listing(page) { return (await call('/drama/rank', { tab: 'all', page: String(page) })).list?.map(card).filter(Boolean) || []; }
+    async function search(wd, page) {
+        if (!wd) return [];
+        const data = await call('/drama/list', { keywords: wd, page: String(page), page_size: '30' });
+        return (data.list || []).map(card).filter(Boolean);
+    }
+    async function detail(id) {
+        if (!/^[A-Za-z0-9_-]{1,100}$/.test(id)) throw new Error('黄豆剧集 ID 无效');
+        const data = await call('/drama/detail', { id });
+        const returned = String(data.id || data.drama_id || '').replace(/^rp_/, '');
+        if (returned && returned !== id) throw new Error('黄豆详情不匹配');
+        const rows = data.episodes || data.chapters || data.list || [];
+        const episodes = (Array.isArray(rows) ? rows : rows.episodes || rows.list || [])
+            .map((ep) => ({ no: Number(ep.seq || ep.episode || ep.ep),
+                name: String(ep.name || ep.title || '') })).filter((ep) => ep.no > 0).sort((a, b) => a.no - b.no);
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: data.name || data.title || id,
+            vod_pic: data.img_y || data.img_x || data.img || data.cover || '',
+            vod_content: data.description || data.summary || '', vod_remarks: `共${episodes.length}集`,
+            vod_play_from: '黄豆', vod_play_url: episodes.map((ep) =>
+                `${(ep.name || `第${ep.no}集`).replaceAll('#', '_').replaceAll('$', '_')}$huangdou://${id}/${ep.no}`).join('#') }] };
+    }
+    async function mediaWorks(url) {
+        try {
+            const response = await fetch(url, { headers: { 'User-Agent': ua, Referer: host + '/home',
+                Range: 'bytes=0-1023' }, signal: AbortSignal.timeout(18000) });
+            if (!response.ok) return false;
+            const bytes = Buffer.from(await response.arrayBuffer());
+            return bytes.subarray(0, 16).toString().includes('#EXTM3U') ||
+                bytes.subarray(4, 12).toString().includes('ftyp');
+        } catch { return false; }
+    }
+    async function play(id) {
+        const match = /^huangdou:\/\/([A-Za-z0-9_-]{1,100})\/(\d+)$/.exec(id);
+        if (!match) throw new Error('黄豆分集 ID 无效');
+        const data = await call('/drama/play', { id: match[1], seq: match[2] });
+        let url = data.m3u8 || data.url || data.play_url || data.playUrl || '';
+        const preview = data.is_preview || data.isPreview || (url && url === (data.preview_m3u8 || data.preview_url));
+        if (preview || !url) url = `${host}/api/drama/hls/${encodeURIComponent(match[1])}/${match[2]}/play.m3u8?line=free`;
+        if (!/^https?:\/\//.test(url)) url = new URL(url, host).href;
+        if (!await mediaWorks(url)) throw new Error('黄豆正片不可读');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: host + '/home' } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 20, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: [{ type_id: 'all', type_name: '全部' }], list: await listing(1) }));
+        fastify.post('/category', async (req) => paged(await listing(pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeHuangDouSource.api });
+};
+
+globalThis.leeYeGuoSource = { key: 'lee_zhenguo_yeguo', name: '真果鉴 · 野果',
+    type: 3, api: '/spider/lee_zhenguo_yeguo/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeYeGuo = async function registerLeeYeGuo(server) {
+    const crypto = require('node:crypto');
+    const sites = ['https://blue.ekzhadks.cc', 'https://aids.ekzhadks.cc',
+        'https://adopt.ekzhadks.cc'];
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36';
+    const identifier = crypto.randomBytes(16).toString('hex');
+    const one = (v) => String(Array.isArray(v) ? v[0] : v ?? '');
+    const pageOf = (v) => Math.max(1, Number.parseInt(v, 10) || 1);
+    let access, site = sites[0];
+    async function get(url, referer) {
+        const response = await fetch(url, { headers: { 'User-Agent': ua, Accept: '*/*',
+            Referer: referer || site + '/' }, signal: AbortSignal.timeout(25000) });
+        if (!response.ok) throw new Error(`野果 HTTP ${response.status}`);
+        return response.text();
+    }
+    const bytes = (value) => value.includes('_')
+        ? Buffer.from(value.split('_').map((part) => Number(part))) : Buffer.from(value);
+    function config(js) {
+        const fields = {};
+        for (const match of js.matchAll(/\b(version|mode|padding|key|iv|sign_key)\s*:\s*(?:[a-zA-Z_$][a-zA-Z0-9_$]*\(\s*)?["'`]([^"'`\\\r\n]{1,512})["'`]/g))
+            fields[match[1]] = match[2];
+        if (fields.version !== 'v0' || fields.mode !== 'CBC' || fields.padding !== 'Pkcs7') return null;
+        const key = bytes(fields.key || ''), iv = bytes(fields.iv || ''), signKey = bytes(fields.sign_key || '');
+        if (![16, 24, 32].includes(key.length) || iv.length !== 16 || !signKey.length) return null;
+        return { key, iv, signKey };
+    }
+    async function discover(base) {
+        const html = await get(base + '/', base + '/');
+        const modules = [...html.matchAll(/<script\b[^>]*type="module"[^>]*src="([^"]+)"/gi)];
+        const entry = modules.map((m) => new URL(m[1], base).href)
+            .find((url) => url.startsWith(base + '/_nuxt/') && url.includes('.js'));
+        if (!entry) throw new Error('野果配置脚本缺失');
+        const script = await get(entry, base + '/');
+        const imports = [...script.matchAll(/import\s*\{([^{};]+)\}\s*from\s*["'`]([^"'`]+)["'`]/gs)]
+            .sort((a, b) => Number(a[1].includes(',')) - Number(b[1].includes(',')));
+        let api = /https:\/\/[a-z0-9.-]+\/api\.php/i.exec(script)?.[0] || '';
+        const seen = new Set();
+        for (const item of imports) {
+            if (item[1].length > 2400 || seen.size >= 20) continue;
+            const url = new URL(item[2], entry).href;
+            if (!url.startsWith(base + '/_nuxt/') || !url.includes('.js') || seen.has(url)) continue;
+            seen.add(url);
+            const module = await get(url, base + '/');
+            api ||= /https:\/\/[a-z0-9.-]+\/api\.php/i.exec(module)?.[0] || '';
+            const found = config(module);
+            if (found) return { ...found, api: api || 'https://www.yeguodj.com/api.php', site: base,
+                loaded: Date.now() };
+        }
+        throw new Error('野果加密配置失效');
+    }
+    async function credentials() {
+        if (access && Date.now() - access.loaded < 3600000) return access;
+        let failure;
+        for (const base of [site, ...sites.filter((item) => item !== site)]) {
+            try { access = await discover(base); site = base; return access; }
+            catch (error) { failure = error; }
+        }
+        throw failure;
+    }
+    function decode(env, credentials) {
+        if (env.sign) {
+            const line = Object.keys(env).filter((key) => !['sign', '_ver'].includes(key) && env[key] != null)
+                .sort().map((key) => `${key}=${key === 'data' ? String(env[key]).replaceAll(' ', '+') : String(env[key])}`).join('&');
+            const sha = crypto.createHash('sha256').update(Buffer.concat([Buffer.from(line), credentials.signKey])).digest();
+            const expected = crypto.createHash('md5').update(sha.toString('hex')).digest('hex');
+            if (expected !== String(env.sign).toLowerCase()) throw new Error('野果响应签名不匹配');
+        }
+        if (typeof env.data !== 'string') return env;
+        const decipher = crypto.createDecipheriv(`aes-${credentials.key.length * 8}-cbc`,
+            credentials.key, credentials.iv);
+        const raw = Buffer.concat([decipher.update(Buffer.from(env.data.replaceAll(' ', '+'), 'base64')),
+            decipher.final()]);
+        return JSON.parse(raw.toString('utf8'));
+    }
+    async function call(route, params = {}) {
+        let failure;
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const a = await credentials();
+            const body = new URLSearchParams(Object.entries({ bundleId: 'com.pwa.mater',
+                version: '1.3.2', oauth_type: 'web', language: 'zh', via: 'pwa',
+                oauth_id: identifier, trace_id: identifier, token: '', ...params })
+                .sort(([x], [y]) => x.localeCompare(y))).toString();
+            try {
+                const response = await fetch(a.api + route, { method: 'POST', body,
+                    headers: { 'User-Agent': ua, 'Content-Type': 'application/x-www-form-urlencoded',
+                        Accept: 'application/json, text/plain, */*', Origin: a.site, Referer: a.site + '/' },
+                    signal: AbortSignal.timeout(25000) });
+                if (!response.ok) throw new Error(`野果 HTTP ${response.status}`);
+                const payload = decode(await response.json(), a);
+                if (String(payload.status) !== '1') throw new Error(`野果请求失败：${payload.msg || payload.status}`);
+                return payload.data || {};
+            } catch (error) { failure = error; access = undefined; }
+        }
+        throw failure;
+    }
+    const cover = (value) => {
+        if (Array.isArray(value)) return cover(value[0]);
+        if (value && typeof value === 'object') return cover(value.url || value.contentUrl || value.thumbnailUrl);
+        if (!value || typeof value !== 'string') return '';
+        try { return new URL(value, site).href; } catch { return ''; }
+    };
+    function card(row) {
+        const id = String(row.video_id || row.id || ''), title = String(row.title || '').trim();
+        if (!/^[1-9]\d{0,17}$/.test(id) || !title) return null;
+        const count = Number(row.episode_count || row.episodes || row.total_serial || 0);
+        const status = row.serialize_status === 1 ? '连载中' : row.serialize_status === 2 ? '已完结' : '';
+        return { vod_id: id, vod_name: title, vod_pic: cover(row.cover),
+            vod_remarks: `${status}${count > 0 ? ` 全${count}集` : ''}`.trim(),
+            vod_class: '推荐', vod_content: String(row.description || '') };
+    }
+    function cards(rows) { return (rows || []).map(card).filter(Boolean); }
+    async function listing(page) { return cards((await call('/api/theater/exploreList',
+        { page: String(page), limit: '20' })).list); }
+    async function search(wd, page) { return wd ? cards((await call('/api/search/result',
+        { keyword: wd, tab: 'video', page: String(page), limit: '20' })).list) : []; }
+    async function detail(id) {
+        if (!/^[1-9]\d{0,17}$/.test(id)) throw new Error('野果剧集 ID 无效');
+        const data = await call('/api/playlet/detail', { video_id: id, id,
+            episode_id: '0', related_limit: '0' });
+        if (String(data.video_id || data.id) !== id) throw new Error('野果详情不匹配');
+        const episodes = (data.episodes || []).filter((ep) => !ep.is_adv &&
+            /^[1-9]\d{0,17}$/.test(String(ep.id)) && Number(ep.sort) > 0)
+            .sort((a, b) => Number(a.sort) - Number(b.sort));
+        if (!episodes.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: data.title || id, vod_pic: cover(data.cover),
+            vod_content: data.description || '', vod_remarks: `共${episodes.length}集`,
+            vod_play_from: '野果', vod_play_url: episodes.map((ep) =>
+                `第${ep.sort}集$yeguo://${id}/${ep.id}`).join('#') }] };
+    }
+    async function play(id) {
+        const match = /^yeguo:\/\/([1-9]\d{0,17})\/([1-9]\d{0,17})$/.exec(id);
+        if (!match) throw new Error('野果分集 ID 无效');
+        const data = await call('/api/playlet/play', { playlet_id: match[1],
+            video_id: match[1], episode_id: match[2] });
+        if (String(data.playlet_id) !== match[1] || String(data.id) !== match[2] || data.is_adv)
+            throw new Error('野果播放分集不匹配');
+        const no = Number(data.episode_sort);
+        if (no < 1) throw new Error('野果分集编号无效');
+        const referer = `${site}/drama/video/${match[1]}/${no > 1 ? `ep-${no}/` : ''}`;
+        const url = data.video_url || data.video_url_h265;
+        if (!/^https?:\/\//.test(url)) throw new Error('野果没有媒体地址');
+        return { parse: 0, url, header: { 'User-Agent': ua, Referer: referer } };
+    }
+    const paged = (list, page) => ({ list, page, pagecount: list.length >= 20 ? page + 1 : page,
+        limit: 20, total: list.length });
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: [{ type_id: 'all', type_name: '推荐' }], list: await listing(1) }));
+        fastify.post('/category', async (req) => paged(await listing(pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/search', async (req) => paged(await search(one(req.body?.wd), pageOf(req.body?.page)), pageOf(req.body?.page)));
+        fastify.post('/detail', async (req) => detail(one(req.body?.id)));
+        fastify.post('/play', async (req) => play(one(req.body?.id)));
+    }, { prefix: globalThis.leeYeGuoSource.api });
+};
+
+// 红果 MP4 的 CENC 样本解密。输入、输出均为完整 MP4 Buffer。
+globalThis.leeHongGuoDecryptCenc = function leeHongGuoDecryptCenc(input, key) {
+    const crypto = require('node:crypto');
+    if (!Buffer.isBuffer(key) || key.length !== 16) throw new Error('CENC 密钥长度错误');
+    const output = Buffer.from(input);
+    function box(data, code, start = 0) {
+        let pos = Math.max(4, start);
+        while ((pos = data.indexOf(code, pos, 'ascii')) >= 0) {
+            if (pos + 4 > data.length) break;
+            let size = data.readUInt32BE(pos - 4);
+            if (size === 1 && pos + 12 <= data.length)
+                size = Number(data.readBigUInt64BE(pos + 4));
+            if (size >= 8 && size <= 5000000 && pos - 4 + size <= data.length)
+                return { offset: pos - 4, size };
+            pos += 4;
+        }
+        return null;
+    }
+    const body = (data, code, start) => {
+        const item = box(data, code, start);
+        return item ? data.subarray(item.offset + 8, item.offset + item.size) : null;
+    };
+    function parseTrack(moov, trackOffset) {
+        const stbl = box(moov, 'stbl', trackOffset + 8);
+        if (!stbl) return null;
+        const stsz = body(moov, 'stsz', stbl.offset), stco = body(moov, 'stco', stbl.offset);
+        const co64 = body(moov, 'co64', stbl.offset), stsc = body(moov, 'stsc', stbl.offset);
+        const saiz = body(moov, 'saiz', stbl.offset), saio = body(moov, 'saio', stbl.offset);
+        if (!stsz || !stsc || !saiz || !saio || (!stco && !co64)) return null;
+        const defaultSize = stsz.readUInt32BE(4), sampleCount = stsz.readUInt32BE(8);
+        const sizes = Array.from({ length: sampleCount }, (_, i) =>
+            defaultSize || stsz.readUInt32BE(12 + i * 4));
+        const chunkTable = stco || co64, chunkCount = chunkTable.readUInt32BE(4);
+        const chunkWidth = stco ? 4 : 8;
+        const offsets = Array.from({ length: chunkCount }, (_, i) =>
+            chunkWidth === 4 ? chunkTable.readUInt32BE(8 + i * chunkWidth)
+                : Number(chunkTable.readBigUInt64BE(8 + i * chunkWidth)));
+        const entryCount = stsc.readUInt32BE(4), entries = Array.from({ length: entryCount }, (_, i) =>
+            [stsc.readUInt32BE(8 + i * 12), stsc.readUInt32BE(12 + i * 12)]);
+        const chunkSamples = Array(chunkCount).fill(0);
+        for (let i = 0; i < entries.length; i++) {
+            const [first, count] = entries[i];
+            const end = i + 1 < entries.length ? entries[i + 1][0] - 1 : chunkCount;
+            for (let chunk = first - 1; chunk < Math.min(end, chunkCount); chunk++) chunkSamples[chunk] = count;
+        }
+        const saizFlags = saiz.readUIntBE(1, 3), saizAt = saizFlags & 1 ? 12 : 4;
+        if (saiz.length < saizAt + 5) return null;
+        const defaultAux = saiz[saizAt], auxCount = saiz.readUInt32BE(saizAt + 1);
+        const auxSizes = defaultAux ? Array(auxCount).fill(defaultAux)
+            : Array.from(saiz.subarray(saizAt + 5, saizAt + 5 + auxCount));
+        if (auxSizes.length !== auxCount) return null;
+        const saioFlags = saio.readUIntBE(1, 3), saioAt = saioFlags & 1 ? 12 : 4;
+        const offsetWidth = saio[0] === 1 ? 8 : 4;
+        if (saio.length < saioAt + 4 + offsetWidth || saio.readUInt32BE(saioAt) < 1) return null;
+        const auxOffset = offsetWidth === 8 ? Number(saio.readBigUInt64BE(saioAt + 4))
+            : saio.readUInt32BE(saioAt + 4);
+        return { sizes, offsets, chunkSamples, auxSizes, auxOffset, sampleCount };
+    }
+    const moovBox = box(output, 'moov');
+    if (!moovBox) throw new Error('MP4 缺少 moov');
+    const moov = output.subarray(moovBox.offset, moovBox.offset + moovBox.size);
+    let search = 0, decrypted = 0;
+    while (true) {
+        const track = box(moov, 'trak', search);
+        if (!track) break;
+        search = track.offset + Math.max(track.size, 8);
+        const parsed = parseTrack(moov, track.offset);
+        if (!parsed) continue;
+        const { sizes, offsets, chunkSamples, auxSizes, auxOffset, sampleCount } = parsed;
+        const auxLength = auxSizes.reduce((sum, value) => sum + Math.max(value, 8), 0);
+        if (!sampleCount || auxOffset < 0 || auxOffset + auxLength > output.length) continue;
+        const aux = output.subarray(auxOffset, auxOffset + auxLength);
+        let sampleIndex = 0, auxIndex = 0;
+        for (let chunk = 0; chunk < offsets.length; chunk++) {
+            let cursor = offsets[chunk];
+            for (let n = 0; n < chunkSamples[chunk]; n++) {
+                if (sampleIndex >= sampleCount || sampleIndex >= sizes.length) break;
+                const size = sizes[sampleIndex];
+                if (cursor + size > output.length || sampleIndex >= auxSizes.length)
+                    throw new Error('MP4 CENC 样本越界');
+                const iv = Buffer.alloc(16);
+                aux.copy(iv, 0, auxIndex, auxIndex + Math.min(Math.max(auxSizes[sampleIndex], 8), 8));
+                const decipher = crypto.createDecipheriv('aes-128-ctr', key, iv);
+                const plain = Buffer.concat([decipher.update(output.subarray(cursor, cursor + size)), decipher.final()]);
+                plain.copy(output, cursor);
+                cursor += size;
+                auxIndex += Math.max(auxSizes[sampleIndex], 8);
+                sampleIndex++;
+                decrypted++;
+            }
+        }
+    }
+    if (!decrypted) throw new Error('MP4 没有可解密的 CENC 样本');
+    for (const [oldCode, fallback] of [['encv', 'avc1'], ['enca', 'mp4a']]) {
+        let pos = 0;
+        while ((pos = moov.indexOf(oldCode, pos, 'ascii')) >= 0) {
+            const nearby = moov.subarray(pos, Math.min(moov.length, pos + 800));
+            let code = fallback, at = 0;
+            while ((at = nearby.indexOf('frma', at, 'ascii')) >= 0) {
+                const candidate = nearby.subarray(at + 4, at + 8).toString('ascii');
+                if (candidate.length === 4 && candidate !== 'encv' && candidate !== 'enca'
+                    && [...candidate].every((char) => char.charCodeAt(0) >= 32 && char.charCodeAt(0) < 127)) {
+                    code = candidate; break;
+                }
+                at += 4;
+            }
+            moov.write(code, pos, 4, 'ascii');
+            pos += 4;
+        }
+    }
+    let pos = 0;
+    while ((pos = moov.indexOf('sinf', pos, 'ascii')) >= 0) {
+        if (pos >= 4) {
+            const size = moov.readUInt32BE(pos - 4), end = pos - 4 + size;
+            if (size >= 8 && size < 50000 && end <= moov.length) {
+                moov.write('free', pos, 4, 'ascii');
+                moov.fill(0, pos + 4, end);
+                pos = end;
+                continue;
+            }
+        }
+        pos += 4;
+    }
+    return output;
+};
+
+globalThis.leeHongGuoSource = { key: 'lee_hongguo_drama', name: '红果短剧', type: 3,
+    api: '/spider/lee_hongguo_drama/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeHongGuo = async function registerLeeHongGuo(server) {
+    const crypto = require('node:crypto');
+    const site = 'https://hongguoduanju.com';
+    const ua = 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
+    const appUa = 'com.phoenix.read/71332 (Linux; U; Android 16; zh_CN; 25053RT47C; Build/BP2A.250605.031.A3; Cronet/TTNetVersion:04657795 2026-01-23 QuicVersion:c67e9834 2025-09-08)';
+    const mediaHeaders = { 'User-Agent': 'com.phoenix.read/71332', Referer: 'https://novel.snssdk.com/' };
+    const qualities = [['1080', '红果超清'], ['720', '红果高清'], ['540', '红果标准'],
+        ['480', '红果流畅'], ['360', '红果极速']];
+    const classes = [['all', '短剧'], ['comic', '漫剧'], ['ai_comic', 'AI 漫剧'],
+        ['latest', '最新'], ['hot', '最热'], ['male', '男频'], ['female', '女频']];
+    const cache = new Map();
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const randomId = () => String(100000000000000000n +
+        crypto.randomBytes(8).readBigUInt64BE() % 900000000000000000n);
+    const pick = (...values) => values.find((value) => value !== undefined && value !== null && String(value).trim()) || '';
+    function parseRouter(html) {
+        const match = /(?:window\.)?_ROUTER_DATA\s*=\s*/.exec(html);
+        if (!match) throw new Error('红果页面缺少路由数据');
+        let begin = match.index + match[0].length;
+        while (html[begin] !== '{' && begin < html.length) begin++;
+        let depth = 0, quoted = false, escaped = false;
+        for (let i = begin; i < html.length; i++) {
+            const c = html[i];
+            if (quoted) {
+                if (escaped) escaped = false;
+                else if (c === '\\') escaped = true;
+                else if (c === '"') quoted = false;
+            } else if (c === '"') quoted = true;
+            else if (c === '{') depth++;
+            else if (c === '}' && --depth === 0) return JSON.parse(html.slice(begin, i + 1));
+        }
+        throw new Error('红果路由数据不完整');
+    }
+    async function page(path) {
+        const response = await fetch(site + path, { headers: { 'User-Agent': ua,
+            Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'zh-CN,zh;q=0.9' }, signal: AbortSignal.timeout(30000) });
+        if (!response.ok) throw new Error(`红果页面 HTTP ${response.status}`);
+        return parseRouter(await response.text()).loaderData || {};
+    }
+    const card = (raw) => {
+        const row = raw?.video_data && typeof raw.video_data === 'object' ? raw.video_data : raw || {};
+        const id = String(pick(row.series_id, raw?.series_id, raw?.keyword, ''));
+        return { vod_id: id, vod_name: String(pick(row.series_title, row.series_name, raw?.series_name, raw?.name, '未命名')),
+            vod_pic: String(pick(row.series_cover, raw?.series_cover, '')),
+            vod_remarks: pick(row.episode_cnt, raw?.episode_cnt) ? `全${pick(row.episode_cnt, raw?.episode_cnt)}集` : '',
+            vod_content: String(pick(row.series_intro, raw?.series_intro, '')) };
+    };
+    const cards = (rows) => (Array.isArray(rows) ? rows : []).map(card).filter((row) => row.vod_id);
+    async function home() {
+        const data = (await page('/')).page || {}, seen = new Set(), list = [];
+        for (const section of data.homeSections || []) {
+            for (const raw of section.video_list || []) {
+                const item = card(raw);
+                if (!item.vod_id || seen.has(item.vod_id)) continue;
+                seen.add(item.vod_id); list.push(item);
+            }
+        }
+        return { class: classes.map(([type_id, type_name]) => ({ type_id, type_name })), list: list.slice(0, 40) };
+    }
+    async function category(id, pageNumber, extend) {
+        if (id === 'ai_comic') return search('AI漫剧', pageNumber);
+        const query = { tab: id === 'comic' ? '2' : '1', sort_type: id === 'latest' ? '2' : '1' };
+        if (id === 'male') query.gender = '1';
+        if (id === 'female') query.gender = '2';
+        if (extend && typeof extend === 'object')
+            for (const [key, value] of Object.entries(extend)) if (value && value !== 'all') query[key] = String(value);
+        if (pageNumber > 1) query.page = String(pageNumber);
+        const data = await page('/category?' + new URLSearchParams(query));
+        const payload = data['category_$'] || data.category_page || {};
+        const list = cards(payload.recommendList);
+        const pagination = payload.pagination || {};
+        return { list, page: pageNumber, pagecount: Number(pagination.totalPages) || pageNumber,
+            limit: list.length, total: Number(pagination.total) || list.length };
+    }
+    async function search(keyword, pageNumber) {
+        const data = await page('/search/' + encodeURIComponent(keyword || '短剧'));
+        const payload = data['search_(keyword)/page'] || {};
+        const list = cards(payload.searchList);
+        return { list, page: pageNumber, pagecount: 1, limit: list.length,
+            total: Number(payload.totalCount) || list.length };
+    }
+    async function detail(id) {
+        const data = await page('/detail?series_id=' + encodeURIComponent(id));
+        const value = data.detail_page?.seriesDetail || {}, vids = value.vid_list || [];
+        const lines = qualities.map(([q]) => vids.map((vid, index) =>
+            `第${index + 1}集$${q}:${vid}`).join('#'));
+        if (!vids.length) return { list: [] };
+        return { list: [{ vod_id: id, vod_name: value.series_name || '',
+            vod_pic: value.series_cover || '', vod_content: value.series_intro || '',
+            vod_remarks: value.episode_right_text || '',
+            vod_play_from: qualities.map(([, name]) => name).join('$$$'),
+            vod_play_url: lines.join('$$$') }] };
+    }
+    function deriveKey(spade) {
+        const raw = Buffer.from(spade, 'base64');
+        if (raw.length < 34) throw new Error('红果密钥材料太短');
+        let size = raw.length - (raw[0] ^ raw[1] ^ raw[2]) + 47;
+        if (size <= 0 || 1 + size > raw.length) size = raw.length - 1;
+        if (size < 33) throw new Error('红果密钥材料无效');
+        const value = Buffer.from(raw.subarray(1, 1 + size));
+        let odd = 85, even = 246;
+        for (let i = 0; i < size; i++) {
+            const previous = i & 1 ? odd : even;
+            if (i & 1) odd = value[i]; else even = value[i];
+            const bits = i.toString(2).replace(/0/g, '').length;
+            value[i] = (-21 - bits + (previous ^ value[i])) & 255;
+        }
+        const key = Buffer.from(value.subarray(1, 33).toString('ascii'), 'hex');
+        if (key.length !== 16) throw new Error('红果密钥解码失败');
+        return key;
+    }
+    async function videoModel(vid) {
+        const deviceId = randomId(), installId = randomId();
+        const params = { iid: installId, device_id: deviceId, ac: 'wifi', channel: 'update_64',
+            aid: '8662', app_name: 'novelread', version_code: '71332', version_name: '7.1.3.32',
+            device_platform: 'android', os: 'android', ssmix: 'a', device_type: '25053RT47C',
+            device_brand: 'Redmi', language: 'zh', os_api: '36', os_version: '16',
+            manifest_version_code: '71332', resolution: '1280*2772', dpi: '520',
+            update_version_code: '71332', host_abi: 'arm64-v8a', dragon_device_type: 'phone',
+            pv_player: '71332', compliance_status: '0', need_personal_recommend: '1',
+            player_so_load: '1', is_android_pad_screen: '0' };
+        const payload = { biz_param: { detail_page_version: 0, device_level: 3,
+            disable_digg_stat: false, need_all_video_definition: true, need_mp4_align: false,
+            use_os_player: false, use_server_dns: false, video_platform: 1024 },
+        mixed_video_id_map: { '1004': [vid] } };
+        const endpoint = 'https://api5-normal-sinfonlineb.fqnovel.com/novel/player/multi_video_model/v1/?'
+            + new URLSearchParams({ ...params, ts: String(Math.floor(Date.now() / 1000)),
+                _rticket: String(Date.now()) });
+        const response = await fetch(endpoint, { method: 'POST', headers: {
+            'User-Agent': appUa, Accept: 'application/json; charset=utf-8,application/x-protobuf',
+            'Content-Type': 'application/json; charset=UTF-8', 'x-xs-from-web': '0',
+            'x-ss-req-ticket': String(Date.now()), 'x-tt-request-tag': 't=0;n=0',
+            'sdk-version': '2', 'passport-sdk-version': '50561',
+            'x-vc-bdturing-sdk-version': '3.7.2.cn' }, body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(30000) });
+        if (!response.ok) throw new Error(`红果取流 HTTP ${response.status}`);
+        const result = await response.json(), data = result.data || {};
+        const entry = data[vid] || Object.values(data).find((value) => value && typeof value === 'object') || data;
+        let model = entry.video_model || data.video_model;
+        if (typeof model === 'string') model = JSON.parse(model);
+        if (!model || typeof model !== 'object') throw new Error('红果视频模型为空');
+        return model;
+    }
+    async function decrypted(vid, quality) {
+        const cacheKey = `${vid}:${quality}`, saved = cache.get(cacheKey);
+        if (saved && Date.now() - saved.at < 600000) return saved.data;
+        const model = await videoModel(vid);
+        const rows = model.video_list || model.dynamic_video_list || [];
+        const wanted = rows.find((row) => String(row.video_meta?.definition || '').includes(quality))
+            || rows.find((row) => String(row.video_meta?.definition || '').includes('360')) || rows[0];
+        if (!wanted) throw new Error('红果没有视频档位');
+        const url = pick(wanted.main_url, wanted.backup_url, wanted.backup_url_1);
+        const spade = pick(wanted.spade_a, wanted.encrypt_info?.spade_a);
+        if (!/^https?:\/\//.test(url) || !spade) throw new Error('红果缺少媒体或解密材料');
+        const response = await fetch(url, { headers: mediaHeaders, signal: AbortSignal.timeout(90000) });
+        if (!response.ok) throw new Error(`红果媒体 HTTP ${response.status}`);
+        const encrypted = Buffer.from(await response.arrayBuffer());
+        const data = globalThis.leeHongGuoDecryptCenc(encrypted, deriveKey(spade));
+        if (data.indexOf('ftyp', 0, 'ascii') < 0 || data.indexOf('ftyp', 0, 'ascii') > 32)
+            throw new Error('红果解密结果不是 MP4');
+        cache.set(cacheKey, { at: Date.now(), data });
+        while (cache.size > 3) cache.delete(cache.keys().next().value);
+        return data;
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => home());
+        fastify.post('/category', async (request) => category(one(request.body?.id),
+            pageOf(request.body?.page), request.body?.extend));
+        fastify.post('/search', async (request) => search(one(request.body?.wd), pageOf(request.body?.page)));
+        fastify.post('/detail', async (request) => detail(one(request.body?.id)));
+        fastify.post('/play', async (request) => {
+            const token = one(request.body?.id), match = /^(1080|720|540|480|360):(\d+)$/.exec(token);
+            if (!match) throw new Error('红果分集参数无效');
+            const host = request.headers?.host;
+            if (!host) throw new Error('无法确定本地媒体代理地址');
+            const proto = one(request.headers['x-forwarded-proto']) || 'http';
+            const url = `${proto}://${host}${globalThis.leeHongGuoSource.api}/media?vid=${match[2]}&q=${match[1]}`;
+            return { parse: 0, url, header: { 'User-Agent': ua } };
+        });
+        fastify.get('/media', async (request, reply) => {
+            const vid = one(request.query?.vid), quality = one(request.query?.q);
+            if (!/^\d{10,}$/.test(vid) || !qualities.some(([q]) => q === quality))
+                return reply.code(400).send('红果分集参数无效');
+            const data = await decrypted(vid, quality);
+            const requestedRange = one(request.headers.range);
+            const range = /^bytes=(\d+)-(\d*)$/.exec(requestedRange);
+            const suffix = /^bytes=-(\d+)$/.exec(requestedRange);
+            reply.header('Content-Type', 'video/mp4').header('Accept-Ranges', 'bytes');
+            if (range || suffix) {
+                const start = suffix ? Math.max(0, data.length - Number(suffix[1])) : Number(range[1]);
+                const end = suffix ? data.length - 1
+                    : Math.min(data.length - 1, range[2] ? Number(range[2]) : data.length - 1);
+                if (start >= data.length || end < start) return reply.code(416)
+                    .header('Content-Range', `bytes */${data.length}`).send();
+                return reply.code(206).header('Content-Range', `bytes ${start}-${end}/${data.length}`)
+                    .header('Content-Length', end - start + 1).send(data.subarray(start, end + 1));
+            }
+            return reply.header('Content-Length', data.length).send(data);
+        });
+    }, { prefix: globalThis.leeHongGuoSource.api });
+};
+
+globalThis.leeDramaAggregateSources = [
+    { key: 'lee_duoju_drama', name: '多聚短剧 · 可用平台', providers: [
+        { tag: 'x', key: 'lee_duoju_wusheng', name: '悟圣', playScheme: '' },
+        { tag: 'w', key: 'lee_duoju_weiguan', name: '围观', playScheme: 'weiguan://' },
+        { tag: 'k', key: 'lee_duoju_kuwo', name: '酷我', playScheme: 'kuwo://' },
+        { tag: 'd', key: 'lee_duoju_damang', name: '大芒', playScheme: 'damang://' },
+        { tag: 'h', key: 'lee_duoju_haokan', name: '好看', playScheme: 'haokan://' },
+        { tag: 'b', key: 'lee_duoju_baidu', name: '百度', playScheme: 'baidu://' },
+        { tag: 'y', key: 'lee_duoju_xingya', name: '星芽', playScheme: 'xingya://' },
+        { tag: 'z', key: 'lee_duoju_qixing', name: '七星', playScheme: 'qixing://' },
+        { tag: 'm', key: 'lee_duoju_hema', name: '河马', playScheme: 'hema://' },
+        { tag: 'f', key: 'lee_duoju_xifan', name: '西饭', playScheme: 'xifan://' },
+        { tag: 'q', key: 'lee_duoju_qimao', name: '七猫', playScheme: 'qimao://' },
+        { tag: 's', key: 'lee_duoju_shanhai', name: '山海', playScheme: 'shanhai://' },
+        { tag: 'i', key: 'lee_duoju_yimi', name: '薏米', playScheme: 'yimi://' },
+        { tag: 'u', key: 'lee_duoju_xifu', name: '喜福', playScheme: 'xifu://' },
+        { tag: 'n', key: 'lee_duoju_niuniu', name: '牛牛', playScheme: 'niuniu://' },
+        { tag: 'o', key: 'lee_duoju_souju', name: '搜剧AI', playScheme: 'souju://' },
+        { tag: 't', key: 'lee_duoju_yizk', name: '一直看', playScheme: 'yizk://' },
+        { tag: 'g', key: 'lee_duoju_huangguo2', name: '黄果2', playScheme: 'huangguo2://' },
+        { tag: 'j', key: 'lee_duoju_huangju', name: '黄菊', playScheme: 'huangju://' },
+        { tag: 'a', key: 'lee_duoju_xiangjiao', name: '香蕉', playScheme: 'xiangjiao://' },
+        { tag: 'v', key: 'lee_duoju_huangdou2', name: '黄豆2', playScheme: 'huangdou2://' },
+        { tag: 'e', key: 'lee_duoju_chengguo', name: '橙果', playScheme: 'chengguo://' },
+        { tag: 'l', key: 'lee_duoju_huanggua', name: '黄瓜', playScheme: 'huanggua://' },
+        { tag: 'p', key: 'lee_duoju_dj51', name: '51短剧', playScheme: 'dj51://' },
+        { tag: '2', key: 'lee_duoju_md2048', name: '2048', playScheme: 'md2048://' },
+        { tag: '9', key: 'lee_duoju_dj91', name: '91短剧', playScheme: 'dj91://' },
+        { tag: '3', key: 'lee_duoju_kuangbiao', name: '狂飙', playScheme: 'kuangbiao://' },
+        { tag: '4', key: 'lee_zhenguo_huangdou', name: '黄豆', playScheme: 'huangdou://' },
+        { tag: '5', key: 'lee_zhenguo_yeguo', name: '野果', playScheme: 'yeguo://' },
+    ] },
+    { key: 'lee_zhenguo_drama', name: '真果鉴 · 可用平台', providers: [
+        { tag: 'x', key: 'lee_zhenguo_xingguo', name: '星果', playScheme: '' },
+        { tag: 'w', key: 'lee_zhenguo_guanguo', name: '观果', playScheme: 'weiguan://' },
+        { tag: 'y', key: 'lee_zhenguo_yaguo', name: '芽果', playScheme: 'xingya://' },
+        { tag: 'f', key: 'lee_zhenguo_fanguo', name: '饭果', playScheme: 'xifan://' },
+        { tag: 'g', key: 'lee_duoju_huangguo2', name: '黄果视频', playScheme: 'huangguo2://' },
+        { tag: 'r', key: 'lee_zhenguo_heguo', name: '河果', playScheme: 'heguo://' },
+        { tag: 'j', key: 'lee_duoju_huangju', name: '黄菊', playScheme: 'huangju://' },
+        { tag: 'c', key: 'lee_zhenguo_maoguo', name: '猫果', playScheme: 'maoguo://' },
+        { tag: 'a', key: 'lee_zhenguo_hgai', name: '黄果AI', playScheme: 'hgai://' },
+        { tag: 'd', key: 'lee_zhenguo_huangdou', name: '黄豆', playScheme: 'huangdou://' },
+        { tag: 'z', key: 'lee_zhenguo_yeguo', name: '野果', playScheme: 'yeguo://' },
+    ] },
+    { key: 'lee_quanju_drama', name: '全聚合短剧 · 可用平台', providers: [
+        { tag: 'x', key: 'lee_quanju_xingxing', name: '星星', playScheme: '' },
+        { tag: 'w', key: 'lee_quanju_weiguan', name: '围观', playScheme: 'weiguan://' },
+        { tag: 'y', key: 'lee_quanju_xingya', name: '星芽', playScheme: 'xingya://' },
+        { tag: 'm', key: 'lee_quanju_hema', name: '河马', playScheme: 'hema://' },
+        { tag: 'f', key: 'lee_quanju_xifan', name: '西饭', playScheme: 'xifan://' },
+        { tag: 'q', key: 'lee_quanju_qimao', name: '七猫', playScheme: 'qimao://' },
+        { tag: 'h', key: 'lee_quanju_haokan', name: '好看', playScheme: 'haokan://' },
+        { tag: 'b', key: 'lee_quanju_baidu', name: '百度', playScheme: 'baidu://' },
+        { tag: 's', key: 'lee_quanju_shanhai', name: '山海', playScheme: 'shanhai://' },
+        { tag: 'i', key: 'lee_quanju_yimi', name: '薏米', playScheme: 'yimi://' },
+        { tag: 'u', key: 'lee_quanju_xifu', name: '喜福', playScheme: 'xifu://' },
+        { tag: 'n', key: 'lee_quanju_niuniu', name: '牛牛', playScheme: 'niuniu://' },
+    ] },
+].map((item) => ({ ...item, type: 3, api: `/spider/${item.key}/3`,
+    searchable: 1, quickSearch: 1, filterable: 0 }));
+
+globalThis.registerLeeDramaAggregates = async function registerLeeDramaAggregates(server) {
+    const one = (value) => String(Array.isArray(value) ? value[0] : value ?? '');
+    const pageOf = (value) => Math.max(1, Number.parseInt(value, 10) || 1);
+    const split = (id) => {
+        const at = id.indexOf(':');
+        return at < 0 ? ['', id] : [id.slice(0, at), id.slice(at + 1)];
+    };
+    async function call(key, action, body) {
+        const response = await server.inject({ method: 'POST', url: `/spider/${key}/3/${action}`,
+            payload: body || {} });
+        if (response.statusCode !== 200) throw new Error(`${key}/${action} HTTP ${response.statusCode}`);
+        return response.json();
+    }
+    const mark = (rows, tag) => (rows || []).map((row) => ({ ...row, vod_id: `${tag}:${row.vod_id}` }));
+    for (const source of globalThis.leeDramaAggregateSources) {
+        const provider = (tag) => {
+            const found = source.providers.find((item) => item.tag === tag);
+            if (!found) throw new Error(`未知短剧平台：${tag}`);
+            return found;
+        };
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => {
+                const homes = await Promise.allSettled(source.providers.map((item) => call(item.key, 'home')));
+                if (homes.every((home) => home.status === 'rejected')) throw homes[0].reason;
+                return { class: homes.flatMap((entry, i) => (entry.status === 'fulfilled'
+                    ? entry.value.class || [] : []).map((cat) => ({
+                    type_id: `${source.providers[i].tag}:${cat.type_id}`,
+                    type_name: `${source.providers[i].name} · ${cat.type_name}` }))),
+                list: homes.flatMap((entry, i) => entry.status === 'fulfilled'
+                    ? mark(entry.value.list, source.providers[i].tag) : []) };
+            });
+            fastify.post('/category', async (request) => {
+                const [tag, id] = split(one(request.body?.id)), item = provider(tag);
+                const result = await call(item.key, 'category', { ...request.body, id });
+                return { ...result, list: mark(result.list, tag) };
+            });
+            fastify.post('/search', async (request) => {
+                const settled = await Promise.allSettled(source.providers.map((item) =>
+                    call(item.key, 'search', request.body)));
+                if (settled.every((result) => result.status === 'rejected')) throw settled[0].reason;
+                const results = settled.map((result) => result.status === 'fulfilled' ? result.value : {});
+                const list = results.flatMap((result, i) => mark(result.list, source.providers[i].tag));
+                const page = pageOf(request.body?.page);
+                return { list, page, pagecount: Math.max(page, ...results.map((r) => r.pagecount || page)),
+                    limit: list.length, total: results.reduce((sum, r) => sum + (r.total || 0), 0) };
+            });
+            fastify.post('/detail', async (request) => {
+                const [tag, id] = split(one(request.body?.id)), item = provider(tag);
+                const result = await call(item.key, 'detail', { ...request.body, id });
+                return { ...result, list: mark(result.list, tag) };
+            });
+            fastify.post('/play', async (request) => {
+                const id = one(request.body?.id);
+                const item = source.providers.find((p) => p.playScheme && id.startsWith(p.playScheme))
+                    || source.providers[0];
+                return call(item.key, 'play', request.body);
+            });
+        }, { prefix: source.api });
+    }
+};
+
 // 构建时将此文件置于 douer 运行时之前，设备只需加载 index.js。
 // 这里不依赖额外 npm 模块，保持本地包可独立运行。
 globalThis.registerLeeMigration = async function registerLeeMigration(server, config, bridge) {
@@ -1310,7 +5225,7 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     const localSource = { key: 'lee_local', name: '本地 • 视频', type: 3, api: '/spider/lee_local/3', searchable: 0, filterable: 0, changeable: 0 };
     const schoolSource = { key: 'lee_junior_school', name: '初中 | 课堂', type: 3, api: '/spider/lee_junior_school/3', searchable: 1, quickSearch: 0, filterable: 1, changeable: 0 };
     const marketSource = { key: 'lee_market', name: '版本 • 信息', type: 3, api: '/spider/lee_market/3', searchable: 0, filterable: 0, changeable: 0 };
-    const migratedSources = [ucSource, xunleiSource, localSource, schoolSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources, globalThis.leeFourKmpSource, globalThis.leeFengYeSource, globalThis.leeHqVodSource, globalThis.leeJuXiaFanSource, globalThis.leeFourKApiSource, ...globalThis.leeGuluSources, globalThis.leeHeTunSource];
+    const migratedSources = [ucSource, xunleiSource, localSource, schoolSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources, globalThis.leeFourKmpSource, globalThis.leeFengYeSource, globalThis.leeHqVodSource, globalThis.leeJuXiaFanSource, globalThis.leeFourKApiSource, ...globalThis.leeGuluSources, globalThis.leeHeTunSource, ...globalThis.leeDramaAggregateSources, globalThis.leeHongGuoSource];
     const removedBuiltIns = new Set([
         'rrdyw', 'shuangxing', 'pomo', 'tgsou', 'shanzha', 'juzhi', 'gimy', 'wbbb',
         'jinpai', 'xifan', 'xifannext', 'ppnix', 'dbku', 'dashixiong',
@@ -2500,6 +6415,38 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     await globalThis.registerLeeFourKApi(server);
     await globalThis.registerLeeGulu(server);
     await globalThis.registerLeeHeTun(server);
+    await globalThis.registerLeeXingGuo(server);
+    await globalThis.registerLeeWeiGuan(server);
+    await globalThis.registerLeeKuwo(server);
+    await globalThis.registerLeeDamang(server);
+    await globalThis.registerLeeHaokan(server);
+    await globalThis.registerLeeBaidu(server);
+    await globalThis.registerLeeXingYa(server);
+    await globalThis.registerLeeHema(server);
+    await globalThis.registerLeeXiFan(server);
+    await globalThis.registerLeeQiMao(server);
+    await globalThis.registerLeeShanHai(server);
+    await globalThis.registerLeeYiMi(server);
+    await globalThis.registerLeeXiFu(server);
+    await globalThis.registerLeeNiuNiu(server);
+    await globalThis.registerLeeSouJu(server);
+    await globalThis.registerLeeYiZk(server);
+    await globalThis.registerLeeHuangGuo2(server);
+    await globalThis.registerLeeHeGuo(server);
+    await globalThis.registerLeeHuangJu(server);
+    await globalThis.registerLeeXiangJiao(server);
+    await globalThis.registerLeeMaoGuo(server);
+    await globalThis.registerLeeHuangDou2(server);
+    await globalThis.registerLeeNuxtHtml(server);
+    await globalThis.registerLeeDj51(server);
+    await globalThis.registerLeeMd2048(server);
+    await globalThis.registerLeeDj91(server);
+    await globalThis.registerLeeKuangBiao(server);
+    await globalThis.registerLeeHuangGuoAi(server);
+    await globalThis.registerLeeHuangDou(server);
+    await globalThis.registerLeeYeGuo(server);
+    await globalThis.registerLeeHongGuo(server);
+    await globalThis.registerLeeDramaAggregates(server);
 };
 
 
