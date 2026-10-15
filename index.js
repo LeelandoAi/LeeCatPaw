@@ -1,9 +1,8 @@
-// Filter choices preserved from SP360, Xunlei8, Dm84, and DyGang Java spiders.
+// 沿用 Java 版 SP360、Xunlei8、Dm84 和 DyGang 的筛选项，保持分类参数一致。
 globalThis.leeLegacyFilters = {"sp360":{"1":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"喜剧","v":"喜剧"},{"n":"爱情","v":"爱情"},{"n":"动作","v":"动作"},{"n":"恐怖","v":"恐怖"},{"n":"科幻","v":"科幻"},{"n":"剧情","v":"剧情"},{"n":"犯罪","v":"犯罪"},{"n":"奇幻","v":"奇幻"},{"n":"战争","v":"战争"},{"n":"悬疑","v":"悬疑"},{"n":"动画","v":"动画"},{"n":"文艺","v":"文艺"},{"n":"记录","v":"记录"},{"n":"传记","v":"传记"},{"n":"歌舞","v":"歌舞"},{"n":"古装","v":"古装"},{"n":"历史","v":"历史"},{"n":"惊悚","v":"惊悚"},{"n":"伦理","v":"伦理"},{"n":"其他","v":"其他"}]},{"key":"year","name":"年代","value":[{"n":"全部年代","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"2007","v":"2007"},{"n":"更早","v":"更早"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"内地","v":"大陆"},{"n":"中国香港","v":"香港"},{"n":"中国台湾","v":"台湾"},{"n":"泰国","v":"泰国"},{"n":"美国","v":"美国"},{"n":"韩国","v":"韩国"},{"n":"日本","v":"日本"},{"n":"法国","v":"法国"},{"n":"英国","v":"英国"},{"n":"德国","v":"德国"},{"n":"印度","v":"印度"},{"n":"其他","v":"其他"}]},{"key":"actor","name":"明星","value":[{"n":"全部明星","v":""},{"n":"成龙","v":"成龙"},{"n":"周星驰","v":"周星驰"},{"n":"李连杰","v":"李连杰"},{"n":"林正英","v":"林正英"},{"n":"吴京","v":"吴京"},{"n":"徐峥","v":"徐峥"},{"n":"黄渤","v":"黄渤"},{"n":"王宝强","v":"王宝强"},{"n":"李小龙","v":"李小龙"},{"n":"张国荣","v":"张国荣"},{"n":"洪金宝","v":"洪金宝"},{"n":"姜文","v":"姜文"},{"n":"沈腾","v":"沈腾"},{"n":"邓超","v":"邓超"},{"n":"巩俐","v":"巩俐"},{"n":"马丽","v":"马丽"},{"n":"闫妮","v":"闫妮"},{"n":"周冬雨","v":"周冬雨"},{"n":"刘昊然","v":"刘昊然"},{"n":"汤唯","v":"汤唯"},{"n":"舒淇","v":"舒淇"},{"n":"白百何","v":"白百何"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"},{"n":"最受好评","v":"rankpoint"}]}],"2":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"言情","v":"言情"},{"n":"剧情","v":"剧情"},{"n":"伦理","v":"伦理"},{"n":"喜剧","v":"喜剧"},{"n":"悬疑","v":"悬疑"},{"n":"都市","v":"都市"},{"n":"偶像","v":"偶像"},{"n":"古装","v":"古装"},{"n":"军事","v":"军事"},{"n":"警匪","v":"警匪"},{"n":"历史","v":"历史"},{"n":"励志","v":"励志"},{"n":"神话","v":"神话"},{"n":"谍战","v":"谍战"},{"n":"青春","v":"青春"},{"n":"家庭","v":"家庭"},{"n":"动作","v":"动作"},{"n":"情景","v":"情景"},{"n":"武侠","v":"武侠"},{"n":"科幻","v":"科幻"},{"n":"其他","v":"其他"}]},{"key":"year","name":"年代","value":[{"n":"全部年代","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"2007","v":"2007"},{"n":"更早","v":"更早"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"内地","v":"内地"},{"n":"中国香港","v":"香港"},{"n":"中国台湾","v":"台湾"},{"n":"泰国","v":"泰国"},{"n":"日本","v":"日本"},{"n":"韩国","v":"韩国"},{"n":"美国","v":"美国"},{"n":"英国","v":"英国"},{"n":"新加坡","v":"新加坡"}]},{"key":"actor","name":"明星","value":[{"n":"全部明星","v":""},{"n":"杨幂","v":"杨幂"},{"n":"热巴","v":"迪丽热巴"},{"n":"张嘉译","v":"张嘉译"},{"n":"赵丽颖","v":"赵丽颖"},{"n":"赵又廷","v":"赵又廷"},{"n":"胡歌","v":"胡歌"},{"n":"孙俪","v":"孙俪"},{"n":"韩东君","v":"韩东君"},{"n":"周迅","v":"周迅"},{"n":"张一山","v":"张一山"},{"n":"李小璐","v":"李小璐"},{"n":"李沁","v":"李沁"},{"n":"陈坤","v":"陈坤"},{"n":"刘亦菲","v":"刘亦菲"},{"n":"唐嫣","v":"唐嫣"},{"n":"李小冉","v":"李小冉"},{"n":"周冬雨","v":"周冬雨"},{"n":"于和伟","v":"于和伟"},{"n":"李易峰","v":"李易峰"},{"n":"雷佳音","v":"雷佳音"},{"n":"何冰","v":"何冰"},{"n":"阮经天","v":"阮经天"},{"n":"梅婷","v":"梅婷"},{"n":"徐峥","v":"徐峥"},{"n":"祖峰","v":"祖峰"},{"n":"秦海璐","v":"秦海璐"},{"n":"杨紫","v":"杨紫"},{"n":"任嘉伦","v":"任嘉伦"},{"n":"贾乃亮","v":"贾乃亮"},{"n":"罗晋","v":"罗晋"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"},{"n":"最受好评","v":"rankpoint"}]}],"3":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"脱口秀","v":"脱口秀"},{"n":"真人秀","v":"真人秀"},{"n":"搞笑","v":"搞笑"},{"n":"选秀","v":"选秀"},{"n":"八卦","v":"八卦"},{"n":"访谈","v":"访谈"},{"n":"情感","v":"情感"},{"n":"生活","v":"生活"},{"n":"晚会","v":"晚会"},{"n":"音乐","v":"音乐"},{"n":"职场","v":"职场"},{"n":"美食","v":"美食"},{"n":"时尚","v":"时尚"},{"n":"游戏","v":"游戏"},{"n":"少儿","v":"少儿"},{"n":"体育","v":"体育"},{"n":"纪实","v":"纪实"},{"n":"科教","v":"科教"},{"n":"曲艺","v":"曲艺"},{"n":"歌舞","v":"歌舞"},{"n":"财经","v":"财经"},{"n":"汽车","v":"汽车"},{"n":"播报","v":"播报"},{"n":"其他","v":"其他"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"中国大陆","v":"中国大陆"},{"n":"美国","v":"美国"},{"n":"日本","v":"日本"},{"n":"中国香港","v":"中国香港"},{"n":"中国台湾","v":"中国台湾"},{"n":"韩国","v":"韩国"},{"n":"欧洲","v":"欧洲"},{"n":"其他","v":"泰国"}]},{"key":"actor","name":"明星","value":[{"n":"全部明星","v":""},{"n":"邓超","v":"邓超"},{"n":"陈赫","v":"陈赫"},{"n":"何炅","v":"何炅"},{"n":"汪涵","v":"汪涵"},{"n":"王俊凯","v":"王俊凯"},{"n":"黄磊","v":"黄磊"},{"n":"谢娜","v":"谢娜"},{"n":"黄渤","v":"黄渤"},{"n":"周杰伦","v":"周杰伦"},{"n":"薛之谦","v":"薛之谦"},{"n":"Angelababy","v":"Angelababy"},{"n":"易烊千玺","v":"易烊千玺"},{"n":"岳云鹏","v":"岳云鹏"},{"n":"王嘉尔","v":"王嘉尔"},{"n":"鹿晗","v":"鹿晗"},{"n":"杨幂","v":"杨幂"},{"n":"沈腾","v":"沈腾"},{"n":"张艺兴","v":"张艺兴"},{"n":"潘玮柏","v":"潘玮柏"},{"n":"华晨宇","v":"华晨宇"},{"n":"李维嘉","v":"李维嘉"},{"n":"宋小宝","v":"宋小宝"},{"n":"贾玲","v":"贾玲"},{"n":"沙溢","v":"沙溢"},{"n":"撒贝宁","v":"撒贝宁"},{"n":"涂磊","v":"涂磊"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"}]}],"4":[{"key":"class","name":"类型","value":[{"n":"全部类型","v":""},{"n":"热血","v":"热血"},{"n":"科幻","v":"科幻"},{"n":"美少女","v":"美少女"},{"n":"魔幻","v":"魔幻"},{"n":"经典","v":"经典"},{"n":"励志","v":"励志"},{"n":"少儿","v":"少儿"},{"n":"冒险","v":"冒险"},{"n":"搞笑","v":"搞笑"},{"n":"推理","v":"推理"},{"n":"恋爱","v":"恋爱"},{"n":"治愈","v":"治愈"},{"n":"幻想","v":"幻想"},{"n":"校园","v":"校园"},{"n":"动物","v":"动物"},{"n":"机战","v":"机战"},{"n":"亲子","v":"亲子"},{"n":"儿歌","v":"儿歌"},{"n":"运动","v":"运动"},{"n":"悬疑","v":"悬疑"},{"n":"怪物","v":"怪物"},{"n":"战争","v":"战争"},{"n":"益智","v":"益智"},{"n":"青春","v":"青春"},{"n":"童话","v":"童话"},{"n":"竞技","v":"竞技"},{"n":"动作","v":"动作"},{"n":"社会","v":"社会"},{"n":"友情","v":"友情"},{"n":"真人版","v":"真人版"},{"n":"电影版","v":"电影版"},{"n":"OVA版","v":"OVA版"}]},{"key":"year","name":"年代","value":[{"n":"全部年代","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"2007","v":"2007"},{"n":"2006","v":"2006"},{"n":"2005","v":"2005"},{"n":"2004","v":"2004"},{"n":"更早","v":"更早"}]},{"key":"area","name":"地区","value":[{"n":"全部地区","v":""},{"n":"内地","v":"大陆"},{"n":"美国","v":"美国"},{"n":"日本","v":"日本"}]},{"key":"by","name":"排序","value":[{"n":"最近热映","v":"rankhot"},{"n":"最近上映","v":"ranklatest"}]}]},"xunlei8":{"list":[{"name":"类型","key":"cateId","value":[{"n":"全部","v":"0"},{"n":"科幻","v":"科幻"},{"n":"悬疑","v":"悬疑"},{"n":"情色","v":"情色"},{"n":"恐怖","v":"恐怖"},{"n":"奇幻","v":"奇幻"},{"n":"喜剧","v":"喜剧"},{"n":"战争","v":"战争"},{"n":"动作","v":"动作"},{"n":"动画","v":"动画"},{"n":"冒险","v":"冒险"},{"n":"爱情","v":"爱情"},{"n":"武侠","v":"武侠"},{"n":"犯罪","v":"犯罪"},{"n":"惊悚","v":"惊悚"},{"n":"剧情","v":"剧情"},{"n":"纪录片","v":"纪录片"},{"n":"运动","v":"运动"},{"n":"历史","v":"历史"},{"n":"西部","v":"西部"},{"n":"家庭","v":"家庭"},{"n":"音乐","v":"音乐"},{"n":"同性","v":"同性"}]},{"name":"年份","key":"year","value":[{"n":"全部","v":"0"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"更早","v":"更早"}]},{"name":"地区","key":"area","value":[{"n":"全部","v":"0"},{"n":"美国","v":"美国"},{"n":"中国大陆","v":"中国大陆"},{"n":"韩国","v":"韩国"},{"n":"日本","v":"日本"},{"n":"英国","v":"英国"},{"n":"印度","v":"印度"},{"n":"法国","v":"法国"},{"n":"俄罗斯","v":"俄罗斯"},{"n":"加拿大","v":"加拿大"},{"n":"德国","v":"德国"},{"n":"泰国","v":"泰国"},{"n":"西班牙","v":"西班牙"},{"n":"澳大利亚","v":"澳大利亚"},{"n":"意大利","v":"意大利"},{"n":"比利时","v":"比利时"},{"n":"中国台湾","v":"中国台湾"},{"n":"中国香港","v":"中国香港"}]},{"name":"排序","key":"sort","value":[{"n":"最近更新(默认)","v":"date"},{"n":"精彩热播","v":"hot"},{"n":"高分好评","v":"rating"}]}],"tv":[{"name":"类型","key":"cateId","value":[{"n":"全部","v":"0"},{"n":"科幻","v":"科幻"},{"n":"悬疑","v":"悬疑"},{"n":"情色","v":"情色"},{"n":"恐怖","v":"恐怖"},{"n":"奇幻","v":"奇幻"},{"n":"喜剧","v":"喜剧"},{"n":"战争","v":"战争"},{"n":"动作","v":"动作"},{"n":"动画","v":"动画"},{"n":"冒险","v":"冒险"},{"n":"爱情","v":"爱情"},{"n":"武侠","v":"武侠"},{"n":"犯罪","v":"犯罪"},{"n":"惊悚","v":"惊悚"},{"n":"剧情","v":"剧情"},{"n":"纪录片","v":"纪录片"},{"n":"运动","v":"运动"},{"n":"历史","v":"历史"},{"n":"西部","v":"西部"},{"n":"家庭","v":"家庭"},{"n":"音乐","v":"音乐"},{"n":"同性","v":"同性"}]},{"name":"年份","key":"year","value":[{"n":"全部","v":"0"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"},{"n":"2014","v":"2014"},{"n":"2013","v":"2013"},{"n":"2012","v":"2012"},{"n":"2011","v":"2011"},{"n":"2010","v":"2010"},{"n":"2009","v":"2009"},{"n":"2008","v":"2008"},{"n":"更早","v":"更早"}]},{"name":"地区","key":"area","value":[{"n":"全部","v":"0"},{"n":"美国","v":"美国"},{"n":"中国大陆","v":"中国大陆"},{"n":"韩国","v":"韩国"},{"n":"日本","v":"日本"},{"n":"英国","v":"英国"},{"n":"印度","v":"印度"},{"n":"法国","v":"法国"},{"n":"俄罗斯","v":"俄罗斯"},{"n":"加拿大","v":"加拿大"},{"n":"德国","v":"德国"},{"n":"泰国","v":"泰国"},{"n":"西班牙","v":"西班牙"},{"n":"澳大利亚","v":"澳大利亚"},{"n":"意大利","v":"意大利"},{"n":"比利时","v":"比利时"},{"n":"中国台湾","v":"中国台湾"},{"n":"中国香港","v":"中国香港"}]},{"name":"排序","key":"sort","value":[{"n":"最近更新(默认)","v":"date"},{"n":"精彩热播","v":"hot"},{"n":"高分好评","v":"rating"}]}]},"dm84":{"1":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"奇幻","v":"奇幻"},{"n":"战斗","v":"战斗"},{"n":"玄幻","v":"玄幻"},{"n":"穿越","v":"穿越"},{"n":"科幻","v":"科幻"},{"n":"武侠","v":"武侠"},{"n":"热血","v":"热血"},{"n":"眈美","v":"眈美"},{"n":"搞笑","v":"搞笑"},{"n":"动态漫画","v":"动态漫画"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}],"2":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"冒险","v":"冒险"},{"n":"奇幻","v":"奇幻"},{"n":"战斗","v":"战斗"},{"n":"后宫","v":"后宫"},{"n":"热血","v":"热血"},{"n":"励志","v":"励志"},{"n":"搞笑","v":"搞笑"},{"n":"校园","v":"校园"},{"n":"机战","v":"机战"},{"n":"悬疑","v":"悬疑"},{"n":"治愈","v":"治愈"},{"n":"百合","v":"百合"},{"n":"恐怖","v":"恐怖"},{"n":"泡面番","v":"泡面番"},{"n":"恋爱","v":"恋爱"},{"n":"推理","v":"推理"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}],"3":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"科幻","v":"科幻"},{"n":"冒险","v":"冒险"},{"n":"战斗","v":"战斗"},{"n":"百合","v":"百合"},{"n":"奇幻","v":"奇幻"},{"n":"热血","v":"热血"},{"n":"搞笑","v":"搞笑"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}],"4":[{"name":"年份","key":"year","value":[{"n":"全部年份","v":""},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]},{"name":"类型","key":"class","value":[{"n":"全部类型","v":""},{"n":"搞笑","v":"搞笑"},{"n":"奇幻","v":"奇幻"},{"n":"治愈","v":"治愈"},{"n":"科幻","v":"科幻"},{"n":"喜剧","v":"喜剧"},{"n":"冒险","v":"冒险"},{"n":"动作","v":"动作"},{"n":"爱情","v":"爱情"}]},{"name":"排序","key":"by","value":[{"n":"最新","v":"time"},{"n":"人气","v":"hits"},{"n":"评分","v":"score"}]}]},"dygang":{"my_dianying":[{"name":"类型","key":"cateId","value":[{"n":"最新电影(默认)","v":"ys"},{"n":"经典高清","v":"bd"},{"n":"国配电影","v":"gy"},{"n":"经典港片","v":"gp"}]}],"my_dianshiju":[{"name":"类型","key":"cateId","value":[{"n":"国剧(默认)","v":"dsj"},{"n":"日韩剧","v":"dsj1"},{"n":"美剧","v":"yx"}]}]}};
 
-// Older config.json sources that use JSON APIs. This is prepended with register.js.
+// 旧版 config.json 中使用 JSON 接口的源，构建时与 register.js 一起加载。
 globalThis.leeLegacySources = [
-    { key: 'lee_iqiyi', name: '爱奇艺', type: 3, api: '/spider/lee_iqiyi/3', searchable: 1, quickSearch: 1, filterable: 0 },
     { key: 'lee_mgtv', name: '芒果TV', type: 3, api: '/spider/lee_mgtv/3', searchable: 1, quickSearch: 1, filterable: 0 },
     { key: 'lee_sp360', name: '360影视', type: 3, api: '/spider/lee_sp360/3', searchable: 1, quickSearch: 1, filterable: 1 },
 ];
@@ -205,16 +204,12 @@ globalThis.registerLeeLegacy = async function registerLeeLegacy(server) {
     }, { prefix: '/spider/lee_sp360/3' });
 };
 
-// HTML spiders from the jar's older config.json. Loaded before the bundled runtime.
+// 旧版 jar 配置中的 HTML 源，在打包运行时之前注册。
+// 只有分类接口实际读取筛选参数的站点才展示筛选入口。
 globalThis.leeLegacyHtmlSources = [
-    ['lee_xl720', '磁力 | 迅雷电影天堂'],
-    ['lee_sixv', '磁力 | 新6V电影网'],
-    ['lee_dygang', '磁力 | 电影港'],
-    ['lee_xunlei8', '磁力 | 迅雷吧'],
-    ['lee_piaohua', '磁力 | 新飘花电影网'],
     ['lee_dm84', '动漫 | 巴士'],
 ].map(([key, name]) => ({ key, name, type: 3, api: `/spider/${key}/3`, searchable: 1, quickSearch: 1,
-    filterable: ['lee_dygang', 'lee_xunlei8', 'lee_dm84'].includes(key) ? 1 : 0 }));
+    filterable: key === 'lee_dm84' ? 1 : 0 }));
 
 globalThis.registerLeeLegacyHtml = async function registerLeeLegacyHtml(server, bridge) {
     const https = require('node:https');
@@ -485,8 +480,1112 @@ globalThis.registerLeeLegacyHtml = async function registerLeeLegacyHtml(server, 
     }
 };
 
-// This file is prepended to the pinned, self-contained douer runtime at build time.
-// Keep it dependency-free so the device only needs to load index.js.
+// 4K影视网 / 4K电影网: both front ends use the same /api/show/v3 JSON API.
+globalThis.leeStaCafeSources = [
+    { key: 'lee_4k_yingshiwang', name: '4K影视网', type: 3, api: '/spider/lee_4k_yingshiwang/3', searchable: 1, quickSearch: 1, filterable: 0 },
+    { key: 'lee_4k_dianyingwang', name: '4K电影网', type: 3, api: '/spider/lee_4k_dianyingwang/3', searchable: 1, quickSearch: 1, filterable: 1 },
+];
+globalThis.registerLeeStaCafe = async function registerLeeStaCafe(server) {
+    const https = require('node:https');
+    const origin = 'https://www.sta-cafe.com';
+    const api = `${origin}/api/show/v3`;
+    const categories = [['1', '电影', '1'], ['2', '电视剧', '8'], ['3', '动漫', '16'], ['4', '综艺', '21']];
+    const movieNames = ['动作片', '喜剧片', '爱情片', '科幻片', '恐怖片', '剧情片', '战争片',
+        '国产剧', '香港剧', '韩国剧', '欧美剧', '台湾剧', '日本剧', '海外剧', '泰国剧',
+        '国产动漫', '日韩动漫', '欧美动漫', '港台动漫', '海外动漫',
+        '大陆综艺', '港台综艺', '日韩综艺', '欧美综艺'];
+    const movieGroup = (index) => index < 7 ? 0 : index < 15 ? 1 : index < 20 ? 2 : 3;
+    const movieClasses = movieNames.map((type_name, index) => ({ type_id: String(index + 1), type_name }));
+    const movieFilters = Object.fromEntries(movieClasses.map((item, index) => [item.type_id, [
+        { key: 'type', name: '类型', value: [{ n: '全部', v: '' }, ...movieClasses.filter((_, i) => movieGroup(i) === movieGroup(index))
+            .map(({ type_id, type_name }) => ({ n: type_name, v: type_id }))] },
+        { key: 'sort', name: '排序', value: [{ n: '最新', v: '0' }, { n: '最热', v: '1' }, { n: '评分', v: '2' }] },
+    ]]));
+    function fetch(path) {
+        return new Promise((resolve, reject) => {
+            const request = https.get(`${api}${path}`, { timeout: 15000, headers: {
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 Chrome/118.0.0.0 Mobile Safari/537.36',
+                Referer: `${origin}/`, Accept: 'application/json',
+            } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    try {
+                        if (response.statusCode < 200 || response.statusCode >= 300) throw new Error(`HTTP ${response.statusCode}`);
+                        const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+                        resolve(result.code === 0 ? result.data || {} : {});
+                    } catch (error) { reject(error); }
+                });
+            });
+            request.on('timeout', () => request.destroy(new Error('Site request timed out')));
+            request.on('error', reject);
+        });
+    }
+    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
+    const idOf = (body) => String(Array.isArray(body?.id) ? body.id[0] : body?.id || '');
+    const image = (value) => !value ? '' : value.startsWith('//') ? `https:${value}` : new URL(value, origin).href;
+    const card = (item) => ({ vod_id: String(item.vodId || ''), vod_name: String(item.vodName || ''),
+        vod_pic: image(String(item.vodPic || '')), vod_remarks: String(item.vodLastRemarks || '') });
+    async function recommendations() {
+        const out = [], seen = new Set();
+        const scan = (value) => {
+            if (!value || out.length >= 36) return;
+            if (Array.isArray(value)) { for (const item of value) scan(item); return; }
+            if (typeof value !== 'object') return;
+            if (value.vodId && value.vodName) {
+                const item = card(value);
+                if (!seen.has(item.vod_id)) { out.push(item); seen.add(item.vod_id); }
+            }
+            for (const item of Object.values(value)) scan(item);
+        };
+        try { scan(await fetch('/index')); } catch { /* the site can be unavailable */ }
+        return out;
+    }
+    const listing = (data, field, page) => {
+        const list = (data?.[field] || []).map(card);
+        return { list, page, pagecount: Math.max(page, Number(data?.total_page) || page + Number(list.length > 0)),
+            limit: 18, total: Number(data?.total) || list.length };
+    };
+    for (const source of globalThis.leeStaCafeSources) {
+        const isMovie = source.key === 'lee_4k_dianyingwang';
+        server.register(async (fastify) => {
+            fastify.post('/init', async () => ({}));
+            fastify.post('/home', async () => isMovie
+                ? { class: movieClasses, filters: movieFilters, list: await recommendations() }
+                : { class: categories.map(([type_id, type_name]) => ({ type_id, type_name })) });
+            fastify.post('/category', async (request) => {
+                const page = pageOf(request.body);
+                const id = String(request.body?.id || '');
+                const type = String(request.body?.extend?.type || (isMovie ? id : categories.find((item) => item[0] === id)?.[2]) || id);
+                return listing(await fetch(`/type/${encodeURIComponent(type)}/${page}`), 'vod_recent', page);
+            });
+            fastify.post('/detail', async (request) => {
+                const id = idOf(request.body);
+                if (!id) return { list: [] };
+                const data = await fetch(`/vod/${encodeURIComponent(id)}`);
+                if (!data.vodId) return { list: [] };
+                const plays = (data.vod_play || []).filter((item) => item?.vodPlayUrl);
+                return { list: [{ ...card(data), type_name: data.type?.typeName || '', vod_year: String(data.vodYear || ''),
+                    vod_area: data.vodArea || '', vod_actor: data.vodActor || '', vod_director: data.vodDirector || '',
+                    vod_content: data.vodContent || data.vodBlurb || '',
+                    vod_play_from: plays.map((item) => item.collectSource?.webName || '线路').join('$$$'),
+                    vod_play_url: plays.map((item) => item.vodPlayUrl).join('$$$') }] };
+            });
+            fastify.post('/search', async (request) => {
+                const page = pageOf(request.body);
+                return listing(await fetch(`/search/${encodeURIComponent(String(request.body?.wd || ''))}/${page}`), 'vods', page);
+            });
+            fastify.post('/play', async (request) => {
+                const id = idOf(request.body);
+                return { parse: 0, url: id.includes('$') ? id.slice(id.indexOf('$') + 1) : id,
+                    header: { Referer: `${origin}/` } };
+            });
+        }, { prefix: source.api });
+    }
+};
+
+globalThis.leeFourKmpSource = { key: 'lee_4kmp', name: '4KMP', type: 3,
+    api: '/spider/lee_4kmp/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeFourKmp = async function registerLeeFourKmp(server, bridge) {
+    const https = require('node:https');
+    const hosts = ['https://4kmp.com', 'https://www.4k-av.com', 'https://4k-av.com'];
+    let activeHost = hosts[0];
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36';
+    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
+    const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
+    const full = (value) => { try { return value ? new URL(value, activeHost).href : ''; } catch { return ''; } };
+    const pathOf = (category, page) => `/${category}${page === 1 ? '/' : `/page-${page}.html`}`;
+    function fetch(url, redirects = 0) {
+        return new Promise((resolve, reject) => {
+            const req = https.get(url, { timeout: 25000, headers: { 'User-Agent': ua,
+                'Accept-Language': 'zh-CN,zh;q=0.9' } }, (response) => {
+                if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location && redirects < 4) {
+                    response.resume();
+                    return resolve(fetch(new URL(response.headers.location, url).href, redirects + 1));
+                }
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    if (response.statusCode !== 200) return reject(new Error(`HTTP ${response.statusCode}`));
+                    const html = Buffer.concat(chunks).toString('utf8');
+                    if (/Cloudflare/.test(html.slice(0, 400))) return reject(new Error('Site challenge'));
+                    resolve(html);
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('Site request timed out')));
+            req.on('error', reject);
+        });
+    }
+    async function get(address) {
+        let path = String(address || '');
+        for (const host of hosts) if (path.startsWith(host)) { path = path.slice(host.length); break; }
+        if (!path.startsWith('/')) path = `/${path}`;
+        let last;
+        for (const host of [activeHost, ...hosts.filter((item) => item !== activeHost)]) {
+            try {
+                const html = await fetch(`${host}${path}`);
+                activeHost = host;
+                return html;
+            } catch (error) { last = error; }
+        }
+        throw last || new Error('No site mirror available');
+    }
+    function remark(name, tags) {
+        const episode = /(?:全|共|更新至)\s*\d+\s*集|第\s*[一二三四五六七八九十\d]+\s*季|\d+\s*集/.exec(name);
+        return episode ? episode[0].replace(/\s/g, '') : tags.slice(0, 3).join('、');
+    }
+    function cards(html, keepBlob = false) {
+        const $ = bridge.html(html);
+        const out = [];
+        let items = $('.NTMitem');
+        if (!items.length) items = $('.RTMitem');
+        items.each((_, element) => {
+            const item = $(element), a = item.find('.title a[href]').first();
+            const name = (a.find('h2').first().text() || a.attr('title') || '').trim();
+            if (!a.attr('href') || !name) return;
+            const tags = item.find('.tags span').toArray().map((tag) => $(tag).text().trim());
+            const year = item.find('.resyear label[title="年份"]').first().text().trim();
+            const image = item.find('img').first();
+            const vod = { vod_id: a.attr('href'), vod_name: name,
+                vod_pic: full(image.attr('src') || image.attr('data-src') || image.attr('data-original')),
+                vod_year: year, vod_remarks: remark(name, tags) };
+            if (keepBlob) vod._blob = [name, item.find('.info h3').first().text(), year,
+                ...tags, item.find('.videodesc p').first().text()].join(' ').toLowerCase();
+            out.push(vod);
+        });
+        return out;
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: [
+            { type_id: 'movie', type_name: '电影' }, { type_id: 'tv', type_name: '电视剧' },
+        ] }));
+        fastify.post('/category', async (request) => {
+            const page = pageOf(request.body), category = request.body?.id === 'tv' ? 'tv' : 'movie';
+            const html = await get(pathOf(category, page)), list = cards(html);
+            const pagecount = Number(/页次\s*\d+\s*\/\s*(\d+)/.exec(html)?.[1]) || page + Number(list.length > 0);
+            return { list, page, pagecount, limit: list.length, total: list.length * pagecount };
+        });
+        fastify.post('/detail', async (request) => {
+            const id = one(request.body?.id);
+            if (!id) return { list: [] };
+            const $ = bridge.html(await get(id));
+            const title = ($('#MainContent_titleh12 .MainTitle').first().text() || $('h1').first().text()).trim();
+            const pic = full($('.poster img').first().attr('src'));
+            const seasons = new Map();
+            if (id.includes('/tv/')) $('#rtlist li').each((_, element) => {
+                const li = $(element), name = (li.find('.stitle').first().text() || li.find('span').first().text()).trim();
+                if (!name) return;
+                const href = (li.find('a[href]').first().attr('href') || id).replace(/^\/(zh|en|ja|ko|es|pt|th|vi|ar|ru|hi|id|bn|fr|de|it)\//, '/');
+                const season = Number(/^[Ss](\d{1,2})[Ee]/.exec(name)?.[1] || 0);
+                if (!seasons.has(season)) seasons.set(season, []);
+                seasons.get(season).push(`${name.replace(/[$#]/g, '_')}$${full(href)}`);
+            });
+            const lines = [], groups = [];
+            if (seasons.size) {
+                const split = seasons.size > 1 && !seasons.has(0);
+                for (const [season, episodes] of [...seasons].sort((a, b) => a[0] - b[0])) {
+                    lines.push(split ? `第${season}季` : '4KMP');
+                    groups.push(episodes.join('#'));
+                }
+            } else {
+                lines.push('4KMP');
+                const video = full($('video source[src]').first().attr('src'));
+                groups.push(video ? `正片$${video}` : '');
+            }
+            return { list: [{ vod_id: id, vod_name: title, vod_pic: pic,
+                vod_play_from: lines.join('$$$'), vod_play_url: groups.join('$$$') }] };
+        });
+        fastify.post('/search', async (request) => {
+            const page = pageOf(request.body), needle = String(request.body?.wd || '').trim().toLowerCase();
+            const found = new Map();
+            if (needle) for (let p = 1; p <= 34; p++) {
+                const batches = await Promise.allSettled(['movie', 'tv'].map((category) => get(pathOf(category, p))));
+                for (const batch of batches) if (batch.status === 'fulfilled') for (const video of cards(batch.value, true)) {
+                    if (!video._blob.includes(needle)) continue;
+                    delete video._blob;
+                    found.set(video.vod_id, video);
+                }
+                if (found.size) break;
+            }
+            const list = [...found.values()];
+            return { list, page, pagecount: 1, limit: list.length, total: list.length };
+        });
+        fastify.post('/play', async (request) => {
+            let url = one(request.body?.id);
+            if (!/\.(m3u8|mp4)(?:$|[?#])/i.test(url)) {
+                const $ = bridge.html(await get(url));
+                url = full($('video source[src]').first().attr('src'));
+            }
+            return { parse: 0, url, header: { 'User-Agent': ua } };
+        });
+    }, { prefix: globalThis.leeFourKmpSource.api });
+};
+
+globalThis.leeFengYeSource = { key: 'lee_fengye4k', name: '枫叶4K', type: 3,
+    api: '/spider/lee_fengye4k/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeFengYe = async function registerLeeFengYe(server, bridge) {
+    const https = require('node:https');
+    const host = 'https://maihaolian.com';
+    const ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 Version/16.0 Mobile/15E148 Safari/604.1';
+    const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
+    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
+    function request(url, body) {
+        return new Promise((resolve, reject) => {
+            const req = https.request(url, { method: body ? 'POST' : 'GET', timeout: 15000,
+                headers: { 'User-Agent': ua, 'Accept-Language': 'zh-CN,zh;q=0.9',
+                    ...(body ? { 'Content-Type': 'application/x-www-form-urlencoded', Referer: 'https://www.ht10010.com/' } : {}) } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => response.statusCode >= 200 && response.statusCode < 300
+                    ? resolve(Buffer.concat(chunks).toString('utf8')) : reject(new Error(`HTTP ${response.statusCode}`)));
+            });
+            req.on('timeout', () => req.destroy(new Error('Site request timed out')));
+            req.on('error', reject);
+            if (body) req.write(body);
+            req.end();
+        });
+    }
+    const get = (path) => request(path.startsWith('http') ? path : `${host}${path}`);
+    const pic = (value) => String(value || '').startsWith('//') ? `https:${value}` : String(value || '').replace(/&amp;/g, '&');
+    function cards(html) {
+        const $ = bridge.html(html), seen = new Set(), list = [];
+        $('a.public-list-exp[href]').each((_, element) => {
+            const a = $(element), id = /\/detail\/(\d+)\.html/.exec(a.attr('href') || '')?.[1];
+            if (!id || seen.has(id)) return;
+            seen.add(id);
+            const image = a.find('img').first();
+            const tags = a.find('span.public-prt').toArray().map((tag) => $(tag).text());
+            list.push({ vod_id: id, vod_name: (a.attr('title') || image.attr('alt') || '').trim(),
+                vod_pic: pic(image.attr('data-src')),
+                vod_remarks: a.find('.ft2, .public-list-prb').first().text().trim(), vod_year: tags.join(',') });
+        });
+        return list;
+    }
+    const categories = [['/label/qq', '腾讯VIP精选'], ['/label/bli', 'B站VIP精选'], ['/label/youku', '优酷VIP精选'],
+        ['5', '红果短剧'], ['2', '电视剧'], ['1', '电影'], ['4', '动漫'], ['3', '综艺']]
+        .map(([type_id, type_name]) => ({ type_id, type_name }));
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: categories }));
+        fastify.post('/category', async (request) => {
+            const id = String(request.body?.id || ''), page = pageOf(request.body), ext = request.body?.extend || {};
+            let path;
+            if (id.startsWith('/label/')) path = `${id}/page/${page}.html`;
+            else {
+                const type = String(ext.class || id);
+                const area = String(ext.area || ''), genre = String(ext.genre || ''), year = String(ext.year || '');
+                const lang = String(ext.lang || ''), letter = String(ext.letter || ''), sort = String(ext.sort || '');
+                path = !(area + genre + year + lang + letter + sort)
+                    ? `/cupfox-list/${type}--------${page}---.html`
+                    : `/cupfox-list/${[type, area, sort, genre, lang, letter, '', '', page, '', '', year].join('-')}.html`;
+            }
+            const html = await get(path), list = cards(html);
+            const pagecount = Number(/href=["'][^"']*---(\d+)---[^"']*["'][^>]*>\s*尾页/.exec(html)?.[1])
+                || page + Number(list.length >= 24);
+            return { list, page, pagecount, limit: id.startsWith('/label/') ? 24 : 36, total: 9999 };
+        });
+        fastify.post('/detail', async (request) => {
+            const id = one(request.body?.id).split(',')[0].trim();
+            if (!id) return { list: [] };
+            const $ = bridge.html(await get(`/detail/${id}.html`));
+            let director = '', actor = '';
+            $('.slide-info').each((_, element) => {
+                const info = $(element).text().trim();
+                if (info.startsWith('导演：')) director = info.slice(3).trim();
+                if (info.startsWith('演员：')) actor = info.slice(3).trim();
+            });
+            const names = $('.anthology-tab a.swiper-slide').toArray().map((element) => $(element).text().trim());
+            const groups = [];
+            $('.anthology-list-box').each((_, block) => {
+                const episodes = [];
+                $(block).find('li a[href]').each((_, element) => {
+                    const a = $(element), play = /\/play\/(.*?)\.html/.exec(a.attr('href') || '')?.[1];
+                    if (play) episodes.push(`${a.text().trim().replace(/[$#]/g, '_')}$${play}`);
+                });
+                episodes.reverse();
+                if (episodes.length && groups.length < names.length) groups.push(episodes.join('#'));
+            });
+            return { list: [{ vod_id: id, vod_name: $('h3.slide-info-title').first().text().trim(),
+                vod_pic: pic($('img.lazy').first().attr('data-src')), vod_director: director, vod_actor: actor,
+                vod_content: $('#height_limit').first().text().trim(),
+                vod_play_from: names.slice(0, groups.length).join('$$$'), vod_play_url: groups.join('$$$') }] };
+        });
+        fastify.post('/search', async (request) => {
+            const page = pageOf(request.body), word = encodeURIComponent(String(request.body?.wd || ''));
+            const list = cards(await get(`/cupfox-search/${word}----------${page}---.html`));
+            return { list, page, pagecount: 1, limit: 36, total: list.length };
+        });
+        fastify.post('/play', async (request) => {
+            const id = one(request.body?.id), page = id.startsWith('http') ? id : `${host}/play/${id}.html`;
+            const html = await get(page), raw = /player_aaaa=(.*?)<\/script>/s.exec(html)?.[1];
+            if (raw) {
+                let player;
+                try { player = JSON.parse(raw); } catch { player = {}; }
+                const url = String(player.url || ''), source = String(player.from || '');
+                if (/^https?:\/\/.*\.(m3u8|mp4)(?:$|\?)/i.test(url)) return { parse: 0, url, header: { 'User-Agent': ua } };
+                const endpoint = source === 'YYNB' ? 'https://zzrs.mfdyvip.com/player/mplayer.php'
+                    : source === 'JD4K' ? 'https://fgsrg.hzqingshan.com/player/mplayer.php' : '';
+                if (endpoint && url) {
+                    const challenge = await get(`https://fgsrg.hzqingshan.com/player/?url=${encodeURIComponent(url)}`);
+                    const token = /data-te="(.*?)"/.exec(challenge)?.[1];
+                    if (token) {
+                        const result = JSON.parse(await request(endpoint, new URLSearchParams({ url, token }).toString()));
+                        if (result.code === 200 && result.url) return { parse: 0, url: result.url, header: { 'User-Agent': ua } };
+                    }
+                }
+            }
+            return { parse: 1, url: page };
+        });
+    }, { prefix: globalThis.leeFengYeSource.api });
+};
+
+globalThis.leeHqVodSource = { key: 'lee_hqvod4k', name: '高清点播4K', type: 3,
+    api: '/spider/lee_hqvod4k/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeHqVod = async function registerLeeHqVod(server, bridge) {
+    const https = require('node:https');
+    const host = 'https://hqvod.com';
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0 Safari/537.36';
+    const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
+    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
+    function get(path) {
+        return new Promise((resolve, reject) => {
+            const req = https.get(path.startsWith('http') ? path : `${host}${path}`, { timeout: 15000,
+                headers: { 'User-Agent': ua, Referer: `${host}/` } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => response.statusCode >= 200 && response.statusCode < 300
+                    ? resolve(Buffer.concat(chunks).toString('utf8')) : reject(new Error(`HTTP ${response.statusCode}`)));
+            });
+            req.on('timeout', () => req.destroy(new Error('Site request timed out')));
+            req.on('error', reject);
+        });
+    }
+    function cards(html) {
+        const $ = bridge.html(html), seen = new Set(), list = [];
+        $('.public-list-box').each((_, element) => {
+            const box = $(element), link = box.find('a[href^="/xiangqing/"]').first();
+            const id = /\/xiangqing\/(\d+)\.html/.exec(link.attr('href') || '')?.[1];
+            if (!id || seen.has(id)) return;
+            seen.add(id);
+            list.push({ vod_id: id, vod_name: String(link.attr('title') || ''),
+                vod_pic: String(link.find('img').first().attr('data-src') || ''),
+                vod_remarks: box.find('.public-list-prb').first().text().trim(),
+                vod_score: box.find('.public-prt').first().text().trim() });
+        });
+        return list;
+    }
+    const categories = [['1', '电影'], ['2', '电视剧'], ['3', '动漫'], ['4', '综艺']]
+        .map(([type_id, type_name]) => ({ type_id, type_name }));
+    const lines = (pairs) => pairs.map((pair) => pair.join('#')).join('$$$');
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => ({ class: categories, list: cards(await get('/')) }));
+        fastify.post('/category', async (request) => {
+            const id = String(request.body?.id || '1'), page = pageOf(request.body), ext = request.body?.extend || {};
+            const params = new URLSearchParams();
+            const kind = String(ext.class || ext['类型'] || ''), year = String(ext.year || ext['年份'] || '');
+            if (kind && kind !== '全部') params.set('class', kind);
+            if (year && year !== '全部') params.set('year', year);
+            if (ext.by === 'hits') params.set('sort', 'hits');
+            const query = params.toString();
+            const list = cards(await get(`/fenlei/${id}-${page}.html${query ? `?${query}` : ''}`));
+            return { list, page, pagecount: page + Number(list.length > 0), limit: list.length || 24, total: 9999 };
+        });
+        fastify.post('/detail', async (request) => {
+            const id = one(request.body?.id);
+            if (!id) return { list: [] };
+            const $ = bridge.html(await get(`/xiangqing/${id}.html`));
+            const title = $('.this-desc-title').first().text().trim();
+            if (!title) return { list: [] };
+            const info = $('.this-desc-info span').toArray().map((element) => $(element).text().trim());
+            const poster = $('.this-pic-bj').first().attr('style') || '';
+            const pic = /background-image:\s*url\(['"]?([^)'" ]+)/.exec(poster)?.[1] || '';
+            const names = $('a.swiper-slide').toArray().filter((element) => $(element).find('i.fa').length)
+                .map((element) => $(element).text().trim().replace(/\d+$/, '').trim());
+            const groups = [];
+            $('.anthology-list-box.none').each((_, element) => {
+                const episodes = [];
+                $(element).find('a.hide[href^="/bofang/"]').each((_, link) => {
+                    const a = $(link), name = a.text().trim();
+                    episodes.push(`${/^\d{1,4}$/.test(name) ? `第${Number(name)}集` : name.replace(/[$#]/g, '_')}$${a.attr('href')}`);
+                });
+                if (episodes.length && groups.length < names.length) groups.push(episodes.join('#'));
+            });
+            const order = groups.map((_, index) => index).sort((a, b) =>
+                Number(!/4k|2160/i.test(names[a])) - Number(!/4k|2160/i.test(names[b])));
+            const sortedNames = order.map((index) => names[index]);
+            const sortedGroups = order.map((index) => groups[index]);
+            let remarks = info[3] || '';
+            if (remarks.includes('完结') && sortedGroups.length) remarks = `已完结·全${sortedGroups[0].split('#').length}集`;
+            return { list: [{ vod_id: id, vod_name: title, vod_pic: pic, vod_score: info[0] || '',
+                vod_year: info[1] || '', vod_area: info[2] || '', vod_remarks: remarks,
+                vod_content: $('meta[name="description"]').first().attr('content') || '',
+                vod_play_from: sortedNames.join('$$$'), vod_play_url: sortedGroups.join('$$$') }] };
+        });
+        fastify.post('/search', async (request) => {
+            const page = pageOf(request.body), word = encodeURIComponent(String(request.body?.wd || ''));
+            const list = cards(await get(`/sousuo/-------------.html?wd=${word}&page=${page}`));
+            return { list, page, pagecount: page + Number(list.length > 0), limit: list.length || 15, total: 9999 };
+        });
+        fastify.post('/play', async (request) => {
+            const id = one(request.body?.id), page = id.startsWith('http') ? id : `${host}${id}`;
+            let match;
+            try { match = /https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4|flv|ts)/i.exec(await get(page)); }
+            catch { match = null; }
+            return { parse: match ? 0 : 1, url: match ? match[0] : page,
+                header: { 'User-Agent': ua, Referer: `${host}/` } };
+        });
+    }, { prefix: globalThis.leeHqVodSource.api });
+};
+
+globalThis.leeYingTanSource = { key: 'lee_yingtan4k', name: '影探4K', type: 3,
+    api: '/spider/lee_yingtan4k/3', searchable: 1, quickSearch: 1, filterable: 1 };
+
+globalThis.registerLeeYingTan = async function registerLeeYingTan(server) {
+    const https = require('node:https');
+    const http = require('node:http');
+    const crypto = require('node:crypto');
+    const host = 'http://cms.lyyytv.cn';
+    const cmsKey = 'wP5bvxoc3yv7FoBQENFZuAF0EUYr4LTy';
+    const parser = 'https://mk1080p.top/zzbh.php?url=';
+    const webParsers = ['https://jx.xmflv.com/?url=', 'https://www.playm3u8.cn/jiexi.php?url=',
+        'https://bd.jx.cn/?url=', 'https://jx.77flv.cc/?url=', 'https://jx.xymp4.cc/?url='];
+    const normalize = (value) => String(value || '').replace(/[\s:：·（）()\-_,，。.[\]【】!！?？]/g, '').toLowerCase();
+    async function juxiafanLines(title) {
+        if (!title) return [[], []];
+        const route = '/spider/lee_juxiafan4k/3/';
+        const search = await server.inject({ method: 'POST', url: `${route}search`, payload: { wd: title, page: '1' } });
+        if (search.statusCode !== 200) return [[], []];
+        const list = search.json().list || [], needle = normalize(title);
+        const item = list.find((entry) => normalize(entry.vod_name) === needle)
+            || list.find((entry) => {
+                const name = normalize(entry.vod_name);
+                return name && (name.includes(needle) || needle.includes(name));
+            });
+        if (!item?.vod_id) return [[], []];
+        const detail = await server.inject({ method: 'POST', url: `${route}detail`, payload: { id: item.vod_id } });
+        if (detail.statusCode !== 200) return [[], []];
+        const vod = detail.json().list?.[0] || {}, names = String(vod.vod_play_from || '').split('$$$');
+        const from = [], urls = [];
+        for (const [index, group] of String(vod.vod_play_url || '').split('$$$').entries()) {
+            const flag = names[index] || `线路${index + 1}`;
+            const episodes = group.split('#').filter(Boolean).map((part) => {
+                const cut = part.indexOf('$');
+                const name = cut < 0 ? part : part.slice(0, cut);
+                const id = cut < 0 ? part : part.slice(cut + 1);
+                return `${name.replace(/[$#]/g, '_')}$jxf@@${flag}@@${id}`;
+            });
+            if (episodes.length) { from.push(`剧下饭4K·${flag}`); urls.push(episodes.join('#')); }
+        }
+        return [from, urls];
+    }
+    const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
+    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
+    function get(url) {
+        return new Promise((resolve, reject) => {
+            const req = (url.startsWith('http:') ? http : https).get(url, { timeout: 20000, headers: { 'User-Agent': 'okhttp/4.12.0' } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    try {
+                        if (response.statusCode < 200 || response.statusCode >= 300) throw new Error(`HTTP ${response.statusCode}`);
+                        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')));
+                    } catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('Site request timed out')));
+            req.on('error', reject);
+        });
+    }
+    function decrypt(ciphertext, key, iv) {
+        const cipher = crypto.createDecipheriv('aes-128-cbc', Buffer.from(key), Buffer.from(iv));
+        return Buffer.concat([cipher.update(Buffer.from(ciphertext, 'base64')), cipher.final()]).toString('utf8');
+    }
+    function lvdou(value) {
+        const raw = String(value || '');
+        if (!raw.startsWith('lvdou+')) return raw;
+        try { return decrypt(raw.slice(7), cmsKey.slice(0, 16), cmsKey.slice(16)); } catch { return raw; }
+    }
+    function ldmax(input) {
+        let value = String(input || '');
+        for (let depth = 0; depth <= 5; depth++) {
+            try { value = Buffer.from(value.replace(/\s/g, ''), 'base64').toString('utf8').trim(); }
+            catch { return value; }
+            if (!value.includes('ldmax.cooom')) return value;
+            const path = value.replace(/^https?:\/\/ldmax\.cooom\//, '');
+            if (path.length < 16) return '';
+            const key = [...path.slice(0, 16)].reverse().join('');
+            try { value = decrypt(path.slice(16), key, key); } catch { return ''; }
+        }
+        return value;
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => {
+            const data = await get(`${host}/api.php/app/nav?token=`);
+            const classes = [], filters = {};
+            for (const item of data.list || []) {
+                const id = String(item.type_id || '');
+                classes.push({ type_id: id, type_name: item.type_name || '' });
+                const options = [];
+                for (const key of ['class', 'area', 'lang', 'year', 'letter', 'by', 'sort']) {
+                    const values = String(item.type_extend?.[key] || '').split(',').map((v) => v.trim()).filter(Boolean);
+                    if (values.length) options.push({ key, name: key, value: values.map((v) => ({ n: v, v })) });
+                }
+                if (options.length) filters[id] = options;
+            }
+            return { class: classes, filters };
+        });
+        fastify.post('/category', async (request) => {
+            const query = new URLSearchParams({ tid: String(request.body?.id || ''), pg: String(pageOf(request.body)), limit: '18' });
+            for (const key of ['class', 'area', 'lang', 'year']) {
+                const value = request.body?.extend?.[key];
+                if (value) query.set(key, String(value));
+            }
+            return get(`${host}/api.php/app/video?${query}`);
+        });
+        fastify.post('/detail', async (request) => {
+            const id = one(request.body?.id);
+            if (!id) return { list: [] };
+            const result = await get(`${host}/api.php/app/video_detail?id=${encodeURIComponent(id)}`);
+            const vod = result.data;
+            if (!vod) return { list: [] };
+            const names = String(vod.vod_play_from || '').split('$$$');
+            const groups = String(vod.vod_play_url || '').split('$$$');
+            const from = [], urls = [];
+            groups.forEach((group, index) => {
+                if (!group) return;
+                const episodes = group.split('#').filter(Boolean).map((episode) => {
+                    const cut = episode.indexOf('$');
+                    return cut < 0 ? lvdou(episode) : `${episode.slice(0, cut).replace(/[$#]/g, '_')}$${lvdou(episode.slice(cut + 1))}`;
+                });
+                from.push(`影探·${names[index]?.trim() || `线路${index + 1}`}`);
+                urls.push(episodes.join('#'));
+            });
+            try {
+                const [extraFrom, extraUrls] = await juxiafanLines(vod.vod_name);
+                from.push(...extraFrom);
+                urls.push(...extraUrls);
+            } catch { /* the optional source may be unavailable */ }
+            if (from.length) {
+                delete vod.vod_url_with_player;
+                vod.vod_play_from = from.join('$$$');
+                vod.vod_play_url = urls.join('$$$');
+            }
+            return { list: [vod] };
+        });
+        fastify.post('/search', async (request) => {
+            const page = pageOf(request.body);
+            const data = await get(`${host}/api.php/app/search?text=${encodeURIComponent(String(request.body?.wd || ''))}&pg=${page}`);
+            return { list: (data.list || []).map(({ type, ...item }) => item), page };
+        });
+        fastify.post('/play', async (request) => {
+            let token = one(request.body?.id);
+            if (token.startsWith('jxf@@')) {
+                const [, flag, ...parts] = token.split('@@');
+                const id = parts.join('@@');
+                try {
+                    const result = await server.inject({ method: 'POST', url: '/spider/lee_juxiafan4k/3/play', payload: { flag, id } });
+                    if (result.statusCode === 200 && result.json().url) return result.json();
+                } catch { /* fall through to the native parser */ }
+                token = id;
+            }
+            const url = lvdou(token).trim();
+            if (/^https?:\/\/.*(?:\.(?:mp4|m3u8|flv|avi|mkv|ts|mov|wmv|webm)(?:[?#].*)?|lyyytv\.cn\/.*)$/.test(url))
+                return { parse: 0, url };
+            const decoded = ldmax(url);
+            if (decoded.startsWith('http')) {
+                const parsed = await get(`${parser}${encodeURIComponent(decoded)}`).catch(() => ({}));
+                const stream = ldmax(parsed.url);
+                if (parsed.code === 200 && stream.startsWith('http')) return { parse: 0, url: stream };
+            }
+            if (url.startsWith('http')) return { parse: 1,
+                url: `${webParsers[url.length % webParsers.length]}${encodeURIComponent(url)}` };
+            return { jx: 1, parse: 0, url };
+        });
+    }, { prefix: globalThis.leeYingTanSource.api });
+};
+
+globalThis.leeJuXiaFanSource = { key: 'lee_juxiafan4k', name: '剧下饭4K', type: 3,
+    api: '/spider/lee_juxiafan4k/3', searchable: 1, quickSearch: 1, filterable: 0 };
+
+globalThis.registerLeeJuXiaFan = async function registerLeeJuXiaFan(server) {
+    const http = require('node:http');
+    const crypto = require('node:crypto');
+    const hosts = ['http://manian.juxiafan.com', 'http://195.225.24.128:6213', 'http://jugaoqing.com',
+        'http://jumianfei.com', 'http://juyongjiu.com', 'http://kuailezhuiju2.com',
+        'http://zhuiju666.com', 'http://194.147.100.155:7744'];
+    const ua = 'okhttp/4.12.0', key = Buffer.from('kZ6fT8oF6oM8eX6lF7eH2rJ3pW7gW0kC');
+    const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
+    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
+    function request(url, body, contentType) {
+        return new Promise((resolve, reject) => {
+            const target = new URL(url), mod = target.protocol === 'https:' ? require('node:https') : http;
+            const req = mod.request(url, { method: body === undefined ? 'GET' : 'POST', timeout: 12000,
+                headers: { 'User-Agent': ua, ...(contentType ? { 'Content-Type': contentType } : {}) } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    try {
+                        if (response.statusCode < 200 || response.statusCode >= 300) throw new Error(`HTTP ${response.statusCode}`);
+                        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')));
+                    } catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('Site request timed out')));
+            req.on('error', reject);
+            if (body !== undefined) req.write(body);
+            req.end();
+        });
+    }
+    async function post(path, params = {}, form = false) {
+        const values = { ...params, timestamp: String(Math.floor(Date.now() / 1000)) };
+        const sorted = Object.entries(values).sort(([a], [b]) => a.localeCompare(b));
+        const concat = sorted.map(([k, v]) => `${k}=${form ? encodeURIComponent(String(v)).replace(/%20/g, '+') : v}`).join('&');
+        const cipher = crypto.createCipheriv('aes-256-ecb', key, null);
+        const signature = Buffer.concat([cipher.update(concat, 'utf8'), cipher.final()]).toString('base64');
+        const body = form ? new URLSearchParams({ ...values, datasign: signature }).toString()
+            : JSON.stringify({ ...values, datasign: signature });
+        let last;
+        for (const host of hosts) {
+            try { return await request(`${host}${path}`, body, form ? 'application/x-www-form-urlencoded'
+                : 'application/json;charset=UTF-8'); } catch (error) { last = error; }
+        }
+        throw last || new Error('No site mirror available');
+    }
+    const get = async (path) => {
+        let last;
+        for (const host of hosts) {
+            try { return await request(path.startsWith('http') ? path : `${host}${path}`); }
+            catch (error) { last = error; if (path.startsWith('http')) break; }
+        }
+        throw last || new Error('No site mirror available');
+    };
+    function listing(response, page, newest = false) {
+        const data = response.data || {};
+        const list = (data.list || []).filter((item) => item.id).map((item) => ({ vod_id: String(item.id),
+            vod_name: item.name || '', vod_pic: item.videoPic || '', vod_remarks: item.remarks || '' }));
+        if (newest) list.sort((a, b) => Number(b.vod_id) - Number(a.vod_id));
+        return { list, page, pagecount: Math.max(page, Number(data.totalPage) || 1),
+            limit: Number(data.limit) || 20, total: Number(data.totalCount) || 0 };
+    }
+    async function detail(id) {
+        return (await post('/api/v1/video/videoDetails', { id }, true)).data || {};
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => ({}));
+        fastify.post('/home', async () => {
+            let response;
+            for (const mirror of hosts) {
+                try { response = await request(`${mirror}/api/v1/video/classifies`, '', 'application/x-protobuf'); break; }
+                catch { /* try another mirror */ }
+            }
+            response ||= {};
+            const classes = (response.data || []).filter((item) => item.id && item.name)
+                .map((item) => ({ type_id: String(item.id), type_name: item.name }))
+                .sort((a, b) => Number(a.type_id) - Number(b.type_id));
+            if (!classes.some((item) => item.type_id === '22023')) classes.push({ type_id: '22023', type_name: '直播' });
+            return { class: classes, filters: {}, list: [] };
+        });
+        fastify.post('/category', async (request) => {
+            const id = Number(request.body?.id) || 0, page = pageOf(request.body);
+            if (id === 22023) {
+                const data = (await get('/api/v1/video/liveVideo')).data || {};
+                return listing({ data }, 1);
+            }
+            let response = listing(await post('/api/v1/video/index', { pageNum: page, typeId: id }), page);
+            if (response.list.length < 10) response = listing(await post('/api/v1/video/search',
+                { keyword: '', typeId: id, pageNum: page }), page, true);
+            return response;
+        });
+        fastify.post('/detail', async (request) => {
+            const id = one(request.body?.id);
+            if (!id) return { list: [] };
+            const data = await detail(id), from = [], groups = [], seen = new Map();
+            for (const [sourceIndex, source] of (data.playerSource || []).entries()) {
+                const episodes = source.episodes || [];
+                if (!episodes.length) continue;
+                const name = source.sourceName || '剧下饭', count = (seen.get(name) || 0) + 1;
+                seen.set(name, count);
+                from.push(count > 1 ? `${name}${count}` : name);
+                groups.push(episodes.map((episode, index) =>
+                    `${String(episode.episodeName || `第${index + 1}集`).replace(/[$#]/g, '_')}$${id}@@${sourceIndex}_${index + 1}`).join('#'));
+            }
+            if (!groups.length) return { list: [] };
+            return { list: [{ vod_id: String(data.id || id), vod_name: data.name || '', vod_pic: data.videoPic || '',
+                vod_actor: data.actor || '', vod_director: data.director || '', vod_remarks: data.remarks || '',
+                vod_content: data.content || '', vod_year: data.year || '', vod_area: data.area || '',
+                vod_play_from: from.join('$$$'), vod_play_url: groups.join('$$$') }] };
+        });
+        fastify.post('/search', async (request) => {
+            const page = pageOf(request.body), keyword = decodeURIComponent(String(request.body?.wd || '').trim());
+            return listing(await post('/api/v1/video/search', { keyword, pageNum: page }), page, true);
+        });
+        fastify.post('/play', async (request) => {
+            const id = one(request.body?.id), exact = /^(.*)@@(\d+)_(\d+)$/.exec(id);
+            const match = exact || /^(.*)_(\d+)$/.exec(id), header = { 'User-Agent': ua };
+            if (!match) return { parse: 0, url: id, header };
+            const data = await detail(match[1]);
+            const selected = String(request.body?.flag || '');
+            const sources = exact ? [data.playerSource?.[Number(exact[2])]].filter(Boolean)
+                : [...(data.playerSource || [])].sort((a, b) =>
+                    Number(b.sourceName === selected) - Number(a.sourceName === selected));
+            for (const source of sources) {
+                const episode = source.episodes?.[Number(exact ? exact[3] : match[2]) - 1];
+                if (!episode) continue;
+                const code = String(episode.playerCode || '');
+                if (source.parseUrl && code) {
+                    const parsed = await get(`${source.parseUrl}${code}`).catch(() => ({}));
+                    if (parsed.url) return { parse: 0, url: parsed.url, header };
+                }
+                if (code && !code.startsWith('http')) {
+                    const parsed = await post('/api/v1/player/analysisUrl',
+                        { from: source.sourceCode || '', code }, true).catch(() => ({}));
+                    const url = String(parsed.data || code);
+                    if (source.sourceCode === 'huya') header.Referer = 'https://www.huya.com/';
+                    return { parse: 0, url, header };
+                }
+                if (code) return { parse: 0, url: code, header };
+            }
+            return { parse: 0, url: '', header };
+        });
+    }, { prefix: globalThis.leeJuXiaFanSource.api });
+};
+
+globalThis.leeFourKApiSource = { key: 'lee_4k_yingshi', name: '4K影视', type: 3,
+    api: '/spider/lee_4k_yingshi/3', searchable: 1, quickSearch: 1, filterable: 1 };
+
+globalThis.registerLeeFourKApi = async function registerLeeFourKApi(server) {
+    const http = require('node:http');
+    const crypto = require('node:crypto');
+    const defaultHost = 'http://43.248.2.106:9001';
+    const ua = 'okhttp/3.12.1';
+    const device = 'a1b2c3d4e5f67890';
+    const sessionTtl = 20 * 3600 * 1000;
+    const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
+    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
+    function request(url, params, headers = {}) {
+        return new Promise((resolve, reject) => {
+            const target = new URL(url), mod = target.protocol === 'https:' ? require('node:https') : http;
+            const body = params === undefined ? undefined : new URLSearchParams(params).toString();
+            const req = mod.request(url, { method: body === undefined ? 'GET' : 'POST', timeout: 15000,
+                headers: { 'User-Agent': ua, 'app-platform': 'android', ...headers,
+                    ...(body === undefined ? {} : { 'Content-Type': 'application/x-www-form-urlencoded' }) } }, (response) => {
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => {
+                    try {
+                        if (response.statusCode < 200 || response.statusCode >= 300) throw new Error(`HTTP ${response.statusCode}`);
+                        resolve(Buffer.concat(chunks).toString('utf8'));
+                    } catch (error) { reject(error); }
+                });
+            });
+            req.on('timeout', () => req.destroy(new Error('Site request timed out')));
+            req.on('error', reject);
+            if (body !== undefined) req.write(body);
+            req.end();
+        });
+    }
+    let session;
+    async function client() {
+        if (session && session.expires > Date.now()) return session;
+        let host = defaultHost;
+        try {
+            const raw = (await request(defaultHost)).trim();
+            const discovered = raw.startsWith('http') ? raw.split(/\s/)[0] : JSON.parse(raw).domain;
+            if (discovered?.startsWith('http')) host = discovered.replace(/\/$/, '');
+        } catch { /* use default */ }
+        const pub = JSON.parse(await request(`${host}/api.php/qijiappapi.index/getPublicKey`));
+        const publicKey = String(pub.data?.public_key || '').replace(/\\\//g, '/');
+        const secret = crypto.randomBytes(64).toString('hex');
+        const encrypted = crypto.publicEncrypt({ key: publicKey, padding: crypto.constants.RSA_PKCS1_PADDING }, Buffer.from(secret));
+        const result = JSON.parse(await request(`${host}/api.php/qijiappapi.index/handshake`, {
+            encrypted_key: encrypted.toString('base64'), device_id: device, timestamp: Math.floor(Date.now() / 1000),
+        }));
+        if (result.code !== 1 || !result.data?.session_id) throw new Error('4K影视 handshake failed');
+        session = { host, sid: result.data.session_id, key: Buffer.from(secret.slice(0, 32), 'hex'),
+            iv: Buffer.from(secret.slice(32, 64), 'hex'), expires: Date.now() + sessionTtl };
+        return session;
+    }
+    async function call(method, params = {}) {
+        const c = await client();
+        const result = JSON.parse(await request(`${c.host}/api.php/qijiappapi.index/${method}`, params,
+            { 'app-session-id': c.sid }));
+        if (result.code !== 1) return {};
+        if (typeof result.data !== 'string') return result.data || {};
+        try {
+            const decipher = crypto.createDecipheriv('aes-128-cbc', c.key, c.iv);
+            return JSON.parse(Buffer.concat([decipher.update(Buffer.from(result.data, 'base64')),
+                decipher.final()]).toString('utf8'));
+        } catch { return {}; }
+    }
+    const card = (item) => ({ vod_id: String(item.vod_id || ''), vod_name: item.vod_name || '',
+        vod_pic: String(item.vod_pic || '').replace(/\\\//g, '/'), vod_remarks: item.vod_remarks || '' });
+    const classes = new Map();
+    const filters = {};
+    let homeVideos = [];
+    async function warmup() {
+        const data = await call('initV119', { device_id: device, app_version: '6.0.4' });
+        classes.clear();
+        homeVideos = [];
+        for (const type of data.type_list || []) {
+            const id = String(type.type_id);
+            classes.set(id, String(type.type_name || id));
+            homeVideos.push(...(type.recommend_list || []).map(card));
+            let ext;
+            try { ext = JSON.parse(type.type_extend || '{}'); } catch { ext = {}; }
+            const choices = [];
+            for (const [key, name] of [['class', '类型'], ['area', '地区'], ['year', '年份'], ['lang', '语言']]) {
+                const values = String(ext[key] || '').split(',').map((v) => v.trim()).filter(Boolean);
+                if (values.length) choices.push({ key, name, value: [{ n: '全部', v: '' },
+                    ...values.map((v) => ({ n: v, v }))] });
+            }
+            if (choices.length) filters[id] = choices;
+        }
+        if (!classes.size) for (const [id, name] of [['0', '全部'], ['1', '电视剧'], ['2', '动漫'],
+            ['3', '电影'], ['4', '综艺'], ['5', '短剧'], ['21', '直播'], ['22', '少儿']]) classes.set(id, name);
+        homeVideos = [...new Map(homeVideos.map((vod) => [vod.vod_id, vod])).values()].slice(0, 60);
+    }
+    function listing(data, page) {
+        const list = (data?.recommend_list || []).map(card);
+        return { list, page, pagecount: page + Number(list.length >= 30), limit: 30, total: list.length };
+    }
+    server.register(async (fastify) => {
+        fastify.post('/init', async () => { await warmup(); return {}; });
+        fastify.post('/home', async () => {
+            if (!classes.size) await warmup();
+            return { class: [...classes].map(([type_id, type_name]) => ({ type_id, type_name })),
+                filters, list: homeVideos };
+        });
+        fastify.post('/category', async (request) => {
+            const ext = request.body?.extend || {}, page = pageOf(request.body);
+            return listing(await call('typeFilterVodList', {
+                type_id: request.body?.id || '', page, area: ext.area || '', year: ext.year || '',
+                lang: ext.lang || '', class: ext.class || '', sort: ext.sort || '',
+            }), page);
+        });
+        fastify.post('/detail', async (request) => {
+            const id = one(request.body?.id);
+            if (!/^\d+$/.test(id)) return { list: [] };
+            const data = await call('vodDetail3', { vod_id: id }), vod = data.vod || {};
+            const from = [], groups = [];
+            for (const play of data.vod_play_list || []) {
+                const info = play.player_info || {}, name = info.show || play.from || '线路';
+                let episodes = play.urls || [];
+                if (typeof episodes === 'string') {
+                    try { episodes = JSON.parse(episodes); } catch { episodes = []; }
+                }
+                if (!Array.isArray(episodes) || !episodes.length) continue;
+                from.push(name);
+                groups.push(episodes.map((episode, index) => {
+                    const payload = episode.url?.startsWith('http')
+                        ? { u: episode.url, t: episode.token || '', p: episode.parse_api_url || '',
+                            ua: info.user_agent || ua, h: info.headers || {} }
+                        : { p: info.parse || episode.parse_api_url || '', t: String(info.player_parse_type || '1'),
+                            u: episode.url || '', tok: episode.token || '', ua: info.user_agent || ua,
+                            h: info.headers || {} };
+                    const prefix = episode.url?.startsWith('http') ? 'D|' : 'P|';
+                    return `${String(episode.name || index + 1).replace(/[$#]/g, '_')}$${prefix}${Buffer.from(JSON.stringify(payload)).toString('base64')}`;
+                }).join('#'));
+            }
+            return { list: [{ ...card(vod), type_name: String(vod.vod_class || '').split(',')[0],
+                vod_year: vod.vod_year || '', vod_area: vod.vod_area || '', vod_actor: vod.vod_actor || '',
+                vod_director: vod.vod_director || '', vod_content: String(vod.vod_blurb || '').replace(/\\n/g, '\n'),
+                vod_play_from: from.join('$$$'), vod_play_url: groups.join('$$$') }] };
+        });
+        fastify.post('/search', async (request) => {
+            const keyword = String(request.body?.wd || '').trim(), page = pageOf(request.body);
+            if (!keyword) return { list: [], page, pagecount: page, limit: 30, total: 0 };
+            const result = await call('searchList', { wd: keyword, page });
+            let list = (result.search_list || []).filter((item) =>
+                `${item.vod_name || ''} ${item.vod_actor || ''}`.toLowerCase().includes(keyword.toLowerCase())).map(card);
+            if (list.length < 5) {
+                const fallback = await Promise.allSettled(['1', '2', '3', '4', '5'].map((id) =>
+                    call('typeFilterVodList', { type_id: id, page: 1, area: '', year: '', lang: '', class: '', sort: '' })));
+                for (const batch of fallback) if (batch.status === 'fulfilled') list.push(...(batch.value.recommend_list || [])
+                    .filter((item) => `${item.vod_name || ''} ${item.vod_actor || ''}`.toLowerCase().includes(keyword.toLowerCase())).map(card));
+            }
+            list = [...new Map(list.map((item) => [item.vod_id, item])).values()].slice(0, 30);
+            return { list, page, pagecount: page + Number(list.length >= 30), limit: 30, total: list.length };
+        });
+        fastify.post('/play', async (request) => {
+            const id = one(request.body?.id);
+            if (!id.startsWith('D|') && !id.startsWith('P|')) return { parse: 0, url: id, header: { 'User-Agent': ua } };
+            let info;
+            try { info = JSON.parse(Buffer.from(id.slice(2), 'base64').toString('utf8')); }
+            catch { return { parse: 0, url: '', msg: '参数错误' }; }
+            const headers = { 'User-Agent': info.ua || ua, ...(info.h || {}) };
+            if (id.startsWith('D|')) return { parse: 0, url: info.u || '', header: headers };
+            let url = '';
+            if (String(info.t) === '2' && info.p) {
+                try {
+                    const parsed = JSON.parse(await request(`${info.p}${info.u}${info.tok ? `&token=${encodeURIComponent(info.tok)}` : ''}`));
+                    url = parsed.url || '';
+                } catch { url = ''; }
+            } else {
+                try {
+                    const key = Buffer.from('FTgP4Gq8zPiqbt7M');
+                    const cipher = crypto.createCipheriv('aes-128-cbc', key, key);
+                    const encoded = Buffer.concat([cipher.update(String(info.u || ''), 'utf8'), cipher.final()]).toString('base64');
+                    const parsed = await call('vodParse', { url: encoded, parse_api: info.p || '', token: info.tok || '',
+                        player_parse_type: info.t || '1', base_api: `${info.p || ''}${info.u || ''}` });
+                    url = parsed.url || '';
+                    if (!url && typeof parsed.json === 'string') try { url = JSON.parse(parsed.json).url || ''; } catch { /* invalid parse */ }
+                } catch { url = ''; }
+            }
+            return { parse: 0, url: String(url).replace(/\\\//g, '/'), header: headers,
+                ...(url ? {} : { msg: '解析失败，请换线路' }) };
+        });
+    }, { prefix: globalThis.leeFourKApiSource.api });
+};
+
+// 咕噜咕噜与橘汁共用 v2 加密协议，频道分页格式各自保留。
+globalThis.leeGuluSources = [
+    { key: 'lee_gulu4k', name: '咕噜咕噜4K', type: 3, api: '/spider/lee_gulu4k/3', searchable: 1, quickSearch: 1, filterable: 1 },
+    { key: 'lee_juzi4k', name: '橘汁4K', type: 3, api: '/spider/lee_juzi4k/3', searchable: 1, quickSearch: 1, filterable: 1 },
+];
+globalThis.registerLeeGulu = async function registerLeeGulu(server) {
+    const crypto = require('node:crypto');
+    const zlib = require('node:zlib');
+    const http = require('node:http');
+    const https = require('node:https');
+    const BASE = 'http://103.45.132.22:19987/app/bn/v2';
+    const UA = 'Dalvik/2.1.0 (Linux; U; Android 11; Pixel 4)';
+    const cat = [['movie','电影',8],['tv','电视剧',9],['variety','综艺',10],['anime','动漫',11],['short','短剧',12],['doc','纪录片',6],['cn','大陆剧',34],['hk','港剧',41],['tw','台剧',42],['us','美剧',35],['kr','韩剧',36],['jp','日剧',38],['th','泰剧',39],['uk','英剧',37],['ru','俄剧',45]];
+    const orange = { '1':['推荐',48], '2':['电影',2], '3':['剧集',3], '5':['短剧',61], '6':['动漫',59], '7':['综艺',57] };
+    const orangeRanks = { '2':[['2','全部'],['50','今日热门'],['79','海外上升榜'],['65','豆瓣Top250']], '3':[['3','全部'],['55','今日热门'],['67','美剧人气榜'],['68','韩剧热播榜'],['69','日剧热度榜']], '6':[['59','今日热门'],['72','日漫人气榜'],['73','少儿必看榜']], '7':[['57','今日热门'],['75','海外综艺榜']] };
+    const lines = {dyttm3u8:'电影天堂',bfzym3u8:'暴风资源',lzm3u8:'量子资源',ffm3u8:'非凡资源',qq:'腾讯视频',qiyi:'爱奇艺',youku:'优酷',mgtv:'芒果TV',newxfyun:'咕噜4K',xfyun:'咕噜4K二线',CO4K:'咖啡4K超清',jplink:'金牌极速',rose:'玫瑰4K',NBY:'蚂蚁资源',qsvip:'旋风VIP',qingshan:'青山资源',JD4K:'鲸宝4K',iyf4k:'爱壹帆4K'};
+    const cipherNames = {'CO4K_':'咖啡4K','rose_':'咖啡4K','NBY-':'蚂蚁','qsvip-':'熊出没','qingshan-':'熊出没','JP-':'旋风金牌','xfy-':'新咕噜4K','JD-':'鲸澜解析'};
+    const flagNames = {'咕噜4K':'新咕噜4K','咕噜4K二线':'咕噜4K总接口','玫瑰4K':'咖啡4K','咖啡4K':'咖啡4K','金牌极速':'旋风金牌','蚂蚁资源':'蚂蚁','旋风VIP':'熊出没','青山资源':'熊出没','鲸宝4K':'鲸澜解析'};
+    const fallback = {'咖啡4K':'https://co4k.1ljx.com:32010/api/?key=6db7285d-c228-4cee-918e-67a01ef7c3f8&url=','蚂蚁':'https://api.nbyjson.top:7788/api/?key=8LJohkjTZHC2F9ct48&url=','熊出没':'https://jf.hxx2023.cc/api?key=Uw5rZokFSAywqcLN&url=','旋风金牌':'http://111.170.58.215:4470/api.php?id=','鲸澜解析':'https://jiexi.jdyx.pro/api/?key=8a94da668d980bae94fbc8dd3fd115ce&url=','咕噜4K总接口':'https://xfyvideochandi.online/p.php?id=','新咕噜4K':'http://172.247.189.48:7788/dsxt/api.php?user=xt&key=969632c8da19b3ef8c56e5b51011d5e0&j=19227eae77225a30&url='};
+    const concat = (...parts) => Buffer.concat(parts.map(x => Buffer.isBuffer(x) ? x : Buffer.from(x)));
+    function varint(value) { let n=BigInt(value), out=[]; do {let b=Number(n&127n); n>>=7n; out.push(b|(n?128:0));} while(n); return Buffer.from(out); }
+    const pv=(f,v)=>concat(varint(f*8),varint(v));
+    const pb=(f,v)=>{const b=Buffer.isBuffer(v)?v:Buffer.from(String(v)); return concat(varint(f*8+2),varint(b.length),b);};
+    function decode(buf) { const out=[]; let p=0; const read=()=>{let n=0n,s=0n; while(p<buf.length){const b=buf[p++];n|=BigInt(b&127)<<s;if(!(b&128))return Number(n);s+=7n;}throw Error('bad protobuf');}; while(p<buf.length){const tag=read(), f=tag>>3, w=tag&7; if(w===0)out.push([f,w,read()]);else if(w===2){const len=read();if(len<0||p+len>buf.length)throw Error('bad protobuf length');out.push([f,w,buf.subarray(p,p+len)]);p+=len;}else if(w===1)p+=8;else if(w===5)p+=4;else throw Error('bad protobuf wire');}return out; }
+    const first=(fields,f,w)=>fields.find(x=>x[0]===f&&(w===undefined||x[1]===w))?.[2];
+    const str=x=>Buffer.isBuffer(x)?x.toString('utf8'):String(x??'');
+    const post=(url, body, headers={})=>new Promise((resolve,reject)=>{const target=new URL(url),lib=target.protocol==='https:'?https:http;const req=lib.request(target,{method:'POST',timeout:25000,headers:{'Content-Type':'application/x-protobuf','User-Agent':UA,'X-Player-Page-Protection':'1',...headers}},res=>{const chunks=[];res.on('data',x=>chunks.push(x));res.on('end',()=>res.statusCode>=200&&res.statusCode<300?resolve(Buffer.concat(chunks)):reject(Error(`HTTP ${res.statusCode}`)));});req.on('timeout',()=>req.destroy(Error('timeout')));req.on('error',reject);req.end(body);});
+    const get=url=>new Promise((resolve,reject)=>{const lib=url.startsWith('https:')?https:http;const req=lib.get(url,{timeout:20000,headers:{'User-Agent':UA}},res=>{const chunks=[];res.on('data',x=>chunks.push(x));res.on('end',()=>res.statusCode>=200&&res.statusCode<300?resolve(Buffer.concat(chunks).toString('utf8')):reject(Error(`HTTP ${res.statusCode}`)));});req.on('timeout',()=>req.destroy(Error('timeout')));req.on('error',reject);});
+    class Client {
+        constructor(){this.ecdh=crypto.createECDH('prime256v1');this.ecdh.generateKeys();this.androidId=crypto.randomBytes(8).toString('hex');this.session='';this.key=null;this.booted=false;this.apis={};this.apiIds={};this.lastSearch=0;this.pending=null;}
+        async ensure(){if(this.key&&this.booted)return; if(this.pending)return this.pending;this.pending=(async()=>{await this.handshake();await this.boot();})().finally(()=>{this.pending=null;});return this.pending;}
+        async handshake(){const key=crypto.randomBytes(16).toString('hex');const iv=crypto.randomBytes(16);const inner=concat(pv(1,1),pv(2,1),pv(3,1));const outer=concat(pb(1,this.ecdh.getPublicKey(undefined,'uncompressed')),pb(2,'1.0.0'),pb(3,inner));const enc=crypto.createCipheriv('aes-256-cbc',Buffer.from(key),iv);const body=concat(iv,enc.update(zlib.deflateSync(outer,{level:5})),enc.final()).toString('base64');const resp=Buffer.from((await post(BASE,Buffer.from(body),{'X-Handshake-Key':key})).toString(),'base64');const dec=crypto.createDecipheriv('aes-256-cbc',Buffer.from(key),resp.subarray(0,16));const fields=decode(zlib.inflateSync(concat(dec.update(resp.subarray(16)),dec.final())));this.session=str(first(fields,1,2));const pub=first(fields,2,2);if(!this.session||!pub)throw Error('handshake failed');const shared=this.ecdh.computeSecret(pub);const prk=crypto.createHmac('sha256',this.session).update(shared).digest();this.key=crypto.createHmac('sha256',prk).update(concat('v2-session',Buffer.from([1]))).digest();}
+        async boot(){const a=this.androidId;const info=concat(pb(1,'咕噜咕噜'),pb(2,'2.1.2'),pb(3,'com.jymqfh.xee'),pb(4,a),pb(5,'212'));const state=concat(pb(1,a),pv(2,0),pb(3,'11'),pb(4,'Pixel 4'),pb(5,'google/redfin/redfin:11/RQ3A.211001.001'),pb(6,'google'),pb(7,'redfin'),pv(8,0),pb(9,'unknown'),pb(10,'unknown'),pv(11,0),pv(12,30));const result=await this.api(1,0,concat(pb(1,'v1'),pb(2,'Android 11'),pb(3,'gulu'),pb(4,info),pb(5,state)));if(!result)throw Error('boot failed');this.booted=true;for(const [f,w,v] of decode(result.payload||Buffer.alloc(0))){if(f!==7||w!==2)continue;const x=decode(v),name=str(first(x,2,2)),url=str(first(x,3,2));if(name&&url){this.apis[name]=url;this.apiIds[name]=first(x,1,0);}}}
+        async api(service,method,body=Buffer.alloc(0)){if(!this.key)throw Error('no key');if(method===61){const delay=2800-(Date.now()-this.lastSearch);if(this.lastSearch&&delay>0)await new Promise(r=>setTimeout(r,delay));this.lastSearch=Date.now();}const ts=Date.now();const inner=concat(pv(1,ts),pv(2,service),pv(3,method),pb(4,this.androidId),pb(5,Buffer.alloc(0)),pb(6,body),pv(7,ts));const nonce=crypto.randomBytes(12),enc=crypto.createCipheriv('aes-256-gcm',this.key,nonce);const blob=concat(nonce,enc.update(zlib.deflateRawSync(inner)),enc.final(),enc.getAuthTag());const raw=await post(BASE,concat(pv(1,ts),pb(2,blob)),{'X-Session-Id':this.session});const value=first(decode(raw),2,2);if(!value||value.length<28)throw Error('empty encrypted response');const decr=crypto.createDecipheriv('aes-256-gcm',this.key,value.subarray(0,12));decr.setAuthTag(value.subarray(value.length-16));const fields=decode(zlib.inflateRawSync(concat(decr.update(value.subarray(12,-16)),decr.final())));return {code:first(fields,2,0),payload:first(fields,4,2)};}
+    }
+    function item(raw){const f=decode(raw);return {vod_id:String(first(f,1,0)||''),vod_name:str(first(f,3,2)),vod_pic:str(first(f,6,2)),vod_remarks:str(first(f,11,2)||first(f,9,2))};}
+    function items(payload){const result=[];if(!payload)return result;for(const [,w,v] of decode(payload)){if(w!==2||v.length<30)continue;let sub;try{sub=decode(v);}catch{continue;}const nested=sub.filter(x=>x[0]===66&&x[1]===2);if(nested.length){for(const x of nested){const d=item(x[2]);if(d.vod_id&&d.vod_name)result.push(d);}continue;}if(first(sub,2,0)!==undefined){const d=item(v);if(d.vod_id&&d.vod_name)result.push(d);}else for(const x of sub.filter(x=>x[0]===3&&x[1]===2&&x[2].length>30)){const d=item(x[2]);if(d.vod_id&&d.vod_name)result.push(d);}}return result;}
+    function m66(id,page,isOrange,year='',sort=''){if(isOrange)return concat(pv(1,id),pv(2,page));let out=concat(pv(1,id),pb(2,varint(page)));if(year)out=concat(out,pb(3,year));if(sort)out=concat(out,pb(5,concat(pv(1,1),pb(2,varint(0)),pb(3,sort))));return out;}
+    for(const source of globalThis.leeGuluSources){const isOrange=source.key==='lee_juzi4k';let client=new Client();const ensure=async()=>{try{await client.ensure();}catch{client=new Client();await client.ensure();}return client;};const pageOf=b=>Math.max(1,parseInt(b?.page,10)||1);const idOf=b=>String(Array.isArray(b?.id)?b.id[0]:b?.id||'');
+        const channel=async(id,page,year='',sort='')=>{const c=await ensure();const result=await c.api(3,66,m66(id,page,isOrange,year,sort));const list=items(result.payload);let pagecount=page+(list.length>=2?1:0),limit=Math.max(1,list.length),total=list.length;if(isOrange&&result.payload){const meta=first(decode(result.payload),65,2);if(meta){const f=decode(meta);pagecount=first(f,3,0)||pagecount;limit=first(f,2,0)||limit;total=first(f,4,0)||total;}}else{const threshold=[8,9,10,11,12].includes(id)?10:id===6?3:2;pagecount=page+(list.length>=threshold?1:0);limit=Math.max(list.length,threshold);}return {list,page,pagecount,limit,total};};
+        server.register(async(fastify)=>{
+            fastify.post('/init',async()=>({}));
+            fastify.post('/home',async()=>{const classes=isOrange?Object.entries(orange).map(([type_id,[type_name]])=>({type_id,type_name})):cat.map(([type_id,type_name])=>({type_id,type_name}));const filters={};for(const c of classes){if(isOrange){const ranks=orangeRanks[c.type_id];if(ranks)filters[c.type_id]=[{key:'by',name:'榜单',value:ranks.map(([v,n])=>({v,n}))}];}else filters[c.type_id]=[{key:'year',name:'年份',value:[{n:'全部',v:''},...Array.from({length:12},(_,i)=>{const v=String(2026-i);return {n:v,v};})]},{key:'by',name:'排序',value:[{n:'最热',v:'vod_hits_week'},{n:'最新',v:'vod_time'},{n:'评分',v:'vod_score'}]}];}let list=[];try{list=(await channel(isOrange?48:9,1)).list.slice(0,24);}catch{}return {class:classes,filters,list};});
+            fastify.post('/category',async(request)=>{const body=request.body||{},page=pageOf(body),tid=String(body.id||''),ext=body.extend||{};let id;if(isOrange){const entry=orange[tid];id=entry?Number(entry[1]):Number(tid);const by=String(ext.by||ext.sort||'');if(entry&&orangeRanks[tid]?.some(([x])=>x===by))id=Number(by);}else id=cat.find(([x])=>x===tid)?.[2]||Number(tid);if(!Number.isFinite(id))return {list:[]};return channel(id,page,String(ext.year||''),String(ext.by||ext.sort||''));});
+            fastify.post('/detail',async(request)=>{const id=Number(idOf(request.body));if(!Number.isFinite(id))return {list:[]};const c=await ensure();const r=await c.api(3,62,concat(pv(1,id),pb(4,'APP_PLATFORM_ANDROID_TV'),pv(5,0)));if(!r.payload)return {list:[]};const f=decode(r.payload),vod={vod_id:String(id),vod_name:str(first(f,5,2)),vod_pic:str(first(f,13,2)),vod_actor:f.filter(x=>x[0]===17&&x[1]===2).map(x=>str(x[2])).slice(0,12).join('、'),vod_director:f.filter(x=>x[0]===18&&x[1]===2).map(x=>str(x[2])).join('、'),type_name:f.filter(x=>x[0]===12&&x[1]===2).map(x=>str(x[2])).slice(0,4).join('/'),vod_content:str(first(f,21,2)),vod_remarks:str(first(f,22,2)),vod_area:str(first(f,28,2)),vod_year:str(first(f,30,2))};const from=[],urls=[];for(const [,w,v] of f.filter(x=>x[0]===75&&x[1]===2)){const src=decode(v),name=str(first(src,1,2));let episodes=[];for(const e of src.filter(x=>x[0]===2&&x[1]===2)){const ep=decode(e[2]),url=str(first(ep,3,2));if(!url.startsWith('http')&&!Object.keys(cipherNames).some(prefix=>url.startsWith(prefix)))continue;episodes.push(`${str(first(ep,4,2))||`第${first(ep,1,0)||''}集`}$${url}`);}if(episodes.length){from.push(lines[name]||name||'线路');urls.push(episodes.join('#'));}}vod.vod_play_from=from.join('$$$');vod.vod_play_url=urls.join('$$$');return {list:[vod]};});
+            fastify.post('/search',async(request)=>{const key=String(request.body?.wd||'').trim(),page=pageOf(request.body);if(!key)return {list:[]};const c=await ensure(),sort=concat(pv(1,1),pv(2,0),pb(3,'vod_hits_week')),body=concat(pb(1,key),pv(2,page),pb(5,sort));let r=await c.api(3,61,body);if(!r.payload||r.payload.length<200){await new Promise(resolve=>setTimeout(resolve,5500));r=await c.api(3,61,body);}const list=items(r.payload);return {list,page,pagecount:page+(list.length>=20?1:0),limit:Math.max(20,list.length),total:list.length};});
+            fastify.post('/play',async(request)=>{let id=idOf(request.body),flag=String(request.body?.flag||'');const header={'User-Agent':UA};if(!id)return {parse:0,url:'',header};if(/^https?:/i.test(id))return {parse:/\.m3u8|m\.php/.test(id)?0:1,url:id,header};if(/^(CO4K_|rose_)/.test(id))id=id.replace(/ /g,'+');const name=flagNames[flag]||cipherNames[Object.keys(cipherNames).find(x=>id.startsWith(x))],c=await ensure(),url=(c.apis[name]||fallback[name]||'')+encodeURIComponent(id);if(!name||!url)return {parse:0,url:'',header};for(let i=0;i<2;i++){try{const txt=await get(url),got=JSON.parse(txt).url||txt.match(/"url"\s*:\s*"([^"]+)/)?.[1];if(got)return {parse:0,url:String(got).replace(/\\\//g,'/'),header};}catch{} }return {parse:0,url:'',header};});
+        },{prefix:source.api});
+    }
+};
+
+globalThis.leeHeTunSource = { key: 'lee_hetun4k', name: '河豚4K', type: 3, api: '/spider/lee_hetun4k/3', searchable: 1, quickSearch: 1, filterable: 0 };
+globalThis.registerLeeHeTun = async function registerLeeHeTun(server) {
+    const crypto = require('node:crypto');
+    const https = require('node:https');
+    const http = require('node:http');
+    const cfg={appName:'河豚',publicKey:'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCr8SzZhjYy+rsya1K09t8d2K50pWFoBkgUqMpKOiW+3IEVKd4eTdvg9RSOjQ82kypL6R9BnsmrS1V8s4PVDwjQbUtYhTPPC9Hz16qY7rpD6m0d2vr09/UpWQ5uOy9PR0QTrsioveZ+DIe9jc3C+zBCu/kZSY/R8stwJoiitki3gwIDAQAB',mSafeCode:'V04XQZNYRWN6T0JODZFIAG5CTZB3PT0=',dataIv:'OC1A06E197EF10CF3F6058CA7A803B5E',pkg:'com.djlxxl.xcydzkj',host:'https://az1-1456692500.cos.ap-guangzhou.myqcloud.com/az1.txt',vName:'7.0.0.2'};
+    let host='',dynamicKey='',loading=null;
+    const cat=(...a)=>Buffer.concat(a.map(x=>Buffer.isBuffer(x)?x:Buffer.from(x)));
+    function vi(n){let v=BigInt(n),out=[];do{let b=Number(v&127n);v>>=7n;out.push(b|(v?128:0));}while(v);return Buffer.from(out);}
+    const pi=(f,v)=>cat(vi(f*8),vi(v));
+    const pb=(f,v)=>{const b=Buffer.isBuffer(v)?v:Buffer.from(String(v));return cat(vi(f*8+2),vi(b.length),b);};
+    function fields(b){const o={};let p=0;const read=()=>{let n=0n,s=0n;while(p<b.length){const x=b[p++];n|=BigInt(x&127)<<s;if(!(x&128))return Number(n);s+=7n;}throw Error('bad varint');};while(p<b.length){const tag=read(),f=tag>>3,w=tag&7;let v;if(w===0)v=read();else if(w===2){const len=read();v=b.subarray(p,p+len);p+=len;}else if(w===1){v=b.subarray(p,p+8);p+=8;}else if(w===5){v=b.subarray(p,p+4);p+=4;}else throw Error('bad wire');(o[f]??=[]).push(v);}return o;}
+    const one=(o,f,d='')=>o?.[f]?.[0]??d;
+    const str=v=>Buffer.isBuffer(v)?v.toString('utf8'):String(v??'');
+    const random=n=>crypto.randomBytes(n).toString('base64').replace(/[^a-zA-Z0-9]/g,'').padEnd(n-1,'A').slice(0,n-1)+'=';
+    function aes(text,key,mode='ecb',decrypt=false,encoding='base64'){const alg=`aes-${Buffer.byteLength(key)*8}-${mode}`,k=Buffer.from(key),iv=mode==='cbc'?k:null,c=decrypt?crypto.createDecipheriv(alg,k,iv):crypto.createCipheriv(alg,k,iv),data=decrypt?Buffer.from(text,encoding):Buffer.from(text);return cat(c.update(data),c.final());}
+    function rsa(text,key){const pk=crypto.createPublicKey({key:Buffer.from(key,'base64'),format:'der',type:'spki'});return crypto.publicEncrypt({key:pk,padding:crypto.constants.RSA_PKCS1_PADDING},Buffer.from(text)).toString('base64');}
+    function request(url,method='GET',body,headers={}){return new Promise((resolve,reject)=>{const target=new URL(url),lib=target.protocol==='https:'?https:http,req=lib.request(target,{method,headers,timeout:18000},res=>{const chunks=[];res.on('data',x=>chunks.push(x));res.on('end',()=>res.statusCode>=200&&res.statusCode<300?resolve(Buffer.concat(chunks)):reject(Error(`HTTP ${res.statusCode}`)));});req.on('timeout',()=>req.destroy(Error('timeout')));req.on('error',reject);req.end(body);});}
+    async function init(){if(host)return; if(loading)return loading;loading=(async()=>{const data=JSON.parse((await request(cfg.host)).toString('utf8'));host=String(data.domain||'').replace(/\/$/,'');if(!host)throw Error('missing host');try{const ts=Date.now(),r=random(16),body=cat(pi(1,ts),pb(2,rsa(String(ts)+r,cfg.publicKey)),pb(3,random(16)),pb(4,r),pb(5,random(16)));const f=fields(one(fields(await post('/api/v5/find/app/zone',body)),3,Buffer.alloc(0)));dynamicKey=[2,3,4,5].map(x=>str(one(f,x))).join('');}catch{dynamicKey='';}})().finally(()=>loading=null);return loading;}
+    function headers(protobuf=true){const ts=Date.now(),r=random(16),uid=crypto.randomUUID().replace(/-/g,'').toUpperCase(),vapp=cfg.vName.replace(/\./g,'');const device={country:'CN',vName:cfg.vName,cpuId:'MT6893Z%2FCZA',young:0,facturer:'Xiaomi',pkg:cfg.pkg,uuid:uid,resolution:'1080x2272',mac:'02%3A00%3A00%3A00%3A00%3A00',abid:'397',model:'M2012K11AC',plat:'android',udid:uid,dpi:'440',net:'1',lang:'zh',brand:'Xiaomi',density:'2.75',appName:cfg.appName,cpu:'arm64-v8a',chid:'10000',carrier:'%E8%81%94%E9%80%9A',_vOsCode:30,vOs:'11',v:1,tenantId:'',vApp:vapp,device:0,androidID:uid.toLowerCase().slice(0,16)};device.sig=rsa(String(ts)+r+vapp,dynamicKey||cfg.publicKey);device.random_str=r;device.timestamp=ts;const sig=aes(String(ts)+r,cfg.dataIv).toString('base64');device.sig2=sig.slice(0,8);device.sig3=sig.slice(8);const params=aes(JSON.stringify(device),'ed5fdsgucxumegqa','cbc').toString('hex');return {'User-Agent':'okhttp/3.12.1',Accept:protobuf?'application/x-protobuf':'application/json','Content-Type':protobuf?'application/x-protobuf':'application/json; charset=utf-8',publicParams:JSON.stringify({paramsData:params})};}
+    function secure(params){const ts=Date.now(),r=random(8),fake=random(20),query=Object.entries(params).filter(([,v])=>v!==null&&v!==undefined&&String(v)!=='').map(([k,v])=>`${k}=${v}`).join('&'),encrypted=r+aes(query+ts,cfg.mSafeCode).toString('base64');return cat(pb(1,encrypted.slice(0,20)),pb(2,encrypted.slice(20)),pb(3,fake),pi(4,ts),pb(5,r));}
+    async function post(path,body){if(!host)throw Error('host unavailable');return request(host+path,'POST',body,headers());}
+    async function api(path,params){await init();return fields(one(fields(await post(path,secure(params))),3,Buffer.alloc(0)));}
+    async function json(path){await init();return JSON.parse((await request(host+path,'GET',undefined,headers(false))).toString('utf8'));}
+    function cover(raw){if(!Buffer.isBuffer(raw)||!raw.length)return '';const f=fields(raw);return str(one(f,2)||one(f,1));}
+    function drama(raw){const f=fields(raw);return {vod_id:String(one(f,3,0)),vod_name:str(one(f,5)),vod_pic:cover(one(f,2)),vod_remarks:str(one(f,13)),vod_year:String(one(f,14,'')),vod_area:str(one(f,1))};}
+    const idOf=b=>String(Array.isArray(b?.id)?b.id[0]:b?.id||'');
+    const pageOf=b=>Math.max(1,parseInt(b?.page,10)||1);
+    server.register(async(fastify)=>{
+        fastify.post('/init',async()=>({}));
+        fastify.post('/home',async()=>{const d=await json('/api/v3/drama/getCategory?orderBy=type_id');return {class:(d.data||[]).filter(x=>x.name!=='公告'&&x.id).map(x=>({type_id:String(x.id),type_name:String(x.name||'')}))};});
+        fastify.post('/category',async(req)=>{const b=req.body||{},page=pageOf(b),e=b.extend||{},f=await api('/api/proto/v5/drama/category',{pagesize:'21',typeId1:String(b.id||''),page:String(page),vodOrderBy:e['排序']||'最新',vodArea:e['地区']||'',vodLang:e['语言']||'',vodClass:e['类型']||'',vodYear:e['年份']||''});const list=(f[1]||[]).map(drama);return {list,page,pagecount:list.length?9999:page,limit:21,total:list.length?9999:0};});
+        fastify.post('/detail',async(req)=>{const id=idOf(req.body),f=await api('/api/proto/v5/drama/getDetail',{id});const grouped=new Map();for(const raw of f[29]||[]){const x=fields(raw),title=str(one(x,2))||'播放',path=str(one(x,4)),source=str(one(x,9)),quality=str(one(x,10))||source||'未知',name=source&&quality!==source?`${quality} (${source})`:quality,stream=/\.(?:mp4|m3u8|flv|mkv|avi|ts|mov|mpd|m4a|wmv)(?:\?.*)?$/i.test(path),token=stream?path:Buffer.from(JSON.stringify({vodPlayFrom:source,playUrl:path})).toString('base64');if(!grouped.has(name))grouped.set(name,[]);grouped.get(name).push(`${title}$${token}`);}const order=['蓝光4k','蓝光'],names=[...grouped.keys()].sort((a,b)=>{const ai=order.findIndex(x=>a.toLowerCase().includes(x.toLowerCase())),bi=order.findIndex(x=>b.toLowerCase().includes(x.toLowerCase()));return (ai<0?99:ai)-(bi<0?99:bi);});const vod={vod_id:id,vod_name:str(one(f,9)),vod_pic:cover(one(f,2)),vod_actor:str(one(f,25)),vod_director:str(one(f,12)),vod_area:str(one(f,1)),vod_year:String(one(f,18,'')),vod_remarks:str(one(f,26)),vod_content:str(one(f,6)),vod_play_from:names.join('$$$'),vod_play_url:names.map(x=>grouped.get(x).join('#')).join('$$$')};return {list:[vod]};});
+        fastify.post('/search',async(req)=>{const f=await api('/api/proto/v5/drama/search',{searchKeys:String(req.body?.wd||''),page:String(pageOf(req.body)),pagesize:'21'});return {list:(f[1]||[]).slice(0,1).map(drama)};});
+        fastify.post('/play',async(req)=>{const id=idOf(req.body);if(/\.(?:mp4|m3u8|flv|mkv|avi|ts|mov|mpd|m4a|wmv)(?:\?.*)?$/i.test(id))return {parse:0,url:id,header:{}};let params;try{params=JSON.parse(Buffer.from(id,'base64').toString('utf8'));}catch{return {parse:1,url:id,header:{}};}const f=await api('/api/proto/v5/videoUsableUrl',params),header={};for(const raw of f[6]||[]){const x=fields(raw),key=str(one(x,1));if(key)header[key]=str(one(x,2));}return {parse:0,url:str(one(f,1)),header};});
+    },{prefix:globalThis.leeHeTunSource.api});
+};
+
+globalThis.leeVmsSource={key:'lee_4kvms',name:'4kvms',type:3,api:'/spider/lee_4kvms/3',searchable:1,quickSearch:1,filterable:1};
+globalThis.registerLeeVms=async function registerLeeVms(server,bridge){
+    const https=require('node:https');
+    const ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
+    const hosts=['https://www.4kvms.org','https://www.4kvms.com','https://www.4kvm.org','https://www.4kvm.cc','https://www.4kvm.com','https://www.4kvm.me'];
+    let host=hosts[0];
+    const pageOf=b=>Math.max(1,parseInt(b?.page,10)||1);
+    const idOf=b=>String(Array.isArray(b?.id)?b.id[0]:b?.id||'');
+    function fetch(url){return new Promise((resolve,reject)=>{const req=https.get(url,{timeout:15000,headers:{'User-Agent':ua,Accept:'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','Accept-Language':'zh-CN,zh;q=0.9'}},res=>{const chunks=[];res.on('data',x=>chunks.push(x));res.on('end',()=>res.statusCode===200?resolve(Buffer.concat(chunks).toString('utf8')):reject(Error(`HTTP ${res.statusCode}`)));});req.on('timeout',()=>req.destroy(Error('timeout')));req.on('error',reject);});}
+    async function get(path){if(/^https?:/.test(path))return fetch(path);let error;for(const domain of [host,...hosts.filter(x=>x!==host)]){try{const html=await fetch(domain+path);host=domain;return html;}catch(e){error=e;}}throw error;}
+    const pic=x=>{try{return x?new URL(String(x).replace(/&amp;/g,'&'),host).href:'';}catch{return '';}};
+    function cards(html){const $=bridge.html(html),list=[],seen=new Set();$('.movie-card[data-vod-id]').each((_,node)=>{const el=$(node),id=String(el.attr('data-vod-id')||'');if(!id||seen.has(id))return;seen.add(id);const img=el.find('img').first(),name=(el.find('h3').first().text()||img.attr('alt')||'').trim();if(!name)return;list.push({vod_id:id,vod_name:name,vod_pic:pic(img.attr('data-src')||img.attr('src')),vod_remarks:el.find('.badge, .episode, .text-red-500').first().text().trim()});});if(!list.length)$('a[href^="/play/"]').each((_,node)=>{const el=$(node),id=/\/play\/([a-zA-Z0-9]+)/.exec(el.attr('href')||'')?.[1];if(!id||seen.has(id))return;const img=el.find('img').first(),name=(el.find('h3').first().text()||img.attr('alt')||'').trim();if(!name)return;seen.add(id);list.push({vod_id:id,vod_name:name,vod_pic:pic(img.attr('data-src')||img.attr('src'))});});return list;}
+    const options=(names,values)=>names.map((n,i)=>({n,v:values[i]}));
+    const area=options(['全部','中国大陆','中国香港','中国台湾','美国','日本','韩国','英国','法国','加拿大','泰国','印度'],['','52','14','21','5','11','12','30','6','32','33','34']);
+    const types=options(['全部','剧情','动作','喜剧','爱情','科幻','悬疑','惊悚','恐怖','犯罪','奇幻','战争','动画','冒险','家庭','纪录','古装','灾难'],['','1','10','5','6','14','2','4','3','9','12','16','11','18','19','20','27','34']);
+    const years=options(['全部','2026','2025','2024','2023','2022','2021','2020','2019','2018','2015-2010','2009-2000','更早'],['','1','3','4','56','13','2','6','8','9','17','23','24']);
+    const sort=options(['最新上映','最受欢迎','评分最高'],['update_time','hits','score']);
+    server.register(async(fastify)=>{
+        fastify.post('/init',async()=>({}));
+        fastify.post('/home',async()=>{const classes=[{type_id:'3',type_name:'动漫'},{type_id:'2',type_name:'电视剧'},{type_id:'1',type_name:'电影'}],filters={};for(const c of classes)filters[c.type_id]=[{key:'areas',name:'地区',value:area},{key:'types',name:'类型',value:types},{key:'years',name:'年份',value:years},{key:'sort_by',name:'排序',value:sort}];return {class:classes,filters,list:cards(await get('/')).slice(0,30)};});
+        fastify.post('/category',async(req)=>{const b=req.body||{},page=pageOf(b),e=b.extend||{},q=new URLSearchParams({classify:String(b.id||''),sort_by:String(e.sort_by||'update_time'),order:'desc'});for(const k of ['areas','types','years'])if(e[k])q.set(k,String(e[k]));if(page>1)q.set('page',String(page));const html=await get(`/filter?${q}`),list=cards(html),count=Number(/共\s*(\d+)\s*页/.exec(html)?.[1])||Math.max(page,...[...html.matchAll(/[?&]page=(\d+)/g)].map(m=>Number(m[1])));return {list,page,pagecount:count,limit:list.length,total:count*24};});
+        fastify.post('/detail',async(req)=>{const id=idOf(req.body),html=await get(`/play/${encodeURIComponent(id)}`),$=bridge.html(html);const metadata={};$('.col-span-1.text-gray-500').each((_,node)=>{const label=$(node).text().trim(),value=$(node).next('.col-span-2.text-gray-300').text().trim();if(label)metadata[label]=value;});const groups=new Map();$('a[href^="/play/"][data-line][data-episode][dataid]').each((_,node)=>{const el=$(node),line=String(el.attr('data-line')),ep=String(el.attr('data-episode')),did=String(el.attr('dataid')),href=String(el.attr('href')),title=el.find('span').first().text().trim()||`第${ep}集`;if(!groups.has(line))groups.set(line,[]);groups.get(line).push(`${title.replace(/[$#]/g,'_')}$${did}|${href}`);});const names=[...groups.keys()].sort(),from=names.length?names.map(x=>`线路${x}`):['4K影视'],urls=names.length?names.map(x=>groups.get(x).join('#')):[`播放$/play/${id}`];const vod={vod_id:id,vod_name:($('meta[property="og:title"]').attr('content')||$('title').text()).replace(/\s*-\s*第\d+集.*$/,'').replace(/\s*-?\s*4k影视.*$/i,'').trim(),vod_pic:pic($('meta[property="og:image"]').attr('content')||$('[data-poster]').attr('data-poster')),vod_content:$('meta[name="description"]').attr('content')||'',vod_year:(metadata['上映']||'').match(/20\d{2}/)?.[0]||'',vod_area:metadata['地区']||'',vod_actor:metadata['主演']||'',vod_director:metadata['导演']||'',type_name:metadata['类型']||'4K影视',vod_play_from:from.join('$$$'),vod_play_url:urls.join('$$$')};return {list:[vod]};});
+        fastify.post('/search',async(req)=>{const page=pageOf(req.body),q=encodeURIComponent(String(req.body?.wd||'')),html=await get(`/search?q=${q}${page>1?`&page=${page}`:''}`);return {list:cards(html).slice(0,30),page};});
+        fastify.post('/play',async(req)=>{const raw=idOf(req.body),part=raw.includes('|')?raw.slice(raw.indexOf('|')+1):raw,url=new URL(part.startsWith('/play/')?part:`/play/${part}`,host).href;return {parse:1,url,header:{'User-Agent':ua,Referer:`${host}/`}};});
+    },{prefix:globalThis.leeVmsSource.api});
+};
+
+globalThis.leeIk4kSource={key:'lee_ik4k',name:'ik4k影院',type:3,api:'/spider/lee_ik4k/3',searchable:1,quickSearch:1,filterable:0};
+globalThis.registerLeeIk4k=async function registerLeeIk4k(server,bridge){
+    const https=require('node:https'),zlib=require('node:zlib');
+    const host='https://www.ik4k.com',ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+    const categories={'20':'电影','21':'电视剧','23':'综艺片','24':'动漫','25':'国产剧','26':'美剧','27':'韩剧','35':'日剧','36':'港剧','37':'台剧','38':'泰剧','39':'海外剧','40':'大陆综艺','41':'港台综艺','42':'日韩综艺','43':'欧美综艺','67':'国产动漫','68':'日韩动漫','69':'欧美动漫','70':'港台动漫','71':'海外动漫'};
+    const cookie=new Map();
+    const pageOf=b=>Math.max(1,parseInt(b?.page,10)||1),idOf=b=>String(Array.isArray(b?.id)?b.id[0]:b?.id||'');
+    function request(url,method='GET',body){return new Promise((resolve,reject)=>{const data=body?Buffer.from(new URLSearchParams(body).toString()):null,req=https.request(url,{method,timeout:15000,headers:{'User-Agent':ua,Referer:`${host}/`,'X-Requested-With':'XMLHttpRequest',...(data?{'Content-Type':'application/x-www-form-urlencoded','Content-Length':data.length}:{}),...(cookie.size?{Cookie:[...cookie].map(([k,v])=>`${k}=${v}`).join('; ')}:{})}},res=>{for(const header of res.headers['set-cookie']||[]){const m=/^([^=]+)=([^;]*)/.exec(header);if(m&&m[2])cookie.set(m[1],m[2]);}const chunks=[];res.on('data',x=>chunks.push(x));res.on('end',()=>resolve({status:res.statusCode,body:Buffer.concat(chunks)}));});req.on('timeout',()=>req.destroy(Error('timeout')));req.on('error',reject);req.end(data);});}
+    function rc4(data,key){const s=Array.from({length:256},(_,i)=>i);let j=0;for(let i=0;i<256;i++){j=(j+s[i]+key[i%key.length])&255;[s[i],s[j]]=[s[j],s[i]];}const out=Buffer.alloc(data.length);let i=0;j=0;for(let k=0;k<data.length;k++){i=(i+1)&255;j=(j+s[i])&255;[s[i],s[j]]=[s[j],s[i]];out[k]=data[k]^s[(s[i]+s[j])&255];}return out;}
+    function pngGray(data){if(data.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')return null;let p=8,w=0,h=0,ct=0,ch=0,palette=null,parts=[];while(p+12<=data.length){const len=data.readUInt32BE(p),typ=data.toString('ascii',p+4,p+8),b=data.subarray(p+8,p+8+len);p+=12+len;if(typ==='IHDR'){w=b.readUInt32BE(0);h=b.readUInt32BE(4);ct=b[9];if(b[12]!==0||w<400)return null;}else if(typ==='PLTE')palette=b;else if(typ==='IDAT')parts.push(b);else if(typ==='IEND')break;}ch=({0:1,2:3,3:1,4:2,6:4})[ct];if(!ch||!w||!h)return null;const raw=zlib.inflateSync(Buffer.concat(parts)),gray=new Array(h),stride=w*ch;let at=0,prev=Buffer.alloc(stride);for(let y=0;y<h;y++){const filter=raw[at++],row=Buffer.from(raw.subarray(at,at+stride));at+=stride;for(let x=0;x<stride;x++){const a=x>=ch?row[x-ch]:0,b=prev[x],c=x>=ch?prev[x-ch]:0;if(filter===1)row[x]=(row[x]+a)&255;else if(filter===2)row[x]=(row[x]+b)&255;else if(filter===3)row[x]=(row[x]+((a+b)>>1))&255;else if(filter===4){const pa=Math.abs(b-c),pb=Math.abs(a-c),pc=Math.abs(a+b-2*c);row[x]=(row[x]+(pa<=pb&&pa<=pc?a:pb<=pc?b:c))&255;}}const g=new Uint8Array(w);for(let x=0;x<w;x++){let r,gc,b;if(ct===0)r=gc=b=row[x];else if(ct===3){const j=row[x]*3;r=palette?.[j]||0;gc=palette?.[j+1]||0;b=palette?.[j+2]||0;}else{const j=x*ch;r=row[j];gc=row[j+1];b=row[j+2];}g[x]=Math.round(.299*r+.587*gc+.114*b);}gray[y]=g;prev=row;}return {w,h,gray};}
+    let guardBusy=null;
+    async function guard(){if(guardBusy)return guardBusy;guardBusy=(async()=>{await request(`${host}/`);await request(`${host}/_guard/html.js?js=easy_slider_html`);const response=await request(`${host}/_guard/easy_slide.png?t=${Date.now()}`),png=pngGray(response.body),gw=Number(cookie.get('guardword')||0),key=String(cookie.get('guard')||'').slice(0,8);if(!png||!key)return false;const {w,h,gray}=png,integral=new Array((w+1)*(h+1)).fill(0);for(let y=0;y<h;y++){let acc=0;for(let x=0;x<w;x++){acc+=Number(gray[y][x]<95);integral[(y+1)*(w+1)+x+1]=integral[y*(w+1)+x+1]+acc;}}const candidates=[];for(let y=Math.max(6,gw+2);y<Math.min(164,gw+16)&&y+36<=h;y++)for(let x=6;x<303&&x+38<=w;x++){const sum=integral[(y+36)*(w+1)+x+38]-integral[y*(w+1)+x+38]-integral[(y+36)*(w+1)+x]+integral[y*(w+1)+x];if(sum>1000)candidates.push({x,y,sum});}candidates.sort((a,b)=>b.sum-a.sum);const seen=new Set();for(const c of candidates.slice(0,8))for(const off of [-8,-7,-9,-6,-10]){const x=c.x+off;if(x<0||x>290||seen.has(x))continue;seen.add(x);cookie.set('guardret',rc4(Buffer.from(`${x}x${gw}`),Buffer.from(key)).toString('base64'));const res=await request(`${host}/`);if(res.body.length>8000){for(const k of ['guard','guardword','guarddata','guardret'])cookie.delete(k);return true;}if(seen.size>=16)return false;}return false;})().finally(()=>guardBusy=null);return guardBusy;}
+    async function get(path,method='GET',body){const url=path.startsWith('http')?path:host+path;for(let i=0;i<3;i++){const r=await request(url,method,body),txt=r.body.toString('utf8');if(txt.length<500&&txt.includes('_guard')){if(await guard())continue;throw Error('ik4k challenge unsolved');}if(r.status>=200&&r.status<300)return txt;throw Error(`HTTP ${r.status}`);}throw Error('ik4k challenge');}
+    const pic=x=>{try{return x?new URL(x,host).href:'';}catch{return '';}};
+    function cards(html){const $=bridge.html(html),seen=new Set(),out=[];$('.public-list-box').each((_,node)=>{const el=$(node),a=el.find('a[href^="/voddetail/"]').first(),id=/\/voddetail\/(\d+)/.exec(a.attr('href')||'')?.[1];if(!id||seen.has(id))return;seen.add(id);const img=el.find('img').first();out.push({vod_id:id,vod_name:(a.attr('title')||img.attr('alt')||el.find('h3').first().text()).trim(),vod_pic:pic(img.attr('data-src')||img.attr('src')),vod_remarks:el.find('.public-list-prb, .public-list-subtitle').first().text().trim()});});return out;}
+    server.register(async(fastify)=>{
+        fastify.post('/init',async()=>({}));
+        fastify.post('/home',async()=>({class:Object.entries(categories).map(([type_id,type_name])=>({type_id,type_name})),list:cards(await get('/'))}));
+        fastify.post('/category',async(req)=>{const page=pageOf(req.body),data=JSON.parse(await get('/index.php/ds_api/vod','POST',{type:String(req.body?.id||''),page:String(page),limit:'40'}));const list=(data.list||[]).map(x=>({vod_id:String(x.vod_id||''),vod_name:String(x.vod_name||''),vod_pic:pic(x.vod_pic),vod_remarks:String(x.vod_remarks||x.vod_state||'')}));return {list,page,pagecount:Number(data.pagecount)||page,limit:40,total:list.length};});
+        fastify.post('/detail',async(req)=>{const id=idOf(req.body).match(/\d+/)?.[0];if(!id)return {list:[]};const $=bridge.html(await get(`/voddetail/${id}/`)),name=($('h3.slide-info-title').first().text()||$('title').first().text()).trim(),img=$('img[data-src]').first(),from=[],urls=[],names=$('.anthology-tab a.swiper-slide').toArray().map(x=>$(x).text().trim());$('ul.anthology-list-play').each((i,node)=>{const eps=[];$(node).find('a[href^="/vodplay/"]').each((_,a)=>{const el=$(a);eps.push(`${el.text().trim().replace(/[$#]/g,'_')}$${pic(el.attr('href'))}`);});if(eps.length){from.push(names[i]||`线路${i+1}`);urls.push(eps.join('#'));}});const details={};$('.slide-info-remarks').each((_,node)=>{const text=$(node).text().trim();if(text.startsWith('导演'))details.vod_director=text.replace(/^导演\s*:?/,'');if(text.startsWith('演员'))details.vod_actor=text.replace(/^演员\s*:?/,'');});const vod={vod_id:id,vod_name:name,vod_pic:pic(img.attr('data-src')),vod_remarks:$('.slide-info-remarks.cor5').first().text().trim(),vod_content:$('#height_limit').first().text().trim(),vod_play_from:from.join('$$$'),vod_play_url:urls.join('$$$'),...details};return {list:[vod]};});
+        fastify.post('/search',async(req)=>{const page=pageOf(req.body),word=encodeURIComponent(String(req.body?.wd||'')),path=page===1?`/vodsearch/${word}-------------/`:`/vodsearch/${word}----------${page}---/`,html=await get(path),list=cards(html),count=Number(/共\d+条[^当]*当前\d+\s*\/\s*(\d+)页/.exec(html)?.[1])||page;return {list,page,pagecount:count};});
+        fastify.post('/play',async(req)=>{const id=idOf(req.body);if(/\.(?:m3u8|mp4|flv)(?:\?|$)/i.test(id))return {parse:0,url:id,header:{Referer:`${host}/`}};const full=pic(id),html=await get(full),json=/player_aaaa\s*=\s*(\{[\s\S]*?\})\s*<\/script>/.exec(html)?.[1];let url='';if(json){try{const d=JSON.parse(json);url=String(d.url||'');if(d.encrypt&&url&&!/^https?:/.test(url))url=Buffer.from(url,'base64').toString('utf8');}catch{}}if(!url)url=/https?:\/\/[^\s"'<>]+\.m3u8/.exec(html)?.[0]||'';return {parse:url?(/\.(?:m3u8|mp4|flv)(?:\?|$)/i.test(url)?0:1):1,url:url||full,header:{'User-Agent':ua,Referer:`${host}/`}};});
+    },{prefix:globalThis.leeIk4kSource.api});
+};
+
+// 构建时将此文件置于 douer 运行时之前，设备只需加载 index.js。
+// 这里不依赖额外 npm 模块，保持本地包可独立运行。
 globalThis.registerLeeMigration = async function registerLeeMigration(server, config, bridge) {
     const https = require('node:https');
     const http = require('node:http');
@@ -530,12 +1629,19 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     const localSource = { key: 'lee_local', name: '本地 • 视频', type: 3, api: '/spider/lee_local/3', searchable: 0, filterable: 0, changeable: 0 };
     const schoolSource = { key: 'lee_junior_school', name: '初中 | 课堂', type: 3, api: '/spider/lee_junior_school/3', searchable: 1, quickSearch: 0, filterable: 1, changeable: 0 };
     const marketSource = { key: 'lee_market', name: '版本 • 信息', type: 3, api: '/spider/lee_market/3', searchable: 0, filterable: 0, changeable: 0 };
-    const migratedSources = [ucSource, xunleiSource, localSource, schoolSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources];
+    const migratedSources = [ucSource, xunleiSource, localSource, schoolSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources, ...globalThis.leeStaCafeSources, globalThis.leeFourKmpSource, globalThis.leeFengYeSource, globalThis.leeHqVodSource, globalThis.leeYingTanSource, globalThis.leeJuXiaFanSource, globalThis.leeFourKApiSource, ...globalThis.leeGuluSources, globalThis.leeHeTunSource, globalThis.leeVmsSource, globalThis.leeIk4kSource];
+    const removedBuiltIns = new Set([
+        'rrdyw', 'shuangxing', 'pomo', 'tgsou', 'shanzha', 'juzhi', 'gimy', 'wbbb',
+        'jinpai', 'xifan', 'xifannext', 'ppnix', 'dbku', 'dashixiong',
+        'hanxiaoquan', 'girigiri', 'ciyuancheng', 'anime1', 'tgfilebot',
+    ].map((key) => `nodejs_${key}`));
+    // 上游站点已返回筛选项，但配置里未标记可筛选；动态站点仍由自身首页提供选项。
     const filteredBuiltIns = new Set([
         'douban', 'wanou', 'muou', 'labi', 'shandian', 'zhizhen', 'duoduo', 'ouge', 'erxiao', 'huban',
         'xiaoban', 'libvio', '4kzn', 'pinglian', 'doubi', 'juzhi', 'guazi', 'xifan', 'xifannext',
         'ppnix', 'girigiri', 'ciyuancheng', 'kafei',
     ].map((key) => `nodejs_${key}`));
+    // 只补空白标题，保留站点原有的筛选名称和值；未知键直接显示英文键名。
     const filterNames = {
         u: '分类', type: '类型', cate: '专题', cateId: '类型', form: '形式', genre: '题材',
         class: '类型', area: '地区', region: '地区', year: '年份', lang: '语言',
@@ -544,6 +1650,21 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
         section: '榜单范围', weekday: '星期', month: '月份', version: '版本', state: '改编',
         grade: '年级', actor: '演员',
     };
+    // 配置页保存过的旧默认采集地址会覆盖 index.config.js，按原值迁移到 JSON 接口。
+    try {
+        const savedCms = await server.db.getObjectDefault('/cms', {});
+        const defaults = new Map((config?.cms?.list || []).map((item) => [item.name, item.address]));
+        let changed = false;
+        const list = (savedCms.list || []).map((item) => {
+            const name = String(item.name || '').replace(/^「采」/, '');
+            const current = defaults.get(name);
+            const previous = name === '非凡资源' ? current?.replace(/\/at\/json\/$/, '') : current?.replace(/\/$/, '');
+            if (!current || item.address !== previous) return item;
+            changed = true;
+            return { ...item, address: current };
+        });
+        if (changed) await server.db.push('/cms/list', list);
+    } catch { /* no saved CMS list */ }
     const websiteStyle = `<style>
         [id$="-panel-sites"] .ant-table-tbody tr[data-row-key] > td:nth-child(2) span[title] {
             white-space: normal !important;
@@ -555,6 +1676,38 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
         body:has([id$="-panel-sites"]) .lee-xunlei-login { display: none !important; }
     </style>`;
 
+    // The bundled push source only recognizes cloud shares. Keep ordinary video
+    // and page URLs usable by the phone's push action as well.
+    server.addHook('preHandler', async (request, reply) => {
+        if (request.method !== 'POST') return;
+        const action = request.url.split('?')[0];
+        if (action === '/spider/kafei/3/play') {
+            let stream = String(request.body?.id || '');
+            try { stream = decodeURIComponent(stream); } catch { /* use the raw value */ }
+            let parsed;
+            try { parsed = new URL(stream); } catch { /* unsupported stream */ }
+            if (!parsed || !['http:', 'https:'].includes(parsed.protocol) ||
+                !/\.(?:m3u8|mp4|flv|ts|webm)(?:$|[?#])/i.test(parsed.href)) {
+                return reply.code(422).send({ error: '咖啡直播未提供可直接播放的视频地址' });
+            }
+            return;
+        }
+        if (action !== '/spider/push/4/detail' && action !== '/spider/push/4/play') return;
+        const id = String(Array.isArray(request.body?.id) ? request.body.id[0] : request.body?.id || '').trim();
+        let url;
+        try { url = new URL(id); } catch { return; }
+        if (!['http:', 'https:'].includes(url.protocol) || shareHosts.test(url.hostname)) return;
+        if (action.endsWith('/detail')) {
+            const entry = `播放$${id}`;
+            return reply.send({ list: [{ vod_id: id, vod_name: '在线视频', vod_content: id,
+                vod_play_from: '直连$$$嗅探$$$解析', vod_play_url: `${entry}$$$${entry}$$$${entry}` }] });
+        }
+        const flag = String(request.body?.flag || '');
+        if (flag === '直连') return reply.send({ parse: 0, url: id });
+        if (flag === '嗅探') return reply.send({ parse: 1, url: id });
+        if (flag === '解析') return reply.send({ parse: 2, jx: '1', url: id });
+    });
+
     server.addHook('preHandler', async (request) => {
         if (request.method !== 'GET' || request.url.split('?')[0] !== '/config') return;
         try { request.leeSiteSettings = await server.db.getData('/sites/list'); } catch { /* defaults */ }
@@ -563,6 +1716,7 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     server.addHook('onSend', async (request, reply, payload) => {
         if (reply.statusCode !== 200) return payload;
         const path = request.url.split('?')[0];
+        // 统一修正所有站点的首页筛选标题，不改动实际筛选参数。
         if (request.method === 'POST' && /^\/spider\/[^/]+\/\d+\/home$/.test(path)) {
             let home;
             try { home = JSON.parse(String(payload)); } catch { return payload; }
@@ -591,6 +1745,7 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
                 result.video.sites.push({ ...source, api: existing.api.replace(/\/myquark\/3$/, `/${source.key}/3`), key });
                 keys.add(key);
             }
+            result.video.sites = result.video.sites.filter((site) => !removedBuiltIns.has(site.key));
             for (const site of result.video.sites) {
                 if (filteredBuiltIns.has(site.key)) site.filterable = 1;
             }
@@ -1042,15 +2197,14 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     }
 
     async function sharesDetail(id, metadata, links) {
-        const playable = [];
-        for (const link of links.filter(Boolean).slice(0, 20)) {
-            const result = await pushDetail(link).catch(() => null);
-            if (result?.vod_play_url) playable.push(result);
-        }
+        const shares = [...new Set(links.filter((link) => {
+            try { return shareHosts.test(new URL(link).hostname); } catch { return false; }
+        }))].slice(0, 20);
         return { list: [{
             vod_id: id, ...metadata,
-            vod_play_from: playable.map((item) => item.vod_play_from).join('$$$'),
-            vod_play_url: playable.map((item) => item.vod_play_url).join('$$$'),
+            // The host expands structured share links with an eight-second budget.
+            // Resolving them here first repeats each remote request and delays detail.
+            lee_share_links: shares.map((url) => ({ name: new URL(url).hostname, url })),
         }] };
     }
 
@@ -1428,14 +2582,13 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
         const list = [];
         $('.pan-links li a').each((_index, element) => {
             const link = $(element);
-            const url = link.attr('data-link') || link.attr('href');
-            if (!url) return;
+            const href = link.attr('href');
+            if (!href || !href.startsWith('/link_start/?')) return;
+            const url = siteUrl(href, origin);
             const name = link.attr('title') || link.text().trim() || '网盘分享';
             list.push(asVideo(name, url, '', ''));
         });
-        return list.filter((item) => {
-            try { return shareHosts.test(new URL(item.vod_id, origin).hostname); } catch { return false; }
-        });
+        return list;
     }
     for (const source of siteSources) {
         const seed = source.key === 'lee_seedhub';
@@ -1493,6 +2646,15 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
                             return { list: item ? [item] : [] };
                         }
                     } catch { /* site detail path */ }
+                    if (id.startsWith('https://') || id.startsWith('http://')) {
+                        const parsed = new URL(id);
+                        if (parsed.pathname !== '/link_start/' || !parsed.searchParams.has('redirect_to')) return { list: [] };
+                        const { html } = await sitePage(source.key, `${parsed.pathname}${parsed.search}`);
+                        const link = html.match(/var panLink\s*=\s*["'](https?:\/\/[^"']+)["']/)?.[1];
+                        return link && shareHosts.test(new URL(link).hostname)
+                            ? sharesDetail(id, { vod_name: parsed.searchParams.get('movie_title') || '' }, [link])
+                            : { list: [] };
+                    }
                 }
                 if (!/^\/[A-Za-z0-9_/-]+(?:\.html)?$/.test(id)) return { list: [] };
                 const { html, origin } = await sitePage(source.key, id);
@@ -1650,6 +2812,17 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     }, { prefix: '/website/lee-xunlei' });
     await globalThis.registerLeeLegacy(server, config);
     await globalThis.registerLeeLegacyHtml(server, bridge);
+    await globalThis.registerLeeStaCafe(server);
+    await globalThis.registerLeeFourKmp(server, bridge);
+    await globalThis.registerLeeFengYe(server, bridge);
+    await globalThis.registerLeeHqVod(server, bridge);
+    await globalThis.registerLeeYingTan(server);
+    await globalThis.registerLeeJuXiaFan(server);
+    await globalThis.registerLeeFourKApi(server);
+    await globalThis.registerLeeGulu(server);
+    await globalThis.registerLeeHeTun(server);
+    await globalThis.registerLeeVms(server, bridge);
+    await globalThis.registerLeeIk4k(server, bridge);
 };
 
 
@@ -14630,7 +15803,7 @@ async function openPage(type){
 \u6B63\u5728\u901A\u8FC7\u539F\u59CB\u5730\u5740\u8BF7\u6C42\u5F39\u5E55\u6E90: ${x.name||c}`),console.log("\u89C6\u9891\u9875\u9762:",a));let l=await r(`${c}/api/v2/comment`,{params:{url:a,format:"json"},timeout:u}),d=JR(l?.data);if(i&&console.log("\u539F\u59CB\u5730\u5740\u89E3\u6790\u5F39\u5E55\u6570:",d.length),d.length>0){let f=x.name||"\u5F39\u5E55\u6E90";return{comments:d,sourceName:f,platformUrl:a,match:{mode:"url",sourceName:f,platformUrl:a}}}}catch(l){i&&(console.log(`${x.name||c} \u539F\u59CB\u5730\u5740\u89E3\u6790\u5931\u8D25:`,l.message),l.response?.status&&console.log("\u54CD\u5E94\u72B6\u6001\u7801:",l.response.status))}}return null}function RHt(e,t={},r=""){let n=new URL(e),i=String(t.name||"").trim(),a=String(t.episodeNumber||"").trim(),s=String(t.originalName||"").trim(),o=WTe(r);return i&&n.searchParams.set("name",i),a&&n.searchParams.set("episodeNumber",a),s&&n.searchParams.set("originalName",s),o&&n.searchParams.set("url",o),n.toString()}function NHt(e){let t=`<?xml version="1.0" encoding="UTF-8"?>
 <i>
 `;for(let r of JR(e)){let n=AHt(r.p),i=AHt(String(r.m).trim());t+=`    <d p="${n}">${i}</d>
-`}return t+"</i>"}var KTe=async e=>(await e.db.getObjectDefault("/t4",{}))?.list||e.config.t4?.list||[],$En=async(e,t)=>{await e.db.push("/t4/list",t)},LEn=async e=>{await e.db.delete("/t4/list")};async function XTe(e){e.get("/list",async(t,r)=>{r.send({code:0,data:await KTe(t.server)})}),e.put("/list",async(t,r)=>{await $En(t.server,t.body),r.send({code:0})}),e.delete("/list",async(t,r)=>{await LEn(t.server),r.send({code:0})})}function JTe(e,t){let r=ve.create({baseURL:t});function n(){return{}}async function i(){try{let{data:c}=await r.get("",{params:{filter:!0}});return c}catch(c){return console.warn(c),{class:[]}}}async function a(c){try{let{data:u}=await r.get("",{params:{ac:"detail",t:c.body.id,pg:c.body.page||1}});return u}catch(u){console.warn(u)}}async function s(c){try{let{data:u}=await r.get("",{params:{ac:"detail",ids:c.body.id}});return u}catch(u){console.warn(u)}}async function o(c){try{let{data:u}=await r.get("",{params:{play:c.body.id,flag:c.body.flag}});return!u.url&&!u.urls&&c.body.id.startsWith("http")?{url:c.body.id}:u}catch(u){console.warn(u)}}async function x(c){try{let{data:u}=await r.get("",{params:{ac:"list",wd:c.body.wd}});return u}catch(u){console.warn(u)}}return{meta:{key:e,name:e,type:3,t4:!0},api:async c=>{c.post("/init",n),c.post("/home",i),c.post("/category",a),c.post("/detail",s),c.post("/play",o),c.post("/search",x)}}}var MEn=["/api.php/provide/vod/","/api.php/provide/vod","/api.php/app/","/api.php/app"],jG="\u300C\u91C7\u300D",UEn=[{name:`${jG}\u7535\u5F71\u5929\u5802`,address:"http://dyttzyw.com/api.php/provide/vod/"}];function QTe(e,t="https"){let r=String(e||"").trim();return r?/^https?:\/\//i.test(r)?r:`${t}://${r}`:""}function eAe(e){try{return new URL(e)}catch{return null}}function BEn(e=""){let t=String(e||"").toLowerCase();return t==="localhost"||t.includes(".")||t.includes(":")||/^\d{1,3}(?:\.\d{1,3}){3}$/.test(t)}function FEn(e){for(let t of["ac","wd","t","pg","ids","quick"])e.searchParams.delete(t);return e.hash="",e}function kHt(e){let t=String(e||"").trim(),r=/^https?:\/\//i.test(t),n=eAe(QTe(t));return!n||!["http:","https:"].includes(n.protocol)||!r&&!BEn(n.hostname)?"":(FEn(n),n.toString())}function jEn(e={},t=""){let r=String(e.name||e.title||t||"").trim();return r||eAe(QTe(e.address||e.api||e.url||""))?.hostname||"CMS"}function HEn(e){let t=String(e||"").trim();return t?t.startsWith(jG)?t:`${jG}${t}`:`${jG}CMS`}function tAe(e,t=""){if(!e||typeof e!="object")return null;let r=String(e.address||e.api||e.url||"").trim(),n=kHt(r);return n?{name:HEn(jEn({...e,address:n},t)),address:n}:null}function PHt(e){if(typeof e=="string")try{return PHt(JSON.parse(e))}catch{return[]}return Array.isArray(e)?e:!e||typeof e!="object"?[]:Array.isArray(e.sites)?e.sites:Array.isArray(e.list)?e.list:e.api_site&&typeof e.api_site=="object"?Object.entries(e.api_site).map(([t,r])=>({...r,key:t})):[]}function qEn(e){let t=new Set;return PHt(e).map(r=>tAe(r,r?.key)).filter(r=>!r||t.has(r.address)?!1:(t.add(r.address),!0))}function zEn(e){let t=String(e||"").trim(),r=[],n=i=>{let a=kHt(i);a&&!r.includes(a)&&r.push(a)};for(let i of["https","http"]){let a=eAe(QTe(t,i));if(!a)continue;if(n(a.toString()),!a.pathname||a.pathname==="/")for(let o of MEn)n(`${a.origin}${o}`)}return r}async function OHt(e,t=void 0){let r=await ge.get(e,{params:t,timeout:1e4,validateStatus:n=>n>=200&&n<400});if(typeof r.data=="string")try{return JSON.parse(r.data)}catch{return r.data}return r.data}function VEn(e){return!!e&&typeof e=="object"&&Array.isArray(e.class)}async function GEn(e,t=""){let r=String(e||"").trim();if(!r)throw new Error("\u8BF7\u8F93\u5165 CMS \u5730\u5740");let n=zEn(r);for(let i of n)try{let a=await OHt(i),s=qEn(a);if(s.length>0)return{type:"config",sources:s}}catch{}for(let i of n)try{let a=await OHt(i,{ac:"class"});if(VEn(a))return{type:"cms",sources:[tAe({name:t,address:i})].filter(Boolean)}}catch{}throw new Error("\u672A\u8BC6\u522B\u5230\u53EF\u7528\u7684 CMS \u6E90")}function ZTe(e=[]){let t=new Set;return(Array.isArray(e)?e:[]).map(r=>tAe(r)).filter(r=>!r||t.has(r.address)?!1:(t.add(r.address),!0))}var rAe=async e=>{let t=await e.db.getObjectDefault("/cms",{});if(t&&Object.prototype.hasOwnProperty.call(t,"list"))return ZTe(t.list);let r=Array.isArray(e.config.cms?.list)?e.config.cms.list:[];return ZTe(r.length>0?r:UEn)},YEn=async(e,t)=>{await e.db.push("/cms/list",ZTe(t))},WEn=async e=>{await e.db.delete("/cms/list")};async function nAe(e){e.get("/list",async(t,r)=>{r.send({code:0,data:await rAe(t.server)})}),e.put("/list",async(t,r)=>{await YEn(t.server,t.body),r.send({code:0})}),e.post("/resolve",async(t,r)=>{try{r.send({code:0,data:await GEn(t.body?.url,t.body?.name)})}catch(n){r.send({code:-1,message:n.message||"CMS \u89E3\u6790\u5931\u8D25"})}}),e.delete("/list",async(t,r)=>{await WEn(t.server),r.send({code:0})})}var KEn=/\.(m3u8|mp4|mkv|flv|avi|webm|mov)(?:[?#]|$)/i,iAe="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";function XEn(e=""){return/^https?:\/\//i.test(String(e||"").trim())}function JEn(e=""){return KEn.test(String(e||"").trim())}function ZEn(e="",t=""){try{return new URL(String(e||"").trim(),t).toString()}catch{return String(e||"").trim()}}function QEn(e=""){let t=[/["']([^"']+\.m3u8(?:\?[^"']*)?)["']/i,/(https?:\/\/[^\s"'<>]+\.m3u8(?:\?[^\s"'<>]*)?)/i];for(let r of t){let n=r.exec(String(e||""));if(n?.[1])return n[1].replace(/\\\//g,"/")}return""}function aAe(e,t){let r=ge.create({baseURL:t});function n(){return{}}async function i(){try{let{data:c}=await r.get("",{params:{ac:"class"}});return c}catch(c){return console.warn(c),{class:[]}}}async function a(c){try{let{data:u}=await r.get("",{params:{ac:"detail",t:c.body.id,pg:c.body.page||1}});return u}catch(u){console.warn(u)}}async function s(c){try{let{data:u}=await r.get("",{params:{ac:"detail",ids:c.body.id}});return u}catch(u){console.warn(u)}}async function o(c){let u=String(c.body.id||"").trim();if(!u)return{url:""};if(!XEn(u)||JEn(u))return{parse:0,url:u};try{let{data:l}=await ge.get(u,{timeout:1e4,headers:{"User-Agent":iAe,Referer:u}}),d=QEn(l);if(d)return{parse:0,url:ZEn(d,u),header:{Referer:u,"User-Agent":iAe}}}catch(l){console.warn(l)}return{parse:1,url:u,header:{Referer:u,"User-Agent":iAe}}}async function x(c){try{let{data:u}=await r.get("",{params:{ac:"list",wd:c.body.wd}});return u}catch(u){console.warn(u)}}return{meta:{key:e,name:e,type:3,cms:!0},api:async c=>{c.post("/init",n),c.post("/home",i),c.post("/category",a),c.post("/detail",s),c.post("/play",o),c.post("/search",x)}}}var h7={HOME:0,CATEGORY:0,SEARCH:0,DETAIL:12e4,PLAY:3e4,SPIDERS:0},sAe=class{constructor(t=800){this.max=Math.max(100,Number(t)||800),this.data=new Map,this.pending=new Map}get(t){if(!this.data.has(t))return;let r=this.data.get(t);if(r.expireAt>0&&r.expireAt<=Date.now()){this.data.delete(t);return}return this.data.delete(t),this.data.set(t,r),r.value}set(t,r,n=0){let i=n>0?Date.now()+n:0;return this.data.has(t)&&this.data.delete(t),this.data.set(t,{value:r,expireAt:i}),this.compact(),r}delete(t){this.pending.delete(t),this.data.delete(t)}clear(){this.pending.clear(),this.data.clear()}compact(){for(;this.data.size>this.max;){let t=this.data.keys().next().value;this.data.delete(t)}}async wrap(t,r,n){let i=this.get(t);if(i!==void 0)return i;if(this.pending.has(t))return this.pending.get(t);let a=(async()=>{try{let s=await n();return s!==void 0&&this.set(t,s,r),s}finally{this.pending.delete(t)}})();return this.pending.set(t,a),a}};function HG(e={}){return new sAe(e.max||800)}async function hp(e,t,r,n){return!e||typeof e.wrap!="function"||Number(r)<=0?n():e.wrap(t,r,n)}function dh(e=[]){return e.map(t=>String(t)).join(":")}function eSn(e){let t=String(e||"").trim().replace(/\/+$/,""),r=t.match(/^\/spider\/([^/]+)\/(\d+)(?:\/.*)?$/);return r?{apiBase:t,spiderKey:decodeURIComponent(r[1]),spiderType:Number(r[2])}:null}function oAe(e){return String(e||"").split(",")[0].trim()}function qG(e=null){let r=oAe(e?.headers?.["x-forwarded-host"])||oAe(e?.headers?.host);if(!r)return{headers:void 0,cacheVary:"-"};let i=oAe(e?.headers?.["x-forwarded-proto"])||String(e?.protocol||"http").trim()||"http";return{headers:{host:r,"x-forwarded-host":r,"x-forwarded-proto":i},cacheVary:`${i}://${r}`}}function tSn(e=[],t=[]){let r={};if(e.forEach(a=>{r[a.key]=a}),!Array.isArray(t)||!t.length)return e;let n={},i=[];return t.forEach(a=>{n[a.key]=!0;let s=r[a.key];if(!s||!a.enable)return;let o=typeof a.name=="string"?a.name.trim():"";i.push({...s,name:o||s.name})}),e.forEach(a=>{n[a.key]||i.push(a)}),i}async function nd(e){let t=e.embyContext?.cache;return hp(t,"emby:enabled-video-spiders:v2",h7.SPIDERS,async()=>{let r=await e.inject({method:"GET",url:"/full-config"});if(r.statusCode>=400)return[];let n=r.json(),i=Array.isArray(n?.video?.sites)?n.video.sites:[],a=await KR(e).catch(()=>[]),s=tSn(i,a),o={},x=[];return s.forEach(c=>{let u=eSn(c.api);if(!u||u.spiderType!==3)return;let l=`${c.key}:${u.apiBase}`;o[l]||(o[l]=!0,x.push({siteKey:c.key,siteName:c.name||u.spiderKey,spiderKey:u.spiderKey,spiderType:u.spiderType,apiBase:u.apiBase,api:c.api}))}),x})}function g7(e=[],t,r=null,n=""){let i=r===null?null:Number(r),a=String(n||"").trim();return e.find(s=>s.spiderKey!==t?!1:i===null?!0:a&&s.apiBase!==a?!1:Number(s.spiderType)===i)||null}async function b7(e,t,r,n,i={},a={}){let s=a?.headers&&typeof a.headers=="object"?a.headers:void 0,o=String(a?.apiBase||"").trim()||`/spider/${encodeURIComponent(t)}/${r}`,x=await e.inject({method:"POST",url:`${o.replace(/\/+$/,"")}/${n}`,payload:i,headers:s});if(x.statusCode>=400)throw new Error(`Spider call failed: ${t}/${r}/${n} ${x.statusCode}`);let c=e.embyContext?.config?.requestLog;try{let u=x.json();if(c&&(n==="detail"||n==="play")){if(n==="detail"){let l=Array.isArray(u?.list)&&u.list.length>0?u.list[0]:null,d=String(l?.vod_play_from||""),f=String(l?.vod_play_url||""),p=d?d.split("$$$").filter(Boolean).length:0,m=f?f.split("$$$").map(h=>String(h||"").split("#").filter(Boolean).length):[];console.log("[Emby Spider] detail:",JSON.stringify({spiderKey:t,spiderType:r,request:{id:String(i?.id||"")},response:{listCount:Array.isArray(u?.list)?u.list.length:0,vodId:String(l?.vod_id||""),vodName:String(l?.vod_name||""),vodRemarks:String(l?.vod_remarks||""),lineCount:p,episodeCountPerLine:m.slice(0,10)}}))}else if(n==="play"){let l=u?.header&&typeof u.header=="object"?Object.keys(u.header):[];console.log("[Emby Spider] play:",JSON.stringify({spiderKey:t,spiderType:r,request:{flag:String(i?.flag||""),idPreview:String(i?.id||"").slice(0,80)},response:{parse:Number(u?.parse||0),hasUrl:!!u?.url,urlPreview:String(u?.url||"").slice(0,120),headerKeys:l}}))}}return u}catch{return{}}}async function ZR(e,t,r=null){let n=e.embyContext?.cache,i=qG(r),a=dh(["emby","home",t.spiderKey,t.spiderType,t.apiBase||"",i.cacheVary]);return hp(n,a,h7.HOME,()=>b7(e,t.spiderKey,t.spiderType,"home",{},{headers:i.headers,apiBase:t.apiBase}))}async function Z4(e,t,r,n=1,i={},a=null){let s=e.embyContext?.cache,o=qG(a),x=dh(["emby","category",t.spiderKey,t.spiderType,t.apiBase||"",r,n,JSON.stringify(i||{}),o.cacheVary]);return hp(s,x,h7.CATEGORY,()=>b7(e,t.spiderKey,t.spiderType,"category",{id:r,page:n,filter:!0,filters:i||{}},{headers:o.headers,apiBase:t.apiBase}))}async function uc(e,t,r,n=null){let i=e.embyContext?.cache,a=qG(n),s=dh(["emby","detail",t.spiderKey,t.spiderType,t.apiBase||"",r,a.cacheVary]);return hp(i,s,h7.DETAIL,()=>b7(e,t.spiderKey,t.spiderType,"detail",{id:r},{headers:a.headers,apiBase:t.apiBase}))}async function DHt(e,t,r,n=1){let i=e.embyContext?.cache,a=dh(["emby","search",t.spiderKey,t.spiderType,t.apiBase||"",r,n]);return hp(i,a,h7.SEARCH,()=>b7(e,t.spiderKey,t.spiderType,"search",{wd:r,page:n},{apiBase:t.apiBase}))}async function fh(e,t,r,n,i=null){let a=e.embyContext?.cache,s=qG(i),o=dh(["emby","play",t.spiderKey,t.spiderType,t.apiBase||"",r,n,s.cacheVary]);return hp(a,o,h7.PLAY,()=>b7(e,t.spiderKey,t.spiderType,"play",{flag:r,id:n},{headers:s.headers,apiBase:t.apiBase}))}function lc(e){return!e||!Array.isArray(e.list)||!e.list.length?null:e.list[0]}function id(e={}){return{spiderKey:String(e.k||e.spiderKey||""),spiderType:Number(e.t||e.spiderType||3),apiBase:String(e.a||e.apiBase||"")}}var xAe=He(require("node:fs"),1),QR=He(require("node:path"),1),rSn=()=>{try{return`const appConfig = {\r
+`}return t+"</i>"}var KTe=async e=>(await e.db.getObjectDefault("/t4",{}))?.list||e.config.t4?.list||[],$En=async(e,t)=>{await e.db.push("/t4/list",t)},LEn=async e=>{await e.db.delete("/t4/list")};async function XTe(e){e.get("/list",async(t,r)=>{r.send({code:0,data:await KTe(t.server)})}),e.put("/list",async(t,r)=>{await $En(t.server,t.body),r.send({code:0})}),e.delete("/list",async(t,r)=>{await LEn(t.server),r.send({code:0})})}function JTe(e,t){let r=ve.create({baseURL:t});function n(){return{}}async function i(){try{let{data:c}=await r.get("",{params:{filter:!0}});return c}catch(c){return console.warn(c),{class:[]}}}async function a(c){try{let{data:u}=await r.get("",{params:{ac:"detail",t:c.body.id,pg:c.body.page||1}});return u}catch(u){console.warn(u)}}async function s(c){try{let{data:u}=await r.get("",{params:{ac:"detail",ids:c.body.id}});return u}catch(u){console.warn(u)}}async function o(c){try{let{data:u}=await r.get("",{params:{play:c.body.id,flag:c.body.flag}});return!u.url&&!u.urls&&c.body.id.startsWith("http")?{url:c.body.id}:u}catch(u){console.warn(u)}}async function x(c){try{let{data:u}=await r.get("",{params:{ac:"list",wd:c.body.wd}});return u}catch(u){console.warn(u)}}return{meta:{key:e,name:e,type:3,t4:!0},api:async c=>{c.post("/init",n),c.post("/home",i),c.post("/category",a),c.post("/detail",s),c.post("/play",o),c.post("/search",x)}}}var MEn=["/api.php/provide/vod/","/api.php/provide/vod","/api.php/app/","/api.php/app"],jG="\u300C\u91C7\u300D",UEn=[{name:`${jG}\u7535\u5F71\u5929\u5802`,address:"http://dyttzyw.com/api.php/provide/vod/"}];function QTe(e,t="https"){let r=String(e||"").trim();return r?/^https?:\/\//i.test(r)?r:`${t}://${r}`:""}function eAe(e){try{return new URL(e)}catch{return null}}function BEn(e=""){let t=String(e||"").toLowerCase();return t==="localhost"||t.includes(".")||t.includes(":")||/^\d{1,3}(?:\.\d{1,3}){3}$/.test(t)}function FEn(e){for(let t of["ac","wd","t","pg","ids","quick"])e.searchParams.delete(t);return e.hash="",e}function kHt(e){let t=String(e||"").trim(),r=/^https?:\/\//i.test(t),n=eAe(QTe(t));return!n||!["http:","https:"].includes(n.protocol)||!r&&!BEn(n.hostname)?"":(FEn(n),n.toString())}function jEn(e={},t=""){let r=String(e.name||e.title||t||"").trim();return r||eAe(QTe(e.address||e.api||e.url||""))?.hostname||"CMS"}function HEn(e){let t=String(e||"").trim();return t?t.startsWith(jG)?t:`${jG}${t}`:`${jG}CMS`}function tAe(e,t=""){if(!e||typeof e!="object")return null;let r=String(e.address||e.api||e.url||"").trim(),n=kHt(r);return n?{name:HEn(jEn({...e,address:n},t)),address:n}:null}function PHt(e){if(typeof e=="string")try{return PHt(JSON.parse(e))}catch{return[]}return Array.isArray(e)?e:!e||typeof e!="object"?[]:Array.isArray(e.sites)?e.sites:Array.isArray(e.list)?e.list:e.api_site&&typeof e.api_site=="object"?Object.entries(e.api_site).map(([t,r])=>({...r,key:t})):[]}function qEn(e){let t=new Set;return PHt(e).map(r=>tAe(r,r?.key)).filter(r=>!r||t.has(r.address)?!1:(t.add(r.address),!0))}function zEn(e){let t=String(e||"").trim(),r=[],n=i=>{let a=kHt(i);a&&!r.includes(a)&&r.push(a)};for(let i of["https","http"]){let a=eAe(QTe(t,i));if(!a)continue;if(n(a.toString()),!a.pathname||a.pathname==="/")for(let o of MEn)n(`${a.origin}${o}`)}return r}async function OHt(e,t=void 0){let r=await ge.get(e,{params:t,timeout:1e4,validateStatus:n=>n>=200&&n<400});if(typeof r.data=="string")try{return JSON.parse(r.data)}catch{return r.data}return r.data}function VEn(e){return!!e&&typeof e=="object"&&Array.isArray(e.class)}async function GEn(e,t=""){let r=String(e||"").trim();if(!r)throw new Error("\u8BF7\u8F93\u5165 CMS \u5730\u5740");let n=zEn(r);for(let i of n)try{let a=await OHt(i),s=qEn(a);if(s.length>0)return{type:"config",sources:s}}catch{}for(let i of n)try{let a=await OHt(i,{ac:"class"});if(VEn(a))return{type:"cms",sources:[tAe({name:t,address:i})].filter(Boolean)}}catch{}throw new Error("\u672A\u8BC6\u522B\u5230\u53EF\u7528\u7684 CMS \u6E90")}function ZTe(e=[]){let t=new Set;return(Array.isArray(e)?e:[]).map(r=>tAe(r)).filter(r=>!r||t.has(r.address)?!1:(t.add(r.address),!0))}var rAe=async e=>{let t=await e.db.getObjectDefault("/cms",{});if(t&&Object.prototype.hasOwnProperty.call(t,"list"))return ZTe(t.list);let r=Array.isArray(e.config.cms?.list)?e.config.cms.list:[];return ZTe(r.length>0?r:UEn)},YEn=async(e,t)=>{await e.db.push("/cms/list",ZTe(t))},WEn=async e=>{await e.db.delete("/cms/list")};async function nAe(e){e.get("/list",async(t,r)=>{r.send({code:0,data:await rAe(t.server)})}),e.put("/list",async(t,r)=>{await YEn(t.server,t.body),r.send({code:0})}),e.post("/resolve",async(t,r)=>{try{r.send({code:0,data:await GEn(t.body?.url,t.body?.name)})}catch(n){r.send({code:-1,message:n.message||"CMS \u89E3\u6790\u5931\u8D25"})}}),e.delete("/list",async(t,r)=>{await WEn(t.server),r.send({code:0})})}var KEn=/\.(m3u8|mp4|mkv|flv|avi|webm|mov)(?:[?#]|$)/i,iAe="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";function XEn(e=""){return/^https?:\/\//i.test(String(e||"").trim())}function JEn(e=""){return KEn.test(String(e||"").trim())}function ZEn(e="",t=""){try{return new URL(String(e||"").trim(),t).toString()}catch{return String(e||"").trim()}}function QEn(e=""){let t=[/["']([^"']+\.m3u8(?:\?[^"']*)?)["']/i,/(https?:\/\/[^\s"'<>]+\.m3u8(?:\?[^\s"'<>]*)?)/i];for(let r of t){let n=r.exec(String(e||""));if(n?.[1])return n[1].replace(/\\\//g,"/")}return""}function aAe(e,t){let r=ge.create({baseURL:t});function n(){return{}}async function i(){try{let{data:c}=await r.get("",{params:{ac:"list"}});return c}catch(c){return console.warn(c),{class:[]}}}async function a(c){try{let{data:u}=await r.get("",{params:{ac:"detail",t:c.body.id,pg:c.body.page||1}});return u}catch(u){console.warn(u)}}async function s(c){try{let{data:u}=await r.get("",{params:{ac:"detail",ids:c.body.id}});return u}catch(u){console.warn(u)}}async function o(c){let u=String(c.body.id||"").trim();if(!u)return{url:""};if(!XEn(u)||JEn(u))return{parse:0,url:u};try{let{data:l}=await ge.get(u,{timeout:1e4,headers:{"User-Agent":iAe,Referer:u}}),d=QEn(l);if(d)return{parse:0,url:ZEn(d,u),header:{Referer:u,"User-Agent":iAe}}}catch(l){console.warn(l)}return{parse:1,url:u,header:{Referer:u,"User-Agent":iAe}}}async function x(c){try{let{data:u}=await r.get("",{params:{ac:"list",wd:c.body.wd}});return u}catch(u){console.warn(u)}}return{meta:{key:e,name:e,type:3,cms:!0},api:async c=>{c.post("/init",n),c.post("/home",i),c.post("/category",a),c.post("/detail",s),c.post("/play",o),c.post("/search",x)}}}var h7={HOME:0,CATEGORY:0,SEARCH:0,DETAIL:12e4,PLAY:3e4,SPIDERS:0},sAe=class{constructor(t=800){this.max=Math.max(100,Number(t)||800),this.data=new Map,this.pending=new Map}get(t){if(!this.data.has(t))return;let r=this.data.get(t);if(r.expireAt>0&&r.expireAt<=Date.now()){this.data.delete(t);return}return this.data.delete(t),this.data.set(t,r),r.value}set(t,r,n=0){let i=n>0?Date.now()+n:0;return this.data.has(t)&&this.data.delete(t),this.data.set(t,{value:r,expireAt:i}),this.compact(),r}delete(t){this.pending.delete(t),this.data.delete(t)}clear(){this.pending.clear(),this.data.clear()}compact(){for(;this.data.size>this.max;){let t=this.data.keys().next().value;this.data.delete(t)}}async wrap(t,r,n){let i=this.get(t);if(i!==void 0)return i;if(this.pending.has(t))return this.pending.get(t);let a=(async()=>{try{let s=await n();return s!==void 0&&this.set(t,s,r),s}finally{this.pending.delete(t)}})();return this.pending.set(t,a),a}};function HG(e={}){return new sAe(e.max||800)}async function hp(e,t,r,n){return!e||typeof e.wrap!="function"||Number(r)<=0?n():e.wrap(t,r,n)}function dh(e=[]){return e.map(t=>String(t)).join(":")}function eSn(e){let t=String(e||"").trim().replace(/\/+$/,""),r=t.match(/^\/spider\/([^/]+)\/(\d+)(?:\/.*)?$/);return r?{apiBase:t,spiderKey:decodeURIComponent(r[1]),spiderType:Number(r[2])}:null}function oAe(e){return String(e||"").split(",")[0].trim()}function qG(e=null){let r=oAe(e?.headers?.["x-forwarded-host"])||oAe(e?.headers?.host);if(!r)return{headers:void 0,cacheVary:"-"};let i=oAe(e?.headers?.["x-forwarded-proto"])||String(e?.protocol||"http").trim()||"http";return{headers:{host:r,"x-forwarded-host":r,"x-forwarded-proto":i},cacheVary:`${i}://${r}`}}function tSn(e=[],t=[]){let r={};if(e.forEach(a=>{r[a.key]=a}),!Array.isArray(t)||!t.length)return e;let n={},i=[];return t.forEach(a=>{n[a.key]=!0;let s=r[a.key];if(!s||!a.enable)return;let o=typeof a.name=="string"?a.name.trim():"";i.push({...s,name:o||s.name})}),e.forEach(a=>{n[a.key]||i.push(a)}),i}async function nd(e){let t=e.embyContext?.cache;return hp(t,"emby:enabled-video-spiders:v2",h7.SPIDERS,async()=>{let r=await e.inject({method:"GET",url:"/full-config"});if(r.statusCode>=400)return[];let n=r.json(),i=Array.isArray(n?.video?.sites)?n.video.sites:[],a=await KR(e).catch(()=>[]),s=tSn(i,a),o={},x=[];return s.forEach(c=>{let u=eSn(c.api);if(!u||u.spiderType!==3)return;let l=`${c.key}:${u.apiBase}`;o[l]||(o[l]=!0,x.push({siteKey:c.key,siteName:c.name||u.spiderKey,spiderKey:u.spiderKey,spiderType:u.spiderType,apiBase:u.apiBase,api:c.api}))}),x})}function g7(e=[],t,r=null,n=""){let i=r===null?null:Number(r),a=String(n||"").trim();return e.find(s=>s.spiderKey!==t?!1:i===null?!0:a&&s.apiBase!==a?!1:Number(s.spiderType)===i)||null}async function b7(e,t,r,n,i={},a={}){let s=a?.headers&&typeof a.headers=="object"?a.headers:void 0,o=String(a?.apiBase||"").trim()||`/spider/${encodeURIComponent(t)}/${r}`,x=await e.inject({method:"POST",url:`${o.replace(/\/+$/,"")}/${n}`,payload:i,headers:s});if(x.statusCode>=400)throw new Error(`Spider call failed: ${t}/${r}/${n} ${x.statusCode}`);let c=e.embyContext?.config?.requestLog;try{let u=x.json();if(c&&(n==="detail"||n==="play")){if(n==="detail"){let l=Array.isArray(u?.list)&&u.list.length>0?u.list[0]:null,d=String(l?.vod_play_from||""),f=String(l?.vod_play_url||""),p=d?d.split("$$$").filter(Boolean).length:0,m=f?f.split("$$$").map(h=>String(h||"").split("#").filter(Boolean).length):[];console.log("[Emby Spider] detail:",JSON.stringify({spiderKey:t,spiderType:r,request:{id:String(i?.id||"")},response:{listCount:Array.isArray(u?.list)?u.list.length:0,vodId:String(l?.vod_id||""),vodName:String(l?.vod_name||""),vodRemarks:String(l?.vod_remarks||""),lineCount:p,episodeCountPerLine:m.slice(0,10)}}))}else if(n==="play"){let l=u?.header&&typeof u.header=="object"?Object.keys(u.header):[];console.log("[Emby Spider] play:",JSON.stringify({spiderKey:t,spiderType:r,request:{flag:String(i?.flag||""),idPreview:String(i?.id||"").slice(0,80)},response:{parse:Number(u?.parse||0),hasUrl:!!u?.url,urlPreview:String(u?.url||"").slice(0,120),headerKeys:l}}))}}return u}catch{return{}}}async function ZR(e,t,r=null){let n=e.embyContext?.cache,i=qG(r),a=dh(["emby","home",t.spiderKey,t.spiderType,t.apiBase||"",i.cacheVary]);return hp(n,a,h7.HOME,()=>b7(e,t.spiderKey,t.spiderType,"home",{},{headers:i.headers,apiBase:t.apiBase}))}async function Z4(e,t,r,n=1,i={},a=null){let s=e.embyContext?.cache,o=qG(a),x=dh(["emby","category",t.spiderKey,t.spiderType,t.apiBase||"",r,n,JSON.stringify(i||{}),o.cacheVary]);return hp(s,x,h7.CATEGORY,()=>b7(e,t.spiderKey,t.spiderType,"category",{id:r,page:n,filter:!0,filters:i||{}},{headers:o.headers,apiBase:t.apiBase}))}async function uc(e,t,r,n=null){let i=e.embyContext?.cache,a=qG(n),s=dh(["emby","detail",t.spiderKey,t.spiderType,t.apiBase||"",r,a.cacheVary]);return hp(i,s,h7.DETAIL,()=>b7(e,t.spiderKey,t.spiderType,"detail",{id:r},{headers:a.headers,apiBase:t.apiBase}))}async function DHt(e,t,r,n=1){let i=e.embyContext?.cache,a=dh(["emby","search",t.spiderKey,t.spiderType,t.apiBase||"",r,n]);return hp(i,a,h7.SEARCH,()=>b7(e,t.spiderKey,t.spiderType,"search",{wd:r,page:n},{apiBase:t.apiBase}))}async function fh(e,t,r,n,i=null){let a=e.embyContext?.cache,s=qG(i),o=dh(["emby","play",t.spiderKey,t.spiderType,t.apiBase||"",r,n,s.cacheVary]);return hp(a,o,h7.PLAY,()=>b7(e,t.spiderKey,t.spiderType,"play",{flag:r,id:n},{headers:s.headers,apiBase:t.apiBase}))}function lc(e){return!e||!Array.isArray(e.list)||!e.list.length?null:e.list[0]}function id(e={}){return{spiderKey:String(e.k||e.spiderKey||""),spiderType:Number(e.t||e.spiderType||3),apiBase:String(e.a||e.apiBase||"")}}var xAe=He(require("node:fs"),1),QR=He(require("node:path"),1),rSn=()=>{try{return`const appConfig = {\r
     _webSite: '',\r
     /**\r
      * \u7F51\u7AD9\u4E3B\u9875\uFF0Cuz \u8C03\u7528\u6BCF\u4E2A\u51FD\u6570\u524D\u90FD\u4F1A\u8FDB\u884C\u8D4B\u503C\u64CD\u4F5C\r
