@@ -480,110 +480,6 @@ globalThis.registerLeeLegacyHtml = async function registerLeeLegacyHtml(server, 
     }
 };
 
-// 4K影视网 / 4K电影网: both front ends use the same /api/show/v3 JSON API.
-globalThis.leeStaCafeSources = [
-    { key: 'lee_4k_yingshiwang', name: '4K影视网', type: 3, api: '/spider/lee_4k_yingshiwang/3', searchable: 1, quickSearch: 1, filterable: 0 },
-    { key: 'lee_4k_dianyingwang', name: '4K电影网', type: 3, api: '/spider/lee_4k_dianyingwang/3', searchable: 1, quickSearch: 1, filterable: 1 },
-];
-globalThis.registerLeeStaCafe = async function registerLeeStaCafe(server) {
-    const https = require('node:https');
-    const origin = 'https://www.sta-cafe.com';
-    const api = `${origin}/api/show/v3`;
-    const categories = [['1', '电影', '1'], ['2', '电视剧', '8'], ['3', '动漫', '16'], ['4', '综艺', '21']];
-    const movieNames = ['动作片', '喜剧片', '爱情片', '科幻片', '恐怖片', '剧情片', '战争片',
-        '国产剧', '香港剧', '韩国剧', '欧美剧', '台湾剧', '日本剧', '海外剧', '泰国剧',
-        '国产动漫', '日韩动漫', '欧美动漫', '港台动漫', '海外动漫',
-        '大陆综艺', '港台综艺', '日韩综艺', '欧美综艺'];
-    const movieGroup = (index) => index < 7 ? 0 : index < 15 ? 1 : index < 20 ? 2 : 3;
-    const movieClasses = movieNames.map((type_name, index) => ({ type_id: String(index + 1), type_name }));
-    const movieFilters = Object.fromEntries(movieClasses.map((item, index) => [item.type_id, [
-        { key: 'type', name: '类型', value: [{ n: '全部', v: '' }, ...movieClasses.filter((_, i) => movieGroup(i) === movieGroup(index))
-            .map(({ type_id, type_name }) => ({ n: type_name, v: type_id }))] },
-        { key: 'sort', name: '排序', value: [{ n: '最新', v: '0' }, { n: '最热', v: '1' }, { n: '评分', v: '2' }] },
-    ]]));
-    function fetch(path) {
-        return new Promise((resolve, reject) => {
-            const request = https.get(`${api}${path}`, { timeout: 15000, headers: {
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 Chrome/118.0.0.0 Mobile Safari/537.36',
-                Referer: `${origin}/`, Accept: 'application/json',
-            } }, (response) => {
-                const chunks = [];
-                response.on('data', (chunk) => chunks.push(chunk));
-                response.on('end', () => {
-                    try {
-                        if (response.statusCode < 200 || response.statusCode >= 300) throw new Error(`HTTP ${response.statusCode}`);
-                        const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-                        resolve(result.code === 0 ? result.data || {} : {});
-                    } catch (error) { reject(error); }
-                });
-            });
-            request.on('timeout', () => request.destroy(new Error('Site request timed out')));
-            request.on('error', reject);
-        });
-    }
-    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
-    const idOf = (body) => String(Array.isArray(body?.id) ? body.id[0] : body?.id || '');
-    const image = (value) => !value ? '' : value.startsWith('//') ? `https:${value}` : new URL(value, origin).href;
-    const card = (item) => ({ vod_id: String(item.vodId || ''), vod_name: String(item.vodName || ''),
-        vod_pic: image(String(item.vodPic || '')), vod_remarks: String(item.vodLastRemarks || '') });
-    async function recommendations() {
-        const out = [], seen = new Set();
-        const scan = (value) => {
-            if (!value || out.length >= 36) return;
-            if (Array.isArray(value)) { for (const item of value) scan(item); return; }
-            if (typeof value !== 'object') return;
-            if (value.vodId && value.vodName) {
-                const item = card(value);
-                if (!seen.has(item.vod_id)) { out.push(item); seen.add(item.vod_id); }
-            }
-            for (const item of Object.values(value)) scan(item);
-        };
-        try { scan(await fetch('/index')); } catch { /* the site can be unavailable */ }
-        return out;
-    }
-    const listing = (data, field, page) => {
-        const list = (data?.[field] || []).map(card);
-        return { list, page, pagecount: Math.max(page, Number(data?.total_page) || page + Number(list.length > 0)),
-            limit: 18, total: Number(data?.total) || list.length };
-    };
-    for (const source of globalThis.leeStaCafeSources) {
-        const isMovie = source.key === 'lee_4k_dianyingwang';
-        server.register(async (fastify) => {
-            fastify.post('/init', async () => ({}));
-            fastify.post('/home', async () => isMovie
-                ? { class: movieClasses, filters: movieFilters, list: await recommendations() }
-                : { class: categories.map(([type_id, type_name]) => ({ type_id, type_name })) });
-            fastify.post('/category', async (request) => {
-                const page = pageOf(request.body);
-                const id = String(request.body?.id || '');
-                const type = String(request.body?.extend?.type || (isMovie ? id : categories.find((item) => item[0] === id)?.[2]) || id);
-                return listing(await fetch(`/type/${encodeURIComponent(type)}/${page}`), 'vod_recent', page);
-            });
-            fastify.post('/detail', async (request) => {
-                const id = idOf(request.body);
-                if (!id) return { list: [] };
-                const data = await fetch(`/vod/${encodeURIComponent(id)}`);
-                if (!data.vodId) return { list: [] };
-                const plays = (data.vod_play || []).filter((item) => item?.vodPlayUrl);
-                return { list: [{ ...card(data), type_name: data.type?.typeName || '', vod_year: String(data.vodYear || ''),
-                    vod_area: data.vodArea || '', vod_actor: data.vodActor || '', vod_director: data.vodDirector || '',
-                    vod_content: data.vodContent || data.vodBlurb || '',
-                    vod_play_from: plays.map((item) => item.collectSource?.webName || '线路').join('$$$'),
-                    vod_play_url: plays.map((item) => item.vodPlayUrl).join('$$$') }] };
-            });
-            fastify.post('/search', async (request) => {
-                const page = pageOf(request.body);
-                return listing(await fetch(`/search/${encodeURIComponent(String(request.body?.wd || ''))}/${page}`), 'vods', page);
-            });
-            fastify.post('/play', async (request) => {
-                const id = idOf(request.body);
-                return { parse: 0, url: id.includes('$') ? id.slice(id.indexOf('$') + 1) : id,
-                    header: { Referer: `${origin}/` } };
-            });
-        }, { prefix: source.api });
-    }
-};
-
 globalThis.leeFourKmpSource = { key: 'lee_4kmp', name: '4KMP', type: 3,
     api: '/spider/lee_4kmp/3', searchable: 1, quickSearch: 1, filterable: 0 };
 
@@ -942,174 +838,6 @@ globalThis.registerLeeHqVod = async function registerLeeHqVod(server, bridge) {
     }, { prefix: globalThis.leeHqVodSource.api });
 };
 
-globalThis.leeYingTanSource = { key: 'lee_yingtan4k', name: '影探4K', type: 3,
-    api: '/spider/lee_yingtan4k/3', searchable: 1, quickSearch: 1, filterable: 1 };
-
-globalThis.registerLeeYingTan = async function registerLeeYingTan(server) {
-    const https = require('node:https');
-    const http = require('node:http');
-    const crypto = require('node:crypto');
-    const host = 'http://cms.lyyytv.cn';
-    const cmsKey = 'wP5bvxoc3yv7FoBQENFZuAF0EUYr4LTy';
-    const parser = 'https://mk1080p.top/zzbh.php?url=';
-    const webParsers = ['https://jx.xmflv.com/?url=', 'https://www.playm3u8.cn/jiexi.php?url=',
-        'https://bd.jx.cn/?url=', 'https://jx.77flv.cc/?url=', 'https://jx.xymp4.cc/?url='];
-    const normalize = (value) => String(value || '').replace(/[\s:：·（）()\-_,，。.[\]【】!！?？]/g, '').toLowerCase();
-    async function juxiafanLines(title) {
-        if (!title) return [[], []];
-        const route = '/spider/lee_juxiafan4k/3/';
-        const search = await server.inject({ method: 'POST', url: `${route}search`, payload: { wd: title, page: '1' } });
-        if (search.statusCode !== 200) return [[], []];
-        const list = search.json().list || [], needle = normalize(title);
-        const item = list.find((entry) => normalize(entry.vod_name) === needle)
-            || list.find((entry) => {
-                const name = normalize(entry.vod_name);
-                return name && (name.includes(needle) || needle.includes(name));
-            });
-        if (!item?.vod_id) return [[], []];
-        const detail = await server.inject({ method: 'POST', url: `${route}detail`, payload: { id: item.vod_id } });
-        if (detail.statusCode !== 200) return [[], []];
-        const vod = detail.json().list?.[0] || {}, names = String(vod.vod_play_from || '').split('$$$');
-        const from = [], urls = [];
-        for (const [index, group] of String(vod.vod_play_url || '').split('$$$').entries()) {
-            const flag = names[index] || `线路${index + 1}`;
-            const episodes = group.split('#').filter(Boolean).map((part) => {
-                const cut = part.indexOf('$');
-                const name = cut < 0 ? part : part.slice(0, cut);
-                const id = cut < 0 ? part : part.slice(cut + 1);
-                return `${name.replace(/[$#]/g, '_')}$jxf@@${flag}@@${id}`;
-            });
-            if (episodes.length) { from.push(`剧下饭4K·${flag}`); urls.push(episodes.join('#')); }
-        }
-        return [from, urls];
-    }
-    const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
-    const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
-    function get(url) {
-        return new Promise((resolve, reject) => {
-            const req = (url.startsWith('http:') ? http : https).get(url, { timeout: 20000, headers: { 'User-Agent': 'okhttp/4.12.0' } }, (response) => {
-                const chunks = [];
-                response.on('data', (chunk) => chunks.push(chunk));
-                response.on('end', () => {
-                    try {
-                        if (response.statusCode < 200 || response.statusCode >= 300) throw new Error(`HTTP ${response.statusCode}`);
-                        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')));
-                    } catch (error) { reject(error); }
-                });
-            });
-            req.on('timeout', () => req.destroy(new Error('Site request timed out')));
-            req.on('error', reject);
-        });
-    }
-    function decrypt(ciphertext, key, iv) {
-        const cipher = crypto.createDecipheriv('aes-128-cbc', Buffer.from(key), Buffer.from(iv));
-        return Buffer.concat([cipher.update(Buffer.from(ciphertext, 'base64')), cipher.final()]).toString('utf8');
-    }
-    function lvdou(value) {
-        const raw = String(value || '');
-        if (!raw.startsWith('lvdou+')) return raw;
-        try { return decrypt(raw.slice(7), cmsKey.slice(0, 16), cmsKey.slice(16)); } catch { return raw; }
-    }
-    function ldmax(input) {
-        let value = String(input || '');
-        for (let depth = 0; depth <= 5; depth++) {
-            try { value = Buffer.from(value.replace(/\s/g, ''), 'base64').toString('utf8').trim(); }
-            catch { return value; }
-            if (!value.includes('ldmax.cooom')) return value;
-            const path = value.replace(/^https?:\/\/ldmax\.cooom\//, '');
-            if (path.length < 16) return '';
-            const key = [...path.slice(0, 16)].reverse().join('');
-            try { value = decrypt(path.slice(16), key, key); } catch { return ''; }
-        }
-        return value;
-    }
-    server.register(async (fastify) => {
-        fastify.post('/init', async () => ({}));
-        fastify.post('/home', async () => {
-            const data = await get(`${host}/api.php/app/nav?token=`);
-            const classes = [], filters = {};
-            for (const item of data.list || []) {
-                const id = String(item.type_id || '');
-                classes.push({ type_id: id, type_name: item.type_name || '' });
-                const options = [];
-                for (const key of ['class', 'area', 'lang', 'year', 'letter', 'by', 'sort']) {
-                    const values = String(item.type_extend?.[key] || '').split(',').map((v) => v.trim()).filter(Boolean);
-                    if (values.length) options.push({ key, name: key, value: values.map((v) => ({ n: v, v })) });
-                }
-                if (options.length) filters[id] = options;
-            }
-            return { class: classes, filters };
-        });
-        fastify.post('/category', async (request) => {
-            const query = new URLSearchParams({ tid: String(request.body?.id || ''), pg: String(pageOf(request.body)), limit: '18' });
-            for (const key of ['class', 'area', 'lang', 'year']) {
-                const value = request.body?.extend?.[key];
-                if (value) query.set(key, String(value));
-            }
-            return get(`${host}/api.php/app/video?${query}`);
-        });
-        fastify.post('/detail', async (request) => {
-            const id = one(request.body?.id);
-            if (!id) return { list: [] };
-            const result = await get(`${host}/api.php/app/video_detail?id=${encodeURIComponent(id)}`);
-            const vod = result.data;
-            if (!vod) return { list: [] };
-            const names = String(vod.vod_play_from || '').split('$$$');
-            const groups = String(vod.vod_play_url || '').split('$$$');
-            const from = [], urls = [];
-            groups.forEach((group, index) => {
-                if (!group) return;
-                const episodes = group.split('#').filter(Boolean).map((episode) => {
-                    const cut = episode.indexOf('$');
-                    return cut < 0 ? lvdou(episode) : `${episode.slice(0, cut).replace(/[$#]/g, '_')}$${lvdou(episode.slice(cut + 1))}`;
-                });
-                from.push(`影探·${names[index]?.trim() || `线路${index + 1}`}`);
-                urls.push(episodes.join('#'));
-            });
-            try {
-                const [extraFrom, extraUrls] = await juxiafanLines(vod.vod_name);
-                from.push(...extraFrom);
-                urls.push(...extraUrls);
-            } catch { /* the optional source may be unavailable */ }
-            if (from.length) {
-                delete vod.vod_url_with_player;
-                vod.vod_play_from = from.join('$$$');
-                vod.vod_play_url = urls.join('$$$');
-            }
-            return { list: [vod] };
-        });
-        fastify.post('/search', async (request) => {
-            const page = pageOf(request.body);
-            const data = await get(`${host}/api.php/app/search?text=${encodeURIComponent(String(request.body?.wd || ''))}&pg=${page}`);
-            return { list: (data.list || []).map(({ type, ...item }) => item), page };
-        });
-        fastify.post('/play', async (request) => {
-            let token = one(request.body?.id);
-            if (token.startsWith('jxf@@')) {
-                const [, flag, ...parts] = token.split('@@');
-                const id = parts.join('@@');
-                try {
-                    const result = await server.inject({ method: 'POST', url: '/spider/lee_juxiafan4k/3/play', payload: { flag, id } });
-                    if (result.statusCode === 200 && result.json().url) return result.json();
-                } catch { /* fall through to the native parser */ }
-                token = id;
-            }
-            const url = lvdou(token).trim();
-            if (/^https?:\/\/.*(?:\.(?:mp4|m3u8|flv|avi|mkv|ts|mov|wmv|webm)(?:[?#].*)?|lyyytv\.cn\/.*)$/.test(url))
-                return { parse: 0, url };
-            const decoded = ldmax(url);
-            if (decoded.startsWith('http')) {
-                const parsed = await get(`${parser}${encodeURIComponent(decoded)}`).catch(() => ({}));
-                const stream = ldmax(parsed.url);
-                if (parsed.code === 200 && stream.startsWith('http')) return { parse: 0, url: stream };
-            }
-            if (url.startsWith('http')) return { parse: 1,
-                url: `${webParsers[url.length % webParsers.length]}${encodeURIComponent(url)}` };
-            return { jx: 1, parse: 0, url };
-        });
-    }, { prefix: globalThis.leeYingTanSource.api });
-};
-
 globalThis.leeJuXiaFanSource = { key: 'lee_juxiafan4k', name: '剧下饭4K', type: 3,
     api: '/spider/lee_juxiafan4k/3', searchable: 1, quickSearch: 1, filterable: 0 };
 
@@ -1120,6 +848,7 @@ globalThis.registerLeeJuXiaFan = async function registerLeeJuXiaFan(server) {
         'http://jumianfei.com', 'http://juyongjiu.com', 'http://kuailezhuiju2.com',
         'http://zhuiju666.com', 'http://194.147.100.155:7744'];
     const ua = 'okhttp/4.12.0', key = Buffer.from('kZ6fT8oF6oM8eX6lF7eH2rJ3pW7gW0kC');
+    const direct = (value) => /^https?:\/\//i.test(String(value || ''));
     const one = (value) => String(Array.isArray(value) ? value[0] : value || '');
     const pageOf = (body) => Math.max(1, Number.parseInt(body?.page, 10) || 1);
     function request(url, body, contentType) {
@@ -1228,7 +957,8 @@ globalThis.registerLeeJuXiaFan = async function registerLeeJuXiaFan(server) {
         fastify.post('/play', async (request) => {
             const id = one(request.body?.id), exact = /^(.*)@@(\d+)_(\d+)$/.exec(id);
             const match = exact || /^(.*)_(\d+)$/.exec(id), header = { 'User-Agent': ua };
-            if (!match) return { parse: 0, url: id, header };
+            if (!match) return { parse: 0, url: direct(id) ? id : '', header,
+                msg: direct(id) ? undefined : '剧下饭未返回可播放地址' };
             const data = await detail(match[1]);
             const selected = String(request.body?.flag || '');
             const sources = exact ? [data.playerSource?.[Number(exact[2])]].filter(Boolean)
@@ -1240,18 +970,21 @@ globalThis.registerLeeJuXiaFan = async function registerLeeJuXiaFan(server) {
                 const code = String(episode.playerCode || '');
                 if (source.parseUrl && code) {
                     const parsed = await get(`${source.parseUrl}${code}`).catch(() => ({}));
-                    if (parsed.url) return { parse: 0, url: parsed.url, header };
+                    if (direct(parsed.url)) return { parse: 0, url: parsed.url, header };
                 }
                 if (code && !code.startsWith('http')) {
                     const parsed = await post('/api/v1/player/analysisUrl',
                         { from: source.sourceCode || '', code }, true).catch(() => ({}));
-                    const url = String(parsed.data || code);
-                    if (source.sourceCode === 'huya') header.Referer = 'https://www.huya.com/';
-                    return { parse: 0, url, header };
+                    const value = typeof parsed.data === 'object' ? parsed.data?.url : parsed.data;
+                    const url = String(value || '');
+                    if (direct(url)) {
+                        if (source.sourceCode === 'huya') header.Referer = 'https://www.huya.com/';
+                        return { parse: 0, url, header };
+                    }
                 }
-                if (code) return { parse: 0, url: code, header };
+                if (direct(code)) return { parse: 0, url: code, header };
             }
-            return { parse: 0, url: '', header };
+            return { parse: 0, url: '', header, msg: '剧下饭解析未返回可播放地址' };
         });
     }, { prefix: globalThis.leeJuXiaFanSource.api });
 };
@@ -1532,58 +1265,6 @@ globalThis.registerLeeHeTun = async function registerLeeHeTun(server) {
     },{prefix:globalThis.leeHeTunSource.api});
 };
 
-globalThis.leeVmsSource={key:'lee_4kvms',name:'4kvms',type:3,api:'/spider/lee_4kvms/3',searchable:1,quickSearch:1,filterable:1};
-globalThis.registerLeeVms=async function registerLeeVms(server,bridge){
-    const https=require('node:https');
-    const ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
-    const hosts=['https://www.4kvms.org','https://www.4kvms.com','https://www.4kvm.org','https://www.4kvm.cc','https://www.4kvm.com','https://www.4kvm.me'];
-    let host=hosts[0];
-    const pageOf=b=>Math.max(1,parseInt(b?.page,10)||1);
-    const idOf=b=>String(Array.isArray(b?.id)?b.id[0]:b?.id||'');
-    function fetch(url){return new Promise((resolve,reject)=>{const req=https.get(url,{timeout:15000,headers:{'User-Agent':ua,Accept:'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','Accept-Language':'zh-CN,zh;q=0.9'}},res=>{const chunks=[];res.on('data',x=>chunks.push(x));res.on('end',()=>res.statusCode===200?resolve(Buffer.concat(chunks).toString('utf8')):reject(Error(`HTTP ${res.statusCode}`)));});req.on('timeout',()=>req.destroy(Error('timeout')));req.on('error',reject);});}
-    async function get(path){if(/^https?:/.test(path))return fetch(path);let error;for(const domain of [host,...hosts.filter(x=>x!==host)]){try{const html=await fetch(domain+path);host=domain;return html;}catch(e){error=e;}}throw error;}
-    const pic=x=>{try{return x?new URL(String(x).replace(/&amp;/g,'&'),host).href:'';}catch{return '';}};
-    function cards(html){const $=bridge.html(html),list=[],seen=new Set();$('.movie-card[data-vod-id]').each((_,node)=>{const el=$(node),id=String(el.attr('data-vod-id')||'');if(!id||seen.has(id))return;seen.add(id);const img=el.find('img').first(),name=(el.find('h3').first().text()||img.attr('alt')||'').trim();if(!name)return;list.push({vod_id:id,vod_name:name,vod_pic:pic(img.attr('data-src')||img.attr('src')),vod_remarks:el.find('.badge, .episode, .text-red-500').first().text().trim()});});if(!list.length)$('a[href^="/play/"]').each((_,node)=>{const el=$(node),id=/\/play\/([a-zA-Z0-9]+)/.exec(el.attr('href')||'')?.[1];if(!id||seen.has(id))return;const img=el.find('img').first(),name=(el.find('h3').first().text()||img.attr('alt')||'').trim();if(!name)return;seen.add(id);list.push({vod_id:id,vod_name:name,vod_pic:pic(img.attr('data-src')||img.attr('src'))});});return list;}
-    const options=(names,values)=>names.map((n,i)=>({n,v:values[i]}));
-    const area=options(['全部','中国大陆','中国香港','中国台湾','美国','日本','韩国','英国','法国','加拿大','泰国','印度'],['','52','14','21','5','11','12','30','6','32','33','34']);
-    const types=options(['全部','剧情','动作','喜剧','爱情','科幻','悬疑','惊悚','恐怖','犯罪','奇幻','战争','动画','冒险','家庭','纪录','古装','灾难'],['','1','10','5','6','14','2','4','3','9','12','16','11','18','19','20','27','34']);
-    const years=options(['全部','2026','2025','2024','2023','2022','2021','2020','2019','2018','2015-2010','2009-2000','更早'],['','1','3','4','56','13','2','6','8','9','17','23','24']);
-    const sort=options(['最新上映','最受欢迎','评分最高'],['update_time','hits','score']);
-    server.register(async(fastify)=>{
-        fastify.post('/init',async()=>({}));
-        fastify.post('/home',async()=>{const classes=[{type_id:'3',type_name:'动漫'},{type_id:'2',type_name:'电视剧'},{type_id:'1',type_name:'电影'}],filters={};for(const c of classes)filters[c.type_id]=[{key:'areas',name:'地区',value:area},{key:'types',name:'类型',value:types},{key:'years',name:'年份',value:years},{key:'sort_by',name:'排序',value:sort}];return {class:classes,filters,list:cards(await get('/')).slice(0,30)};});
-        fastify.post('/category',async(req)=>{const b=req.body||{},page=pageOf(b),e=b.extend||{},q=new URLSearchParams({classify:String(b.id||''),sort_by:String(e.sort_by||'update_time'),order:'desc'});for(const k of ['areas','types','years'])if(e[k])q.set(k,String(e[k]));if(page>1)q.set('page',String(page));const html=await get(`/filter?${q}`),list=cards(html),count=Number(/共\s*(\d+)\s*页/.exec(html)?.[1])||Math.max(page,...[...html.matchAll(/[?&]page=(\d+)/g)].map(m=>Number(m[1])));return {list,page,pagecount:count,limit:list.length,total:count*24};});
-        fastify.post('/detail',async(req)=>{const id=idOf(req.body),html=await get(`/play/${encodeURIComponent(id)}`),$=bridge.html(html);const metadata={};$('.col-span-1.text-gray-500').each((_,node)=>{const label=$(node).text().trim(),value=$(node).next('.col-span-2.text-gray-300').text().trim();if(label)metadata[label]=value;});const groups=new Map();$('a[href^="/play/"][data-line][data-episode][dataid]').each((_,node)=>{const el=$(node),line=String(el.attr('data-line')),ep=String(el.attr('data-episode')),did=String(el.attr('dataid')),href=String(el.attr('href')),title=el.find('span').first().text().trim()||`第${ep}集`;if(!groups.has(line))groups.set(line,[]);groups.get(line).push(`${title.replace(/[$#]/g,'_')}$${did}|${href}`);});const names=[...groups.keys()].sort(),from=names.length?names.map(x=>`线路${x}`):['4K影视'],urls=names.length?names.map(x=>groups.get(x).join('#')):[`播放$/play/${id}`];const vod={vod_id:id,vod_name:($('meta[property="og:title"]').attr('content')||$('title').text()).replace(/\s*-\s*第\d+集.*$/,'').replace(/\s*-?\s*4k影视.*$/i,'').trim(),vod_pic:pic($('meta[property="og:image"]').attr('content')||$('[data-poster]').attr('data-poster')),vod_content:$('meta[name="description"]').attr('content')||'',vod_year:(metadata['上映']||'').match(/20\d{2}/)?.[0]||'',vod_area:metadata['地区']||'',vod_actor:metadata['主演']||'',vod_director:metadata['导演']||'',type_name:metadata['类型']||'4K影视',vod_play_from:from.join('$$$'),vod_play_url:urls.join('$$$')};return {list:[vod]};});
-        fastify.post('/search',async(req)=>{const page=pageOf(req.body),q=encodeURIComponent(String(req.body?.wd||'')),html=await get(`/search?q=${q}${page>1?`&page=${page}`:''}`);return {list:cards(html).slice(0,30),page};});
-        fastify.post('/play',async(req)=>{const raw=idOf(req.body),part=raw.includes('|')?raw.slice(raw.indexOf('|')+1):raw,url=new URL(part.startsWith('/play/')?part:`/play/${part}`,host).href;return {parse:1,url,header:{'User-Agent':ua,Referer:`${host}/`}};});
-    },{prefix:globalThis.leeVmsSource.api});
-};
-
-globalThis.leeIk4kSource={key:'lee_ik4k',name:'ik4k影院',type:3,api:'/spider/lee_ik4k/3',searchable:1,quickSearch:1,filterable:0};
-globalThis.registerLeeIk4k=async function registerLeeIk4k(server,bridge){
-    const https=require('node:https'),zlib=require('node:zlib');
-    const host='https://www.ik4k.com',ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-    const categories={'20':'电影','21':'电视剧','23':'综艺片','24':'动漫','25':'国产剧','26':'美剧','27':'韩剧','35':'日剧','36':'港剧','37':'台剧','38':'泰剧','39':'海外剧','40':'大陆综艺','41':'港台综艺','42':'日韩综艺','43':'欧美综艺','67':'国产动漫','68':'日韩动漫','69':'欧美动漫','70':'港台动漫','71':'海外动漫'};
-    const cookie=new Map();
-    const pageOf=b=>Math.max(1,parseInt(b?.page,10)||1),idOf=b=>String(Array.isArray(b?.id)?b.id[0]:b?.id||'');
-    function request(url,method='GET',body){return new Promise((resolve,reject)=>{const data=body?Buffer.from(new URLSearchParams(body).toString()):null,req=https.request(url,{method,timeout:15000,headers:{'User-Agent':ua,Referer:`${host}/`,'X-Requested-With':'XMLHttpRequest',...(data?{'Content-Type':'application/x-www-form-urlencoded','Content-Length':data.length}:{}),...(cookie.size?{Cookie:[...cookie].map(([k,v])=>`${k}=${v}`).join('; ')}:{})}},res=>{for(const header of res.headers['set-cookie']||[]){const m=/^([^=]+)=([^;]*)/.exec(header);if(m&&m[2])cookie.set(m[1],m[2]);}const chunks=[];res.on('data',x=>chunks.push(x));res.on('end',()=>resolve({status:res.statusCode,body:Buffer.concat(chunks)}));});req.on('timeout',()=>req.destroy(Error('timeout')));req.on('error',reject);req.end(data);});}
-    function rc4(data,key){const s=Array.from({length:256},(_,i)=>i);let j=0;for(let i=0;i<256;i++){j=(j+s[i]+key[i%key.length])&255;[s[i],s[j]]=[s[j],s[i]];}const out=Buffer.alloc(data.length);let i=0;j=0;for(let k=0;k<data.length;k++){i=(i+1)&255;j=(j+s[i])&255;[s[i],s[j]]=[s[j],s[i]];out[k]=data[k]^s[(s[i]+s[j])&255];}return out;}
-    function pngGray(data){if(data.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')return null;let p=8,w=0,h=0,ct=0,ch=0,palette=null,parts=[];while(p+12<=data.length){const len=data.readUInt32BE(p),typ=data.toString('ascii',p+4,p+8),b=data.subarray(p+8,p+8+len);p+=12+len;if(typ==='IHDR'){w=b.readUInt32BE(0);h=b.readUInt32BE(4);ct=b[9];if(b[12]!==0||w<400)return null;}else if(typ==='PLTE')palette=b;else if(typ==='IDAT')parts.push(b);else if(typ==='IEND')break;}ch=({0:1,2:3,3:1,4:2,6:4})[ct];if(!ch||!w||!h)return null;const raw=zlib.inflateSync(Buffer.concat(parts)),gray=new Array(h),stride=w*ch;let at=0,prev=Buffer.alloc(stride);for(let y=0;y<h;y++){const filter=raw[at++],row=Buffer.from(raw.subarray(at,at+stride));at+=stride;for(let x=0;x<stride;x++){const a=x>=ch?row[x-ch]:0,b=prev[x],c=x>=ch?prev[x-ch]:0;if(filter===1)row[x]=(row[x]+a)&255;else if(filter===2)row[x]=(row[x]+b)&255;else if(filter===3)row[x]=(row[x]+((a+b)>>1))&255;else if(filter===4){const pa=Math.abs(b-c),pb=Math.abs(a-c),pc=Math.abs(a+b-2*c);row[x]=(row[x]+(pa<=pb&&pa<=pc?a:pb<=pc?b:c))&255;}}const g=new Uint8Array(w);for(let x=0;x<w;x++){let r,gc,b;if(ct===0)r=gc=b=row[x];else if(ct===3){const j=row[x]*3;r=palette?.[j]||0;gc=palette?.[j+1]||0;b=palette?.[j+2]||0;}else{const j=x*ch;r=row[j];gc=row[j+1];b=row[j+2];}g[x]=Math.round(.299*r+.587*gc+.114*b);}gray[y]=g;prev=row;}return {w,h,gray};}
-    let guardBusy=null;
-    async function guard(){if(guardBusy)return guardBusy;guardBusy=(async()=>{await request(`${host}/`);await request(`${host}/_guard/html.js?js=easy_slider_html`);const response=await request(`${host}/_guard/easy_slide.png?t=${Date.now()}`),png=pngGray(response.body),gw=Number(cookie.get('guardword')||0),key=String(cookie.get('guard')||'').slice(0,8);if(!png||!key)return false;const {w,h,gray}=png,integral=new Array((w+1)*(h+1)).fill(0);for(let y=0;y<h;y++){let acc=0;for(let x=0;x<w;x++){acc+=Number(gray[y][x]<95);integral[(y+1)*(w+1)+x+1]=integral[y*(w+1)+x+1]+acc;}}const candidates=[];for(let y=Math.max(6,gw+2);y<Math.min(164,gw+16)&&y+36<=h;y++)for(let x=6;x<303&&x+38<=w;x++){const sum=integral[(y+36)*(w+1)+x+38]-integral[y*(w+1)+x+38]-integral[(y+36)*(w+1)+x]+integral[y*(w+1)+x];if(sum>1000)candidates.push({x,y,sum});}candidates.sort((a,b)=>b.sum-a.sum);const seen=new Set();for(const c of candidates.slice(0,8))for(const off of [-8,-7,-9,-6,-10]){const x=c.x+off;if(x<0||x>290||seen.has(x))continue;seen.add(x);cookie.set('guardret',rc4(Buffer.from(`${x}x${gw}`),Buffer.from(key)).toString('base64'));const res=await request(`${host}/`);if(res.body.length>8000){for(const k of ['guard','guardword','guarddata','guardret'])cookie.delete(k);return true;}if(seen.size>=16)return false;}return false;})().finally(()=>guardBusy=null);return guardBusy;}
-    async function get(path,method='GET',body){const url=path.startsWith('http')?path:host+path;for(let i=0;i<3;i++){const r=await request(url,method,body),txt=r.body.toString('utf8');if(txt.length<500&&txt.includes('_guard')){if(await guard())continue;throw Error('ik4k challenge unsolved');}if(r.status>=200&&r.status<300)return txt;throw Error(`HTTP ${r.status}`);}throw Error('ik4k challenge');}
-    const pic=x=>{try{return x?new URL(x,host).href:'';}catch{return '';}};
-    function cards(html){const $=bridge.html(html),seen=new Set(),out=[];$('.public-list-box').each((_,node)=>{const el=$(node),a=el.find('a[href^="/voddetail/"]').first(),id=/\/voddetail\/(\d+)/.exec(a.attr('href')||'')?.[1];if(!id||seen.has(id))return;seen.add(id);const img=el.find('img').first();out.push({vod_id:id,vod_name:(a.attr('title')||img.attr('alt')||el.find('h3').first().text()).trim(),vod_pic:pic(img.attr('data-src')||img.attr('src')),vod_remarks:el.find('.public-list-prb, .public-list-subtitle').first().text().trim()});});return out;}
-    server.register(async(fastify)=>{
-        fastify.post('/init',async()=>({}));
-        fastify.post('/home',async()=>({class:Object.entries(categories).map(([type_id,type_name])=>({type_id,type_name})),list:cards(await get('/'))}));
-        fastify.post('/category',async(req)=>{const page=pageOf(req.body),data=JSON.parse(await get('/index.php/ds_api/vod','POST',{type:String(req.body?.id||''),page:String(page),limit:'40'}));const list=(data.list||[]).map(x=>({vod_id:String(x.vod_id||''),vod_name:String(x.vod_name||''),vod_pic:pic(x.vod_pic),vod_remarks:String(x.vod_remarks||x.vod_state||'')}));return {list,page,pagecount:Number(data.pagecount)||page,limit:40,total:list.length};});
-        fastify.post('/detail',async(req)=>{const id=idOf(req.body).match(/\d+/)?.[0];if(!id)return {list:[]};const $=bridge.html(await get(`/voddetail/${id}/`)),name=($('h3.slide-info-title').first().text()||$('title').first().text()).trim(),img=$('img[data-src]').first(),from=[],urls=[],names=$('.anthology-tab a.swiper-slide').toArray().map(x=>$(x).text().trim());$('ul.anthology-list-play').each((i,node)=>{const eps=[];$(node).find('a[href^="/vodplay/"]').each((_,a)=>{const el=$(a);eps.push(`${el.text().trim().replace(/[$#]/g,'_')}$${pic(el.attr('href'))}`);});if(eps.length){from.push(names[i]||`线路${i+1}`);urls.push(eps.join('#'));}});const details={};$('.slide-info-remarks').each((_,node)=>{const text=$(node).text().trim();if(text.startsWith('导演'))details.vod_director=text.replace(/^导演\s*:?/,'');if(text.startsWith('演员'))details.vod_actor=text.replace(/^演员\s*:?/,'');});const vod={vod_id:id,vod_name:name,vod_pic:pic(img.attr('data-src')),vod_remarks:$('.slide-info-remarks.cor5').first().text().trim(),vod_content:$('#height_limit').first().text().trim(),vod_play_from:from.join('$$$'),vod_play_url:urls.join('$$$'),...details};return {list:[vod]};});
-        fastify.post('/search',async(req)=>{const page=pageOf(req.body),word=encodeURIComponent(String(req.body?.wd||'')),path=page===1?`/vodsearch/${word}-------------/`:`/vodsearch/${word}----------${page}---/`,html=await get(path),list=cards(html),count=Number(/共\d+条[^当]*当前\d+\s*\/\s*(\d+)页/.exec(html)?.[1])||page;return {list,page,pagecount:count};});
-        fastify.post('/play',async(req)=>{const id=idOf(req.body);if(/\.(?:m3u8|mp4|flv)(?:\?|$)/i.test(id))return {parse:0,url:id,header:{Referer:`${host}/`}};const full=pic(id),html=await get(full),json=/player_aaaa\s*=\s*(\{[\s\S]*?\})\s*<\/script>/.exec(html)?.[1];let url='';if(json){try{const d=JSON.parse(json);url=String(d.url||'');if(d.encrypt&&url&&!/^https?:/.test(url))url=Buffer.from(url,'base64').toString('utf8');}catch{}}if(!url)url=/https?:\/\/[^\s"'<>]+\.m3u8/.exec(html)?.[0]||'';return {parse:url?(/\.(?:m3u8|mp4|flv)(?:\?|$)/i.test(url)?0:1):1,url:url||full,header:{'User-Agent':ua,Referer:`${host}/`}};});
-    },{prefix:globalThis.leeIk4kSource.api});
-};
-
 // 构建时将此文件置于 douer 运行时之前，设备只需加载 index.js。
 // 这里不依赖额外 npm 模块，保持本地包可独立运行。
 globalThis.registerLeeMigration = async function registerLeeMigration(server, config, bridge) {
@@ -1629,7 +1310,7 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     const localSource = { key: 'lee_local', name: '本地 • 视频', type: 3, api: '/spider/lee_local/3', searchable: 0, filterable: 0, changeable: 0 };
     const schoolSource = { key: 'lee_junior_school', name: '初中 | 课堂', type: 3, api: '/spider/lee_junior_school/3', searchable: 1, quickSearch: 0, filterable: 1, changeable: 0 };
     const marketSource = { key: 'lee_market', name: '版本 • 信息', type: 3, api: '/spider/lee_market/3', searchable: 0, filterable: 0, changeable: 0 };
-    const migratedSources = [ucSource, xunleiSource, localSource, schoolSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources, ...globalThis.leeStaCafeSources, globalThis.leeFourKmpSource, globalThis.leeFengYeSource, globalThis.leeHqVodSource, globalThis.leeYingTanSource, globalThis.leeJuXiaFanSource, globalThis.leeFourKApiSource, ...globalThis.leeGuluSources, globalThis.leeHeTunSource, globalThis.leeVmsSource, globalThis.leeIk4kSource];
+    const migratedSources = [ucSource, xunleiSource, localSource, schoolSource, marketSource, ...searchSources, ...apiSources, ...htmlSources, ...forumSources, ...siteSources, ...globalThis.leeLegacySources, ...globalThis.leeLegacyHtmlSources, globalThis.leeFourKmpSource, globalThis.leeFengYeSource, globalThis.leeHqVodSource, globalThis.leeJuXiaFanSource, globalThis.leeFourKApiSource, ...globalThis.leeGuluSources, globalThis.leeHeTunSource];
     const removedBuiltIns = new Set([
         'rrdyw', 'shuangxing', 'pomo', 'tgsou', 'shanzha', 'juzhi', 'gimy', 'wbbb',
         'jinpai', 'xifan', 'xifannext', 'ppnix', 'dbku', 'dashixiong',
@@ -2812,17 +2493,13 @@ globalThis.registerLeeMigration = async function registerLeeMigration(server, co
     }, { prefix: '/website/lee-xunlei' });
     await globalThis.registerLeeLegacy(server, config);
     await globalThis.registerLeeLegacyHtml(server, bridge);
-    await globalThis.registerLeeStaCafe(server);
     await globalThis.registerLeeFourKmp(server, bridge);
     await globalThis.registerLeeFengYe(server, bridge);
     await globalThis.registerLeeHqVod(server, bridge);
-    await globalThis.registerLeeYingTan(server);
     await globalThis.registerLeeJuXiaFan(server);
     await globalThis.registerLeeFourKApi(server);
     await globalThis.registerLeeGulu(server);
     await globalThis.registerLeeHeTun(server);
-    await globalThis.registerLeeVms(server, bridge);
-    await globalThis.registerLeeIk4k(server, bridge);
 };
 
 
