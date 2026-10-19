@@ -1,0 +1,4 @@
+interface:
+  display_name: "Node.js 内容源编写"
+  short_description: "参考 LeeCatPaw 加载器与源模板，编写和修复 Node.js 内容源插件"
+  default_prompt: "使用 $nodejs-source-writing 参考当前项目加载协议，为指定站点编写或修复 Node.js 内容源。"

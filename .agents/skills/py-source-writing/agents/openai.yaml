@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python 影视源编写"
+  short_description: "参考用户提供的 Python 与道长模板，编写和修复影视、听书及音乐源"
+  default_prompt: "使用 $py-source-writing 参考已保存的模板，为指定站点编写或修复 Python 源。"

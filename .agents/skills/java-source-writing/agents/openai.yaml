@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java 内容源编写"
+  short_description: "参考本项目 Java 模板，编写和修复 CatVod 或 TVBox 内容源插件"
+  default_prompt: "使用 $java-source-writing 参考项目模板，为指定站点编写或修复 Java 内容源。"
